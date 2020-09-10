@@ -1,0 +1,7 @@
+name = "GroupTools"
+uuid = "fdaa9585-3dec-4727-b9cf-4a8cf08d7ff9"
+authors = ["Kyungmin Lee <kyungmin.lee.42@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
