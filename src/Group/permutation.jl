@@ -1,5 +1,3 @@
-export AbstractSpaceSymmetryOperation
-
 export Permutation
 export generate_group
 export isidentity
