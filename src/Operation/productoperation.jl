@@ -1,7 +1,6 @@
 export DirectProductOperation
 export isidentity
-
-import LinearAlgebra
+export ×
 
 struct DirectProductOperation{E1<:AbstractSymmetryOperation, E2<:AbstractSymmetryOperation} <: AbstractSymmetryOperation
     left::E1
@@ -12,24 +11,18 @@ struct DirectProductOperation{E1<:AbstractSymmetryOperation, E2<:AbstractSymmetr
     end
 end
 
-function LinearAlgebra.:(×)(lhs::AbstractSymmetryOperation, rhs::AbstractSymmetryOperation)
+function ×(lhs::AbstractSymmetryOperation, rhs::AbstractSymmetryOperation)
     return DirectProductOperation(lhs, rhs)
 end
 
 function Base.convert(::Type{E1}, obj::DirectProductOperation{E1, E2}) where {E1, E2}
-    if isidentity(obj.right)
-        return obj.left
-    else
-        throw(ArgumentError("cannot convert $obj to type $E1"))
-    end
+    !isidentity(obj.right) && throw(ArgumentError("cannot convert $obj to type $E1"))
+    return obj.left
 end
 
 function Base.convert(::Type{E2}, obj::DirectProductOperation{E1, E2}) where {E1, E2}
-    if isidentity(obj.left)
-        return obj.right
-    else
-        throw(ArgumentError("cannot convert $obj to type $E2"))
-    end
+    !isidentity(obj.left) && throw(ArgumentError("cannot convert $obj to type $E2"))
+    return obj.right
 end
 
 function isidentity(obj::DirectProductOperation)
@@ -59,4 +52,8 @@ end
 
 function (arg::DirectProductOperation)(tgt)
     return apply_operation(arg.left, apply_operation(arg.right, tgt))
+end
+
+function Base.isapprox(lhs::P, rhs::P; atol::Real=0, rtol::Real=Base.rtoldefault(Float64)) where {P<:DirectProductOperation}
+    return isapprox(lhs.left, rhs.left; atol=atol, rtol=rtol) && isapprox(lhs.right, rhs.right; atol=atol, rtol=rtol)
 end
