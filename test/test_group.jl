@@ -159,6 +159,12 @@ using LinearAlgebra
             3 4 2 1;
             4 3 1 2;
         ])
+        @test group1 == FiniteGroup([
+            1 2 3 4;
+            2 1 4 3;
+            3 4 2 1;
+            4 3 1 2;
+        ])
         group1p= FiniteGroup([
             1 2 3 4;
             2 3 4 1;
@@ -166,6 +172,7 @@ using LinearAlgebra
             4 1 2 3;
         ])
         @test !isnothing(group_isomorphism(group1, group1p))
+        @test group1 != group1p
         # 2/m
         group2 = FiniteGroup([
             1 2 3 4;
@@ -174,6 +181,7 @@ using LinearAlgebra
             4 3 2 1;
         ])
         @test isnothing(group_isomorphism(group1, group2))
+        @test group1 != group2
     end # @testset "group isomorphism" begin
 
     @testset "group isomorphism 2" begin
