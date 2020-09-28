@@ -51,15 +51,20 @@ using GroupTools
             @test inv(u1) == u1 * u1
 
 
-            @test u0 * i0 == i0
-            @test i0 * u0 == i0
+            @test u1 * i0 == u1
+            @test i0 * u1 == u1
 
             @test isidentity(u1^3)
         end
 
         @testset "complex" begin
-            u1 = MatrixOperation([cis(2π/3) 0; 0 1])
-            @test isapprox(inv(u1), MatrixOperation([cis(-2π/3) 0; 0 1]))
+            u1 = MatrixOperation([cis(2π/3) 0; 0 cis(2π/3)])
+            @test isapprox(inv(u1), MatrixOperation([cis(-2π/3) 0; 0 cis(-2π/3)]))
+            @test isapprox(u1, MatrixOperation{2, ComplexF64}(cis(2π/3)))
+
+            u = MatrixOperation(cis(2π/3))
+            @test isapprox(inv(u), MatrixOperation{ComplexF64}(cis(-2π/3)))
+            @test isapprox(inv(u), MatrixOperation{1, ComplexF64}(cis(-2π/3)))
         end
     end
 end
