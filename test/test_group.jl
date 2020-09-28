@@ -60,6 +60,10 @@ using LinearAlgebra
             @test group_product(group, i, j) == mtab[i, j]
             @test gp(i, j) == mtab[i, j]
         end
+        @test gp(2, BitSet([1,2])) == BitSet([2,3])
+        @test gp(BitSet([1,2]), 2) == BitSet([2,3])
+        @test gp(BitSet([1,2]), BitSet([1,2])) == BitSet([1,2,3])
+
         @test group_product(group, 2, BitSet([1,2])) == BitSet([2,3])
         @test group_product(group, BitSet([1,2]), 2) == BitSet([2,3])
         @test group_product(group, BitSet([1,2]), BitSet([1,2])) == BitSet([1,2,3])
@@ -182,6 +186,9 @@ using LinearAlgebra
         ])
         @test isnothing(group_isomorphism(group1, group2))
         @test group1 != group2
+        @test ishomomorphic(group1, 1:4, product=group_product(group1))
+        @test !ishomomorphic(group1, 1:4, product=group_product(group1p))
+        @test !ishomomorphic(group1, 1:4, product=group_product(group2))
     end # @testset "group isomorphism" begin
 
     @testset "group isomorphism 2" begin
