@@ -47,6 +47,7 @@ using GroupTools
             @test u1 * u1 * u1 == u0
             @test u1^2 == u1 * u1
             @test u1^(-1) == u1 * u1
+            @test inv(u1) == u1 * u1
 
             @test isidentity(u1^3)
         end
