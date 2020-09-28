@@ -23,8 +23,7 @@ struct Permutation
     function Permutation(perms::AbstractVector{<:Integer}; max_order=2048)
         n = length(perms)
         map = Vector{Int}(perms)
-        let # check for duplicates
-            duplicates = Set{Int}()
+        let duplicates = Set{Int}()  # check for duplicates
             for j in perms
                 if !(1 <= j <= n)
                     throw(ArgumentError("argument not a proper permutation (target != universe)"))
