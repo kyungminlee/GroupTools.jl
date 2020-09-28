@@ -4,28 +4,28 @@ using GroupTools
 @testset "direct-product" begin
 
     @testset "construction" begin
-        u0 = UnitaryOperation([1.0 0.0; 0.0 1.0])
-        u1 = UnitaryOperation{ComplexF64}([0.0 1.0; 1.0 0.0])
+        u0 = MatrixOperation([1.0 0.0; 0.0 1.0])
+        u1 = MatrixOperation{ComplexF64}([0.0 1.0; 1.0 0.0])
         @test isa(u0 × u1, DirectProductOperation)
-        @test isa(u1 * (-1), UnitaryOperation)
-        @test isa(u1 * 1, UnitaryOperation)
-        @test isa(u1 * cis(π/4), UnitaryOperation)
+        @test isa(u1 * (-1), MatrixOperation)
+        @test isa(u1 * 1, MatrixOperation)
+        @test isa(u1 * cis(π/4), MatrixOperation)
         @test_throws InexactError u0 * cis(π/4)
         @test_throws ArgumentError u1 * 0.5
     end
 
     @testset "times" begin
-        u1 = UnitaryOperation([cospi(1/3) sinpi(1/3); -sinpi(1/3) cospi(1/3)])
-        u2 = UnitaryOperation(exp(0.25*pi*im))
+        u1 = MatrixOperation([cospi(1/3) sinpi(1/3); -sinpi(1/3) cospi(1/3)])
+        u2 = MatrixOperation(exp(0.25*pi*im))
         p = u1 × u2
         @test p*p*p == p^3
-        p3 = UnitaryOperation([-1.0 0.0; 0.0 -1.0]) × UnitaryOperation(exp(0.75*pi*im))
+        p3 = MatrixOperation([-1.0 0.0; 0.0 -1.0]) × MatrixOperation(exp(0.75*pi*im))
         @test isapprox(p*p*p, p3)
     end
 
     @testset "isidentity" begin
-        u0 = UnitaryOperation([1 0; 0 1])
-        u1 = UnitaryOperation([0 1; 1 0])
+        u0 = MatrixOperation([1 0; 0 1])
+        u1 = MatrixOperation([0 1; 1 0])
         p = u0 × u1
         @test !isidentity(p)
         @test isidentity(p*p)
@@ -36,8 +36,8 @@ using GroupTools
 
         @test isidentity(u0 × u0)
 
-        p2 = UnitaryOperation([1 0; 0 1]) × UnitaryOperation([0 1; 1 0])
-        p3 = UnitaryOperation([0 1; 1 0]) × UnitaryOperation([1 0; 0 1])
+        p2 = MatrixOperation([1 0; 0 1]) × MatrixOperation([0 1; 1 0])
+        p3 = MatrixOperation([0 1; 1 0]) × MatrixOperation([1 0; 0 1])
         @test p == p2
         @test p != p3
     end
