@@ -2,6 +2,7 @@ using Test
 using GroupTools
 
 @testset "Permutation" begin
+    @test_throws ArgumentError Permutation([1,2,2])
     @test_throws ArgumentError Permutation([1,2,4])
     @test_throws OverflowError Permutation([mod(x, 4096)+1 for x in 1:4096])
     p0 = Permutation([1,2,3,4])
