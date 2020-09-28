@@ -35,6 +35,7 @@ using GroupTools
         end
 
         @testset "integer" begin
+            i0 = IdentityOperation()
             u0 = MatrixOperation([1 0; 0 1])
             u1 = MatrixOperation([0 -1; 1 -1]) # C3 rotation
             @test isidentity(u0)
@@ -48,6 +49,10 @@ using GroupTools
             @test u1^2 == u1 * u1
             @test u1^(-1) == u1 * u1
             @test inv(u1) == u1 * u1
+
+
+            @test u0 * i0 == i0
+            @test i0 * u0 == i0
 
             @test isidentity(u1^3)
         end
