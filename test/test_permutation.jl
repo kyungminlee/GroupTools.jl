@@ -30,6 +30,11 @@ using GroupTools
     @test isless(p0, p1)
     @test isless(p1, p3)
 
+    @test isidentity(p0)
+    @test !isidentity(p1)
+    @test !isidentity(p2)
+    @test !isidentity(p3)
+
     @test p0(1) == 1 && p0(2) == 2 && p0(3) == 3 && p0(4) == 4
     @test p1(1) == 2 && p1(2) == 3 && p1(3) == 4 && p1(4) == 1
 
