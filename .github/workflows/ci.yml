@@ -49,8 +49,9 @@ jobs:
           julia --project -e 'import Pkg; import GroupTools; cd(joinpath(dirname(pathof(GroupTools)), "..")); Pkg.add("Coverage");'
           julia --project -e 'using Coverage; Codecov.submit(Codecov.process_folder());'
           julia --project -e 'using Coverage; Coveralls.submit(process_folder());'
-        # run: julia --project -e 'import Pkg; import GroupTools; cd(joinpath(dirname(pathof(GroupTools)), "..")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder()); Coveralls.submit(process_folder());'
-    # env:
-    #     DEPLOYMENT_KEY: ${{secrets.DEPLOYMENT_KEY}}
-    #     - julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
-    #     - julia --project=docs/ docs/make.jl
+      - name: Documentation
+        env:
+          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
+        run: |
+          julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
+          julia --project=docs/ docs/make.jl
