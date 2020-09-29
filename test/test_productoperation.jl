@@ -21,6 +21,11 @@ using GroupTools
         @test p*p*p == p^3
         p3 = MatrixOperation([-1.0 0.0; 0.0 -1.0]) × MatrixOperation(exp(0.75*pi*im))
         @test isapprox(p*p*p, p3)
+
+        u3 = MatrixOperation([0 1 0; 0 0 1; 1 0 0])
+        u4 = IdentityOperation()
+        @test (u1 × u2) × u3 == u1 × (u2 × u3)
+        @test u1 × u2 × u3 × u4 == u1 × (u2 × u3) × u4 == (u1 × u2) × (u3 × u4)
     end
 
     @testset "isidentity" begin
