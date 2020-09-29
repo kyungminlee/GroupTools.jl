@@ -37,7 +37,7 @@ jobs:
           julia -e "using Pkg; Pkg.update()"
           julia -e "using Pkg; Pkg.Registry.add(RegistrySpec(url=\"https://github.com/kyungminlee/KyungminLeeRegistry.jl.git\"))"
       - name: Build
-        run: julia --project -e 'import Pkg; Pkg.build()'
+        run: julia --project -e 'import Pkg; Pkg.build(); Pkg.precompile()'
       - name: Test
         env:
           JULIA_NUM_THREADS: '2'
@@ -48,9 +48,8 @@ jobs:
           COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
-          julia --project -e 'import Pkg; import GroupTools; cd(joinpath(dirname(pathof(GroupTools)), "..")); Pkg.add("Coverage");'
-          julia --project -e 'using Coverage; Codecov.submit(Codecov.process_folder());'
-          julia --project -e 'using Coverage; Coveralls.submit(process_folder());'
+          julia --project -e 'import Pkg; Pkg.add("Coverage")'
+          julia --project -e 'using Coverage; Codecov.submit(process_folder()); Coveralls.submit(process_folder())'
       - name: Documentation
         env:
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
