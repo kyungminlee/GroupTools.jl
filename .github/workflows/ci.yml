@@ -48,7 +48,8 @@ jobs:
           COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
-          julia --project -e 'import Pkg; Pkg.add("Coverage")'
+          set
+          julia --project -e 'import Pkg; Pkg.add(url="https://github.com/kyungminlee/Coverage.jl.git", rev="github-action-workaround")'
           julia --project -e 'using Coverage; Codecov.submit(process_folder()); Coveralls.submit(process_folder())'
       - name: Documentation
         env:
