@@ -70,6 +70,11 @@ using GroupTools
             @test conj(u) == MatrixOperation([1 -im; 0 -im])
             @test transpose(u) == MatrixOperation([1 0; im im])
             @test adjoint(u) == MatrixOperation([1 0; -im -im])
+
+            @test u * 2 == MatrixOperation([2 2im; 0 2im])
+            @test 2 * u == MatrixOperation([2 2im; 0 2im])
+            @test_throws InexactError u * 1.5
+            @test_throws InexactError 1.5 * u
         end
     end
 end
