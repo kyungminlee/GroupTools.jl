@@ -69,3 +69,6 @@ function Base.isapprox(
 ) where {D, R}
     return isapprox(lhs.matrix, rhs.matrix; atol=atol, rtol=rtol)
 end
+
+# apply_operation(symop::MatrixOperation, tgt::AbstractVector) = symop.matrix * tgt
+# (symop::MatrixOperation)(tgt::AbstractVector) = symop.matrix * tgt

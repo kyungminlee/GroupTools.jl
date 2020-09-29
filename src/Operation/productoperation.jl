@@ -30,10 +30,10 @@ end
 
 isidentity(obj::DirectProductOperation) = all(isidentity, obj.operations)
 
-function apply_operation(arg::DirectProductOperation, tgt)
-    return foldr(apply_operation, args.operations; init=tgt)
-end
+# function apply_operation(arg::DirectProductOperation, tgt)
+#     return foldr(apply_operation, args.operations; init=tgt)
+# end
 
-function (arg::DirectProductOperation)(tgt)
-    return foldr(apply_operation, args.operations; init=tgt)
-end
+# function (arg::DirectProductOperation)(tgt)
+#     return foldr(apply_operation, args.operations; init=tgt)
+# end
