@@ -10,6 +10,7 @@ export issubgroup
 export isabelian
 export minimal_generating_set
 export group_multiplication_table
+export generate_multiplication_table
 
 export element, elements
 export element_name, element_names
@@ -447,11 +448,11 @@ end
 
 
 """
-    group_multiplication_table(elements, product=(*))
+    generate_multiplication_table(elements, product=(*))
 
 Generate a multiplication table from elements with product.
 """
-function group_multiplication_table(
+function generate_multiplication_table(
     elements::AbstractVector{ElementType},
     product::Function=Base.:(*)
 ) where {ElementType}
