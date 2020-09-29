@@ -59,9 +59,9 @@ Base.adjoint(arg::U) where {U<:MatrixOperation} = U(adjoint(arg.matrix))
 
 isidentity(arg::MatrixOperation) = arg.matrix == LinearAlgebra.I
 
-function Base.convert(::Type{MatrixOperation{D, R}}, obj::MatrixOperation{D, R2}) where {D, R, R2}
-    return MatrixOperation{D, R}(obj.matrix)
-end
+# function Base.convert(::Type{MatrixOperation{D, R}}, obj::MatrixOperation{D, R2}) where {D, R, R2}
+#     return MatrixOperation{D, R}(obj.matrix)
+# end
 
 function Base.isapprox(
     lhs::MatrixOperation{D, R},
