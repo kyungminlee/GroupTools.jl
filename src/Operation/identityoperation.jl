@@ -30,6 +30,6 @@ Check whether the argument is an identity. Always `true`.
 """
 isidentity(arg::IdentityOperation) = true
 
-## apply
+## apply is about representation, not group. But identity is special.
 apply_operation(::IdentityOperation, tgt) = tgt
 (symop::IdentityOperation)(tgt) = tgt
