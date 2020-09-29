@@ -50,11 +50,13 @@ using GroupTools
             @test u1^(-1) == u1 * u1
             @test inv(u1) == u1 * u1
 
-
             @test u1 * i0 == u1
             @test i0 * u1 == u1
 
             @test isidentity(u1^3)
+
+            @test u1 * 2 == MatrixOperation([0 -2; 2 -2])
+            @test 2 * u1 == MatrixOperation([0 -2; 2 -2])
         end
 
         @testset "complex" begin
