@@ -59,7 +59,7 @@ BUT THIS: (Return `[p1.map[x] for x in p2.map]`.)
 
 # Examples
 ```jldoctest
-julia> using LatticeTools
+julia> using GroupTools
 
 julia> Permutation([2,1,3]) * Permutation([1,3,2])
 Permutation([2, 3, 1], 3)
@@ -84,7 +84,7 @@ Exponentiate the permutation.
 
 # Examples
 ```jldoctest
-julia> using LatticeTools
+julia> using GroupTools
 
 julia> Permutation([2,3,4,1])^2
 Permutation([3, 4, 1, 2], 2)
