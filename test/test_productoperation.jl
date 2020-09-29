@@ -11,7 +11,7 @@ using GroupTools
         @test isa(u1 * 1, MatrixOperation)
         @test isa(u1 * cis(π/4), MatrixOperation)
         @test_throws InexactError u0 * cis(π/4)
-        @test_throws ArgumentError u1 * 0.5
+        u1 * 0.5
     end
 
     @testset "times" begin
