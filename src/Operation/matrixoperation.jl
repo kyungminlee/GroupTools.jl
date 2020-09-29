@@ -8,33 +8,28 @@ struct MatrixOperation{D, R<:Number} <: AbstractSymmetryOperation
 
     function MatrixOperation{D, R}(matrix::AbstractMatrix) where {D, R}
         size(matrix) != (D, D) && throw(ArgumentError("dimensions must be ($D,$D) != $(size(matrix))"))
-        #!isapprox(matrix * adjoint(matrix), LinearAlgebra.I) && throw(ArgumentError("matrix not unitary"))
         return new{D, R}(matrix)
     end
 
     function MatrixOperation{R}(matrix::AbstractMatrix) where {R}
         D, D2 = size(matrix)
         D != D2 && throw(ArgumentError("dimensions must be square, not ($D,$D2)"))
-        # !isapprox(matrix * adjoint(matrix), LinearAlgebra.I) && throw(ArgumentError("matrix not unitary"))
         return new{D, R}(matrix)
     end
 
     function MatrixOperation(matrix::AbstractMatrix{R}) where {R}
         D, D2 = size(matrix)
         D != D2 && throw(ArgumentError("dimensions must be square, not ($D,$D2)"))
-        # !isapprox(matrix * adjoint(matrix), LinearAlgebra.I) && throw(ArgumentError("matrix not unitary"))
         return new{D, R}(matrix)
     end
 
     function MatrixOperation(value::R) where {R}
         iszero(value) && throw(ArgumentError("value cannot be zero $(value)"))
-        # !isone(abs(value)) && throw(ArgumentError("value not unit length ($(abs(value)))"))
         return new{1, R}(ones(R, (1,1))*value)
     end
 
     function MatrixOperation{R}(value::Number) where {R}
         iszero(value) && throw(ArgumentError("value cannot be zero $(value)"))
-        # !isone(abs(value)) && throw(ArgumentError("value not unit length ($(abs(value)))"))
         return new{1, R}(ones(R, (1,1))*value)
     end
 
@@ -47,21 +42,24 @@ end
 Base.:(*)(lhs::U, rhs::U) where {U<:MatrixOperation} = U(lhs.matrix * rhs.matrix)
 Base.:(*)(lhs::U, rhs::Number) where {U<:MatrixOperation} = U(lhs.matrix * rhs)
 Base.:(*)(lhs::Number, rhs::U) where {U<:MatrixOperation} = U(lhs * rhs.matrix)
-Base.:(^)(lhs::U, rhs::Integer) where {U<:MatrixOperation} = U(lhs.matrix^rhs)
+function Base.:(^)(lhs::U, rhs::Integer) where {U<:MatrixOperation}
+    if rhs >= 0
+        return U(lhs.matrix^rhs)
+    else
+        minv = MathExpr.inverse(lhs.matrix)
+        return U(minv^(-rhs))
+    end
+end
 
-#Base.inv(arg::U) where {U<:MatrixOperation} = U(adjoint(arg.matrix))
-Base.inv(arg::U) where {U<:MatrixOperation} = U(MathExpr.inverse(arg.matrix))
 
 Base.:(==)(lhs::U, rhs::U) where {U<:MatrixOperation} = lhs.matrix == rhs.matrix
+
+Base.inv(arg::U) where {U<:MatrixOperation} = U(MathExpr.inverse(arg.matrix))
 Base.conj(arg::U) where {U<:MatrixOperation} = U(conj(arg.matrix))
 Base.transpose(arg::U) where {U<:MatrixOperation} = U(transpose(arg.matrix))
 Base.adjoint(arg::U) where {U<:MatrixOperation} = U(adjoint(arg.matrix))
 
 isidentity(arg::MatrixOperation) = arg.matrix == LinearAlgebra.I
-
-# function Base.convert(::Type{MatrixOperation{D, R}}, obj::MatrixOperation{D, R2}) where {D, R, R2}
-#     return MatrixOperation{D, R}(obj.matrix)
-# end
 
 function Base.isapprox(
     lhs::MatrixOperation{D, R},
@@ -71,3 +69,6 @@ function Base.isapprox(
 ) where {D, R}
     return isapprox(lhs.matrix, rhs.matrix; atol=atol, rtol=rtol)
 end
+
+# apply_operation(symop::MatrixOperation, tgt::AbstractVector) = symop.matrix * tgt
+# (symop::MatrixOperation)(tgt::AbstractVector) = symop.matrix * tgt

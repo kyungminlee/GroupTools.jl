@@ -47,14 +47,20 @@ using GroupTools
             @test u1 * u1 != u0
             @test u1 * u1 * u1 == u0
             @test u1^2 == u1 * u1
-            @test u1^(-1) == u1 * u1
+            let n = -1  # Julia statically converts negative literals to inv and positive
+                @test u1^n == u1 * u1
+                n = -2
+                @test u1^n == u1
+            end
             @test inv(u1) == u1 * u1
-
 
             @test u1 * i0 == u1
             @test i0 * u1 == u1
 
             @test isidentity(u1^3)
+
+            @test u1 * 2 == MatrixOperation([0 -2; 2 -2])
+            @test 2 * u1 == MatrixOperation([0 -2; 2 -2])
         end
 
         @testset "complex" begin

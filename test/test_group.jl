@@ -92,7 +92,9 @@ using LinearAlgebra
         @test !issubgroup(group, Set([1,2]))
         @test minimal_generating_set(group) == [2]
 
-        @test group_multiplication_table([[1 0; 0 1], [1 0; 0 -1]]) == [1 2; 2 1]
+        @test generate_multiplication_table([[1 0; 0 1], [1 0; 0 -1]]) == [1 2; 2 1]
+        @test_throws ArgumentError generate_multiplication_table([[1 0; 0 1], [1 0; 0 1]]) # duplicate
+        @test_throws KeyError generate_multiplication_table([[1 0; 0 1], [0 -1; 1 -1]]) # not closed
 
         @test ishomomorphic(group, 1:3; product=gp)
         @test !ishomomorphic(group, 1:2; product=gp)
