@@ -43,7 +43,7 @@ Base.:(*)(lhs::U, rhs::U) where {U<:MatrixOperation} = U(lhs.matrix * rhs.matrix
 Base.:(*)(lhs::U, rhs::Number) where {U<:MatrixOperation} = U(lhs.matrix * rhs)
 Base.:(*)(lhs::Number, rhs::U) where {U<:MatrixOperation} = U(lhs * rhs.matrix)
 function Base.:(^)(lhs::U, rhs::Integer) where {U<:MatrixOperation}
-    if rhs > 0
+    if rhs >= 0
         return U(lhs.matrix^rhs)
     else
         minv = MathExpr.inverse(lhs.matrix)

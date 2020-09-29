@@ -20,6 +20,7 @@ Base.:(*)(lhs::IdentityOperation, ::IdentityOperation) = lhs
 Base.:(*)(lhs::AbstractSymmetryOperation, ::IdentityOperation) = lhs
 Base.:(*)(::IdentityOperation, rhs::AbstractSymmetryOperation) = rhs
 Base.:(^)(::IdentityOperation, ::Integer) = IdentityOperation()
+
 Base.inv(::IdentityOperation) = IdentityOperation()
 
 """
