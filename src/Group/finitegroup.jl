@@ -457,6 +457,7 @@ function group_multiplication_table(
 ) where {ElementType}
     element_lookup = Dict(k=>i for (i, k) in enumerate(elements))
     ord_group = length(elements)
+    length(element_lookup) != ord_group && throw(ArgumentError("elements not unique"))
     mtab = zeros(Int, (ord_group, ord_group))
     for i in 1:ord_group, j in 1:ord_group
         mtab[i,j] = element_lookup[ product(elements[i], elements[j]) ]
