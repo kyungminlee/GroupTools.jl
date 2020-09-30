@@ -12,6 +12,8 @@ export minimal_generating_set
 export group_multiplication_table
 export generate_multiplication_table
 
+export generate_group_elements
+
 export element, elements
 export element_name, element_names
 
@@ -484,12 +486,126 @@ function ishomomorphic(
         return false
     end
     for i in 1:ord_group, j in 1:ord_group
-        if !equal( product(representation[i], representation[j]),
-                   representation[ group_product(group, i, j)] )
+        if !equal(
+            product(representation[i], representation[j]),
+            representation[ group_product(group, i, j)]
+        )
             return false
         end
     end
     return true
+end
+
+
+# function generate_group_elements_generating_order(
+#     generators::E...;
+#     product::Function=(*),
+#     max_order::Integer=4096
+# ) where E
+#     change = true
+#     element_set = Set{E}([generators...])
+#     while change
+#         change = false
+#         for g1 in generators, g2 in element_set
+#             g3 = g1 * g2
+#             if !(g3 in element_set)
+#                 change = true
+#                 push!(element_set, g3)
+#             end
+#             length(element_set) > 4096 && throw(OverflowError("number of elements larger than max_order $max_order"))
+#         end
+#     end
+#     element_list = collect(element_set)
+#     # reorder elements
+#     # 1. find identity
+#     identity_index = 0
+#     n = length(element_list)
+#     mtab = generate_multiplication_table(element_list)
+#     @show mtab
+#     for i in 1:n
+#         if mtab[i,:] == 1:n && mtab[:,i] == 1:n
+#             identity_index = i
+#             break
+#         end
+#     end
+#     identity_index == 0 && throw(ArgumentError("identity element not found"))
+#     # 2. and then generators
+#     generator_indices = Int[]
+#     for g in generators
+#         i = findfirst(x -> x == g, element_list)
+#         @assert !isnothing(i)
+#         push!(generator_indices, i)
+#     end
+#     # 3. and then the rest
+#     included = falses(n)
+#     included[identity_index] = true
+#     included[generator_indices] .= true
+#     ordered_element_list = [element_list[identity_index], element_list[generator_indices]...]
+#     sizehint!(ordered_element_list, n)
+#     for i in 1:n
+#         included[i] && continue
+#         push!(ordered_element_list, element_list[i])
+#     end
+#     @assert length(ordered_element_list) == n
+#     return ordered_element_list
+# end
+
+
+"""
+    generate_group_elements(g1[, g2, ...]; product=(*), max_order=4096)
+
+Generate a list of group elements, ordered by their order (period length).
+The identity element in the first spot.
+"""
+function generate_group_elements(
+    generators::E...;
+    product::Function=(*),
+    max_order::Integer=4096
+) where E
+    # Generate all elements
+    element_list = let
+        element_set = Set{E}([generators...])
+        change = true
+        while change
+            change = false
+            for g1 in generators, g2 in element_set
+                g3 = g1 * g2
+                if !(g3 in element_set)
+                    change = true
+                    push!(element_set, g3)
+                    break
+                end
+            end
+            if length(element_set) > 4096
+                throw(OverflowError("number of elements larger than max_order $max_order"))
+            end
+        end
+        collect(element_set)
+    end
+    n = length(element_list)
+    # Reorder elements by element order. Generators comes before other elements with the same order.
+    mtab = generate_multiplication_table(element_list)
+    priority_list = Vector{Tuple{Int, Int}}(undef, n) # [(l, b) | l is order, b is "bonus"]
+    fill!(priority_list, (0, n))
+    for (ig, g) in enumerate(generators)
+        i = findfirst(x -> x == g, element_list)
+        @assert !isnothing(i)
+        priority_list[i][2] != n && continue
+        priority_list[i] = (0, ig-1)
+    end
+    for i in 1:n
+        k = i
+        for j in 1:n
+            k = mtab[i, k]
+            if k == i
+                priority_list[i] = (j, priority_list[i][2])
+                break
+            end
+        end
+    end
+    @assert all(x -> x[1] > 0, priority_list)
+    idx = sortperm(priority_list)
+    return element_list[idx]
 end
 
 

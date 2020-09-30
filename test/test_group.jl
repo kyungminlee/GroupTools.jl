@@ -191,7 +191,16 @@ using LinearAlgebra
         @test ishomomorphic(group1, 1:4, product=group_product(group1))
         @test !ishomomorphic(group1, 1:4, product=group_product(group1p))
         @test !ishomomorphic(group1, 1:4, product=group_product(group2))
-    end # @testset "group isomorphism" begin
+
+        let # generate elements of group C₄ with a generator C₄
+            m = [0 -1; 1 0]
+            element_list = collect(generate_group_elements(m))
+            @test length(element_list) == 4
+            @test element_list == [[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]]
+            group_generated = FiniteGroup(generate_multiplication_table(element_list))
+            @test !isnothing(group_isomorphism(group_generated, group1))
+        end
+    end # @testset "group isomorphism"
 
     @testset "group isomorphism 2" begin
         # D2h
