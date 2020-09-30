@@ -39,6 +39,17 @@ struct MatrixOperation{D, R<:Number} <: AbstractSymmetryOperation
     end
 end
 
+Base.hash(x::MatrixOperation) = Base.hash(x.matrix)
+
+Base.:(==)(lhs::U, rhs::U) where {U<:MatrixOperation} = lhs.matrix == rhs.matrix
+
+Base.inv(arg::U) where {U<:MatrixOperation} = U(MathExpr.inverse(arg.matrix))
+Base.conj(arg::U) where {U<:MatrixOperation} = U(conj(arg.matrix))
+Base.transpose(arg::U) where {U<:MatrixOperation} = U(transpose(arg.matrix))
+Base.adjoint(arg::U) where {U<:MatrixOperation} = U(adjoint(arg.matrix))
+
+
+
 Base.:(*)(lhs::U, rhs::U) where {U<:MatrixOperation} = U(lhs.matrix * rhs.matrix)
 Base.:(*)(lhs::U, rhs::Number) where {U<:MatrixOperation} = U(lhs.matrix * rhs)
 Base.:(*)(lhs::Number, rhs::U) where {U<:MatrixOperation} = U(lhs * rhs.matrix)
@@ -51,13 +62,6 @@ function Base.:(^)(lhs::U, rhs::Integer) where {U<:MatrixOperation}
     end
 end
 
-
-Base.:(==)(lhs::U, rhs::U) where {U<:MatrixOperation} = lhs.matrix == rhs.matrix
-
-Base.inv(arg::U) where {U<:MatrixOperation} = U(MathExpr.inverse(arg.matrix))
-Base.conj(arg::U) where {U<:MatrixOperation} = U(conj(arg.matrix))
-Base.transpose(arg::U) where {U<:MatrixOperation} = U(transpose(arg.matrix))
-Base.adjoint(arg::U) where {U<:MatrixOperation} = U(adjoint(arg.matrix))
 
 isidentity(arg::MatrixOperation) = arg.matrix == LinearAlgebra.I
 
