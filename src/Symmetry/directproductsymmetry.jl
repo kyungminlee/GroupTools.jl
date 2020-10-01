@@ -1,4 +1,5 @@
 export DirectProductSymmetry
+export elements
 
 struct DirectProductSymmetry{E<:AbstractSymmetryOperation, S<:Tuple{Vararg{AbstractSymmetry}}}<:AbstractSymmetry
     symmetries::S
