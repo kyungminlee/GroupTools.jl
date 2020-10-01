@@ -194,7 +194,7 @@ using LinearAlgebra
 
         let # generate elements of group C₄ with a generator C₄
             m = [0 -1; 1 0]
-            element_list = collect(generate_group_elements(m))
+            element_list = collect(generate_group_elements([m]))
             @test element_list == [[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]]
             group_generated = FiniteGroup(generate_multiplication_table(element_list))
             @test !isnothing(group_isomorphism(group_generated, group1))

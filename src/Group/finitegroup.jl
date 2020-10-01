@@ -558,7 +558,7 @@ Generate a list of group elements, ordered by their order (period length).
 The identity element in the first spot.
 """
 function generate_group_elements(
-    generators::E...;
+    generators::AbstractVector{E};
     product::Function=(*),
     max_order::Integer=4096
 ) where E
