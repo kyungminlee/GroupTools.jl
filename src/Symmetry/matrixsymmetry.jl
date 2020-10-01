@@ -12,6 +12,10 @@ struct MatrixSymmetry{M<:MatrixOperation}<:AbstractSymmetry
         group = FiniteGroup(generate_multiplication_table(elements))
         return new{MatrixOperation{D, S}}(elements, group)
     end
+    function MatrixSymmetry(elements::AbstractVector{M}) where {M<:MatrixOperation}
+        group = FiniteGroup(generate_multiplication_table(elements))
+        return new{M}(elements, group)
+    end
 end
 
 Base.eltype(::Type{MatrixSymmetry{M}}) where M = M
@@ -25,7 +29,6 @@ Base.getindex(x::MatrixSymmetry, i) = Base.getindex(x.elements, i)
 
 Base.iterate(x::MatrixSymmetry) = Base.iterate(x.elements)
 Base.iterate(x::MatrixSymmetry, i) = Base.iterate(x.elements, i)
-
 
 elements(m::MatrixSymmetry) = m.elements
 group(m::MatrixSymmetry) = m.group
