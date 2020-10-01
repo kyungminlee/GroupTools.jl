@@ -13,7 +13,7 @@ include("Group/permutation.jl")
 include("Symmetry/abstractsymmetry.jl")
 include("Symmetry/matrixsymmetry.jl")
 include("Symmetry/directproductsymmetry.jl")
-# include("Symmetry/semidirectproductsymmetry.jl")
+include("Symmetry/semidirectproductsymmetry.jl")
 
 
 end # module
