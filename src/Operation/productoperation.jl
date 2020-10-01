@@ -31,11 +31,3 @@ function Base.isapprox(lhs::P, rhs::P; atol::Real=0, rtol::Real=Base.rtoldefault
 end
 
 isidentity(obj::DirectProductOperation) = all(isidentity, obj.operations)
-
-# function apply_operation(arg::DirectProductOperation, tgt)
-#     return foldr(apply_operation, args.operations; init=tgt)
-# end
-
-# function (arg::DirectProductOperation)(tgt)
-#     return foldr(apply_operation, args.operations; init=tgt)
-# end
