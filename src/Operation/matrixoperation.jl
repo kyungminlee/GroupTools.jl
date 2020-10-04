@@ -48,8 +48,6 @@ Base.conj(arg::U) where {U<:MatrixOperation} = U(conj(arg.matrix))
 Base.transpose(arg::U) where {U<:MatrixOperation} = U(transpose(arg.matrix))
 Base.adjoint(arg::U) where {U<:MatrixOperation} = U(adjoint(arg.matrix))
 
-
-
 Base.:(*)(lhs::U, rhs::U) where {U<:MatrixOperation} = U(lhs.matrix * rhs.matrix)
 Base.:(*)(lhs::U, rhs::Number) where {U<:MatrixOperation} = U(lhs.matrix * rhs)
 Base.:(*)(lhs::Number, rhs::U) where {U<:MatrixOperation} = U(lhs * rhs.matrix)
