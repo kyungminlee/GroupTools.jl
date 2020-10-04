@@ -17,6 +17,11 @@ using GroupTools
 
         @test apply_operation(iden, [3,2]) == [3,2]
         @test iden([3,2]) == [3,2]
+
+        col = collect(iden)
+        @test length(col) == 1
+        @test size(col) == ()
+        @test eltype(iden) == typeof(iden)
     end
 
     @testset "MatrixOperation" begin
@@ -32,6 +37,11 @@ using GroupTools
             v2 = MatrixOperation{Float64}([0 1; 1 0])
             @test v0 == v1
             @test v1 == v2
+
+            col = collect(u0)
+            @test length(u0) == 1
+            @test size(u0) == ()
+            @test eltype(u0) == typeof(u0)
         end
 
         @testset "integer" begin

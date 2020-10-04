@@ -18,6 +18,8 @@ end
 ×(lhs::AbstractSymmetryOperation, rhs::DirectProductOperation) = DirectProductOperation(lhs, rhs.operations...)
 ×(lhs::DirectProductOperation, rhs::DirectProductOperation) = DirectProductOperation(lhs.operations..., rhs.operations...)
 
+Base.hash(x::DirectProductOperation) = Base.hash(x.operations)
+
 Base.:(*)(lhs::P, rhs::P) where {P<:DirectProductOperation} = DirectProductOperation(lhs.operations .* rhs.operations)
 Base.:(^)(obj::DirectProductOperation, n::Integer) = DirectProductOperation(obj.operations.^n)
 Base.:(==)(lhs::P, rhs::P) where {P<:DirectProductOperation} = all(lhs.operations .== rhs.operations)
@@ -29,11 +31,3 @@ function Base.isapprox(lhs::P, rhs::P; atol::Real=0, rtol::Real=Base.rtoldefault
 end
 
 isidentity(obj::DirectProductOperation) = all(isidentity, obj.operations)
-
-# function apply_operation(arg::DirectProductOperation, tgt)
-#     return foldr(apply_operation, args.operations; init=tgt)
-# end
-
-# function (arg::DirectProductOperation)(tgt)
-#     return foldr(apply_operation, args.operations; init=tgt)
-# end
