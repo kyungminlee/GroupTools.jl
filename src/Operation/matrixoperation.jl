@@ -39,7 +39,7 @@ struct MatrixOperation{D, R<:Number} <: AbstractSymmetryOperation
     end
 end
 
-Base.hash(x::M) where {M<:MatrixOperation} = Base.hash(x.matrix, Base.hash(M))
+Base.hash(x::M, h::UInt) where {M<:MatrixOperation} = Base.hash(M, Base.hash(x.matrix, h))
 
 Base.:(==)(lhs::U, rhs::U) where {U<:MatrixOperation} = lhs.matrix == rhs.matrix
 

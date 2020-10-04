@@ -1,4 +1,5 @@
 using Test
+using LinearAlgebra
 using GroupTools
 
 @testset "direct-product" begin
@@ -45,6 +46,10 @@ using GroupTools
         p3 = MatrixOperation([0 1; 1 0]) × MatrixOperation([1 0; 0 1])
         @test p == p2
         @test p != p3
+        p2p = MatrixOperation([1 0; 0 1]) × MatrixOperation([0 1; 1 0])
+        @test p2 == p2p
+        @test p2 !== p2p
+        @test hash(p2) == hash(p2p)
     end
 end
 
