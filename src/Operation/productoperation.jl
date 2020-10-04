@@ -18,7 +18,7 @@ end
 ×(lhs::AbstractSymmetryOperation, rhs::DirectProductOperation) = DirectProductOperation(lhs, rhs.operations...)
 ×(lhs::DirectProductOperation, rhs::DirectProductOperation) = DirectProductOperation(lhs.operations..., rhs.operations...)
 
-Base.hash(x::DirectProductOperation) = Base.hash(x.operations)
+Base.hash(x::P) where {P<:DirectProductOperation} = Base.hash(x.operations, Bash.hash(P))
 
 Base.:(*)(lhs::P, rhs::P) where {P<:DirectProductOperation} = DirectProductOperation(lhs.operations .* rhs.operations)
 Base.:(^)(obj::DirectProductOperation, n::Integer) = DirectProductOperation(obj.operations.^n)
