@@ -32,3 +32,5 @@ Base.iterate(x::MatrixSymmetry, i) = Base.iterate(x.elements, i)
 
 elements(m::MatrixSymmetry) = m.elements
 group(m::MatrixSymmetry) = m.group
+
+Base.IteratorSize(::Type{<:MatrixSymmetry}) = Base.HasShape{1}()
