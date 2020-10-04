@@ -15,6 +15,30 @@ using GroupTools
         u1 * 0.5
     end
 
+    @testset "equality" begin
+        u0 = MatrixOperation([1 0; 0 1])
+        u1 = MatrixOperation([0 1; 1 0])
+        p = u0 × u1
+        p2 = MatrixOperation([1 0; 0 1]) × MatrixOperation([0 1; 1 0])
+        p3 = MatrixOperation([0 1; 1 0]) × MatrixOperation([1 0; 0 1])
+        @test p == p2
+        @test p != p3
+        p2p = MatrixOperation([1 0; 0 1]) × MatrixOperation([0 1; 1 0])
+        @test p2 == p2p
+        @test p2 !== p2p
+        @test hash(p2) == hash(p2p)
+    end
+
+    @testset "iterator" begin
+        p2 = MatrixOperation([1 0; 0 1]) × MatrixOperation([0 1; 1 0])
+        p2c = collect(p2)
+        @test length(p2c) == 1
+        @test size(p2c) == ()
+        @test Base.IteratorSize(p2c) == Base.HasShape{0}()
+        @test p2c[1] == p2
+        @test p2c[1] === p2  # exactly that object
+    end
+
     @testset "times" begin
         u1 = MatrixOperation([cospi(1/3) sinpi(1/3); -sinpi(1/3) cospi(1/3)])
         u2 = MatrixOperation(exp(0.25*pi*im))
@@ -39,17 +63,7 @@ using GroupTools
         @test isidentity(p^-2)
         @test !isidentity(p^3)
         @test !isidentity(p^-3)
-
         @test isidentity(u0 × u0)
-
-        p2 = MatrixOperation([1 0; 0 1]) × MatrixOperation([0 1; 1 0])
-        p3 = MatrixOperation([0 1; 1 0]) × MatrixOperation([1 0; 0 1])
-        @test p == p2
-        @test p != p3
-        p2p = MatrixOperation([1 0; 0 1]) × MatrixOperation([0 1; 1 0])
-        @test p2 == p2p
-        @test p2 !== p2p
-        @test hash(p2) == hash(p2p)
     end
 end
 
