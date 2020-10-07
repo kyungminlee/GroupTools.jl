@@ -3,23 +3,54 @@ export MatrixSymmetry
 export elements
 export group
 
+function default_normalize(::Type{Float64})
+    function normalize(x::Float64)
+        y = round(x; digits=8)
+        return (y == -0.0) ? 0.0 : y
+    end
+    normalize(x::AbstractArray{Float64}) = normalize.(x)
+    normalize(x::MatrixOperation{D, Float64}) where D = MatrixOperation{D, Float64}(normalize(x.matrix))
+    return normalize
+end
+
+function default_normalize(::Type{ComplexF64})
+    function _normalize(x::ComplexF64)
+        y = round(x; digits=8)
+        ry = (real(y) == -0.0) ? 0.0 : real(y)
+        iy = (imag(y) == -0.0) ? 0.0 : imag(y)
+        return ComplexF64(ry, iy)
+    end
+    normalize(x::AbstractArray{ComplexF64}) = _normalize.(x)
+    normalize(x::MatrixOperation{D, ComplexF64}) where D = MatrixOperation{D, ComplexF64}(normalize(x.matrix))
+    return normalize
+end
+
+function default_normalize(::Type{T}) where {T<:Union{<:Integer, <:Rational, <:Complex{<:Integer}, <:Complex{<:Rational}}}
+    normalize(x::AbstractArray{T}) = identity(x)
+    normalize(x::MatrixOperation{D, T}) where D = identity(x)
+    return normalize
+end
+
 struct MatrixSymmetry{M<:MatrixOperation}<:AbstractSymmetry
     elements::Vector{M}
     group::FiniteGroup
-    function MatrixSymmetry(matrices::AbstractVector{<:AbstractMatrix{S}}) where {S}
+
+    function MatrixSymmetry(matrices::AbstractVector{<:AbstractMatrix{S}}; normalize::Function=default_normalize(S)) where {S}
         D = size(matrices[1], 1)
         elements = MatrixOperation.(matrices)
-        group = FiniteGroup(generate_multiplication_table(elements))
+        group = FiniteGroup(generate_multiplication_table(elements, (x, y) -> normalize(x*y)))
         return new{MatrixOperation{D, S}}(elements, group)
     end
-    function MatrixSymmetry(elements::AbstractVector{M}) where {M<:MatrixOperation}
-        group = FiniteGroup(generate_multiplication_table(elements))
-        return new{M}(elements, group)
+
+    function MatrixSymmetry(elements::AbstractVector{MatrixOperation{D, S}}; normalize::Function=default_normalize(S)) where {D, S}
+        group = FiniteGroup(generate_multiplication_table(elements, (x, y) -> normalize(x*y)))
+        return new{MatrixOperation{D, S}}(elements, group)
     end
 end
 
 Base.eltype(::Type{MatrixSymmetry{M}}) where M = M
 Base.valtype(::Type{MatrixSymmetry{M}}) where M = M
+Base.valtype(::MatrixSymmetry{M}) where M = M
 
 Base.length(x::MatrixSymmetry) = length(x.elements)
 Base.size(x::MatrixSymmetry) = (length(x.elements),)
