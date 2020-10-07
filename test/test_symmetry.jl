@@ -1,9 +1,16 @@
 using Test
+using LinearAlgebra
 using GroupTools
 
 @testset "MatrixSymmetry" begin
     # C4 group (Abelian)
     sym1 = MatrixSymmetry([[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+    @testset "constructor" begin
+        sym1p = MatrixSymmetry(
+            MatrixOperation.([[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+        )
+        @test sym1 == sym1p
+    end
     @testset "type traits" begin
         @test eltype(sym1) <: MatrixOperation{2, Int}
         @test eltype(typeof(sym1)) <: MatrixOperation{2, Int}
@@ -79,52 +86,120 @@ end
 end
 
 @testset "SemidirectProductSymmetry" begin
-    # 4/m (C₄ₕ) = 4 ⋊ -1
-    sym1 = MatrixSymmetry([
-        [1 0 0; 0 1 0; 0 0 1],
-        [0 -1 0; 1 0 0; 0 0 1],
-        [-1 0 0; 0 -1 0; 0 0 1],
-        [0 1 0; -1 0 0; 0 0 1]
-    ])
-    sym2 = MatrixSymmetry([
-        [1 0 0; 0 1 0; 0 0 1],
-        [-1 0 0; 0 -1 0; 0 0 -1],
-    ])
-    symp = sym1 ⋊ sym2
-    # @show collect(symp)
-    els1 = collect(symp)
-    @test size(els1) == (4,2)
-    @test length(els1) == 8
-    els2 = [
-        MatrixOperation{3,Int64}([1 0 0; 0 1 0; 0 0 1])
-        MatrixOperation{3,Int64}([0 -1 0; 1 0 0; 0 0 1])
-        MatrixOperation{3,Int64}([-1 0 0; 0 -1 0; 0 0 1])
-        MatrixOperation{3,Int64}([0 1 0; -1 0 0; 0 0 1])
-        MatrixOperation{3,Int64}([-1 0 0; 0 -1 0; 0 0 -1])
-        MatrixOperation{3,Int64}([0 1 0; -1 0 0; 0 0 -1])
-        MatrixOperation{3,Int64}([1 0 0; 0 1 0; 0 0 -1])
-        MatrixOperation{3,Int64}([0 -1 0; 1 0 0; 0 0 -1])
-    ]
-    @test vcat(els1...) == els2
+    @testset "4/m" begin
+        # 4/m (C₄ₕ) = 4 ⋊ -1
+        sym1 = MatrixSymmetry([
+            [1 0 0; 0 1 0; 0 0 1],
+            [0 -1 0; 1 0 0; 0 0 1],
+            [-1 0 0; 0 -1 0; 0 0 1],
+            [0 1 0; -1 0 0; 0 0 1]
+        ])
+        sym2 = MatrixSymmetry([
+            [1 0 0; 0 1 0; 0 0 1],
+            [-1 0 0; 0 -1 0; 0 0 -1],
+        ])
+        symp = sym1 ⋊ sym2
 
-    G = FiniteGroup([
-        1  2  3  4  5  6  7  8;
-        2  1  4  3  6  5  8  7;
-        3  4  2  1  7  8  6  5;
-        4  3  1  2  8  7  5  6;
-        5  6  7  8  1  2  3  4;
-        6  5  8  7  2  1  4  3;
-        7  8  6  5  3  4  2  1;
-        8  7  5  6  4  3  1  2
-    ])
-    @test !isnothing(group_isomorphism(group(symp), G))
+        @testset "type traits" begin
+            @test eltype(symp) == MatrixOperation{3, Int}
+            @test eltype(typeof(symp)) == MatrixOperation{3, Int}
+            @test valtype(symp) == MatrixOperation{3, Int}
+            @test valtype(typeof(symp)) == MatrixOperation{3, Int}
+        end
 
-    sym3 = MatrixSymmetry([ones(Int, (1,1)), -ones(Int, (1,1))])
+        @testset "iterator" begin
+            @test Base.IteratorSize(symp) == Base.HasShape{2}()
+            @test size(symp) == (4,2)
+            @test length(symp) == 8
+            @test firstindex(symp) == 1
+            @test lastindex(symp) == 8
+            @test symp[2] == MatrixOperation([0 -1 0; 1 0 0; 0 0 1])
+            @test_throws BoundsError symp[100]
+            @test_throws BoundsError symp[-1]
+            @test_throws BoundsError symp[0]
 
-    sym4 = cross(symp, sym3, sym3)
-    @test size(sym4) == (8, 2, 2)
-    @test length(sym4) == 32
+            els1 = collect(symp)
+            @test size(els1) == (4,2)
+            @test length(els1) == 8
+            els2 = [
+                MatrixOperation{3,Int64}([1 0 0; 0 1 0; 0 0 1])
+                MatrixOperation{3,Int64}([0 -1 0; 1 0 0; 0 0 1])
+                MatrixOperation{3,Int64}([-1 0 0; 0 -1 0; 0 0 1])
+                MatrixOperation{3,Int64}([0 1 0; -1 0 0; 0 0 1])
+                MatrixOperation{3,Int64}([-1 0 0; 0 -1 0; 0 0 -1])
+                MatrixOperation{3,Int64}([0 1 0; -1 0 0; 0 0 -1])
+                MatrixOperation{3,Int64}([1 0 0; 0 1 0; 0 0 -1])
+                MatrixOperation{3,Int64}([0 -1 0; 1 0 0; 0 0 -1])
+            ]
+            @test vcat(els1...) == els2
+        end
 
-    # test order of elements of sym4
-    @test collect(sym4) == [DirectProductOperation(x,y,z) for z in sym3 for y in sym3 for x in symp]
+        @testset "equality" begin
+            sym1p = MatrixSymmetry([
+                [1 0 0; 0 1 0; 0 0 1],
+                [0 -1 0; 1 0 0; 0 0 1],
+                [-1 0 0; 0 -1 0; 0 0 1],
+                [0 1 0; -1 0 0; 0 0 1]
+            ])
+            sym2p = MatrixSymmetry([
+                [1 0 0; 0 1 0; 0 0 1],
+                [-1 0 0; 0 -1 0; 0 0 -1],
+            ])
+            sympp = sym1p ⋊ sym2p
+            @test sym1 == sym1p
+            @test sym2 == sym2p
+            @test symp == sympp
+        end
+
+        @testset "composition" begin
+            G = FiniteGroup([
+                1  2  3  4  5  6  7  8;
+                2  1  4  3  6  5  8  7;
+                3  4  2  1  7  8  6  5;
+                4  3  1  2  8  7  5  6;
+                5  6  7  8  1  2  3  4;
+                6  5  8  7  2  1  4  3;
+                7  8  6  5  3  4  2  1;
+                8  7  5  6  4  3  1  2
+            ])
+            @test !isnothing(group_isomorphism(group(symp), G))
+
+            sym3 = MatrixSymmetry([ones(Int, (1,1)), -ones(Int, (1,1))])
+
+            sym4 = cross(symp, sym3, sym3)
+            @test size(sym4) == (8, 2, 2)
+            @test length(sym4) == 32
+
+            # test order of elements of sym4
+            @test collect(sym4) == [DirectProductOperation(x,y,z) for z in sym3 for y in sym3 for x in symp]
+        end
+    end
+
+    @testset "3m1" begin
+        sym_c3 = MatrixSymmetry([
+            [ 1  0;  0  1],
+            [ 0 -1;  1 -1],
+            [-1  1; -1  0],
+        ])
+        sym_m = MatrixSymmetry([
+            [ 1  0;  0  1],
+            [ 0 -1; -1  0]
+        ])
+        sym_3m1 = sym_c3 ⋊ sym_m
+        @test_throws ArgumentError sym_m ⋊ sym_c3
+        sym_z2 = MatrixSymmetry([ones(Int, (1,1)), -ones(Int, (1,1))])
+
+        sym = cross(sym_3m1, sym_z2)
+        @test size(sym) == (6, 2)
+        @test length(sym) == 12
+
+        @test vcat(collect(sym_3m1)...) == MatrixOperation.([
+            [1 0; 0 1],
+            [0 -1; 1 -1],
+            [-1 1; -1 0],
+            [0 -1; -1 0],
+            [1 0; 1 -1],
+            [-1 1; 0 1],
+        ])
+    end
 end
