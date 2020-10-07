@@ -102,6 +102,31 @@ end
         end
         @test sym3[2:4] == sym3_collect1[2:4]
     end
+
+    @testset "4×Z₂" begin
+        sym_c4 = MatrixSymmetry([
+            [1 0 0; 0 1 0; 0 0 1],
+            [0 -1 0; 1 0 0; 0 0 1],
+            [-1 0 0; 0 -1 0; 0 0 1],
+            [0 1 0; -1 0 0; 0 0 1]
+        ])
+        sym_z2 = MatrixSymmetry([
+            ones(Int, (1,1)),
+            -ones(Int, (1,1)),
+        ])
+        sym = sym_c4 × sym_z2
+        G = FiniteGroup([
+            1  2  3  4  5  6  7  8;
+            2  3  4  1  6  7  8  5;
+            3  4  1  2  7  8  5  6;
+            4  1  2  3  8  5  6  7;
+            5  6  7  8  1  2  3  4;
+            6  7  8  5  2  3  4  1;
+            7  8  5  6  3  4  1  2;
+            8  5  6  7  4  1  2  3
+        ])
+        @test !isnothing(group_isomorphism(group(sym), G))
+    end
 end
 
 @testset "SemidirectProductSymmetry" begin
