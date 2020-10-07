@@ -53,7 +53,9 @@ function Base.IteratorSize(::Type{<:DirectProductSymmetry{E, <:NTuple{N, <:Any}}
     return Base.HasShape{N}()
 end
 
-
+function Base.:(==)(lhs::S, rhs::S) where {S<:DirectProductSymmetry}
+    return lhs.symmetries == rhs.symmetries
+end
 
 function group(m::DirectProductSymmetry)
     tsub = (x -> group_multiplication_table(group(x))).(m.symmetries)

@@ -47,6 +47,10 @@ Base.getindex(sym::SemidirectProductSymmetry, s1::Integer, s2::Integer) = sym.no
 Base.iterate(sym::SemidirectProductSymmetry, i::Integer=1) = (0 < i <= length(sym)) ? (sym[i], i+1) : nothing
 # == END Iterator stuff ==
 
+function Base.:(==)(lhs::S, rhs::S) where {S<:SemidirectProductSymmetry}
+    return lhs.normal == rhs.normal && lhs.rest == rhs.rest
+end
+
 function elements(arg::SemidirectProductSymmetry)
     return [x*y for x in arg.normal, y in arg.rest]
 end

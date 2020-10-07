@@ -65,5 +65,9 @@ Base.getindex(x::MatrixSymmetry, i) = Base.getindex(x.elements, i)
 Base.iterate(x::MatrixSymmetry) = Base.iterate(x.elements)
 Base.iterate(x::MatrixSymmetry, i) = Base.iterate(x.elements, i)
 
+function Base.:(==)(lhs::MS, rhs::MS) where {MS<:MatrixSymmetry}
+    return lhs.elements == rhs.elements && lhs.group == rhs.group
+end
+
 elements(m::MatrixSymmetry) = m.elements
 group(m::MatrixSymmetry) = m.group
