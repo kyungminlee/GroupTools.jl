@@ -16,6 +16,8 @@ Base.valtype(::Type{DirectProductSymmetry{E, S}}) where {E, S} = E
 Base.length(x::DirectProductSymmetry) = prod(length.(x.symmetries))
 Base.size(x::DirectProductSymmetry) = length.(x.symmetries)
 Base.keys(x::DirectProductSymmetry) = CartesianIndices(size(x))
+Base.firstindex(::DirectProductSymmetry) = 1
+Base.lastindex(x::DirectProductSymmetry) = length(x)
 
 function Base.getindex(x::DirectProductSymmetry, i::Integer)
     s = CartesianIndices(length.(x.symmetries))[i]
