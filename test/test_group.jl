@@ -222,6 +222,15 @@ using LinearAlgebra
             group_generated = FiniteGroup(generate_multiplication_table(element_list))
             @test !isnothing(group_isomorphism(group_generated, group1))
         end
+        let
+            ∘(x,y) = mod(x+y, 4)
+            els = generate_group_elements([1]; product=(∘))
+            @test els == [0,2,1,3]
+            g = FiniteGroup(generate_multiplication_table(els, ∘))
+            @test !isnothing(group_isomorphism(group1, g))
+        end
+
+        @test_throws OverflowError generate_group_elements([1]; product=(+))
     end # @testset "group isomorphism"
 
     @testset "group isomorphism 2" begin
