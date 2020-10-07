@@ -8,10 +8,7 @@ using GroupTools
         @test eltype(sym1) <: MatrixOperation{2, Int}
         @test valtype(typeof(sym1)) <: MatrixOperation{2, Int}
         sym2 = MatrixSymmetry([[1.0 0.0; 0 1], [-1 0; 0 -1], [0.0 -1.0; 1.0 0.0], [0 1; -1 0]])
-        @show sym2
-
         @test eltype(sym2) <: MatrixOperation{2, Float64}
-
     end
     @testset "iterator properties" begin
         @test Base.IteratorSize(sym1) == Base.HasShape{1}()
