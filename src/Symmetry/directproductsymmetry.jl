@@ -1,6 +1,8 @@
 export DirectProductSymmetry
 export elements
 
+import LinearAlgebra
+
 struct DirectProductSymmetry{E<:AbstractSymmetryOperation, S<:Tuple{Vararg{AbstractSymmetry}}}<:AbstractSymmetry
     symmetries::S
     function DirectProductSymmetry(sym::AbstractSymmetry...)
@@ -9,6 +11,8 @@ struct DirectProductSymmetry{E<:AbstractSymmetryOperation, S<:Tuple{Vararg{Abstr
         return new{E, S}(sym)
     end
 end
+
+LinearAlgebra.cross(sym::AbstractSymmetry...) = DirectProductSymmetry(sym...)
 
 Base.eltype(::Type{DirectProductSymmetry{E, S}}) where {E, S} = E
 Base.valtype(::Type{DirectProductSymmetry{E, S}}) where {E, S} = E
