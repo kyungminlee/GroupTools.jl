@@ -347,6 +347,7 @@ function generate_subgroup(
 end
 
 
+# COV_EXCL_START
 """
     issubgroup(group, subset)
 
@@ -356,6 +357,7 @@ function issubgroup(group::FiniteGroup, subset::AbstractSet{<:Integer})
     @warn "deprecated issubgroup(group, subset). Use issubgroup(subset, group) instead."
     return all(group_product(group, x, y) in subset for x in subset for y in subset)
 end
+# COV_EXCL_STOP
 
 
 """
@@ -374,6 +376,7 @@ end
 issubgroup(subset::AbstractVector{<:Integer}, group::FiniteGroup) = issubgroup(Set(subset), group)
 
 
+# COV_EXCL_START
 """
     isnormalsubgroup(group, subset::AbstractSet{<:Integer})
 
@@ -386,6 +389,8 @@ function isnormalsubgroup(group::FiniteGroup, subset::AbstractSet{<:Integer})
     ginv = group_inverse(group)
     return all((y ∘ x ∘ ginv(y) in subset) for x in subset, y in elements(group))
 end
+# COV_EXCL_STOP
+
 
 """
     isnormalsubgroup(subset, group)
@@ -524,6 +529,7 @@ function generate_multiplication_table(
 end
 
 
+# COV_EXCL_START
 """
     ishomomorphic(group, representation; product=(*), equal=(==))
 
@@ -551,7 +557,7 @@ function ishomomorphic(
     end
     return true
 end
-
+# COV_EXCL_STOP
 
 function ishomomorphic(
     representation::AbstractVector,
