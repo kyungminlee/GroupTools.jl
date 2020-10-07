@@ -3,62 +3,101 @@ using LinearAlgebra
 using GroupTools
 
 @testset "MatrixSymmetry" begin
-    # C4 group (Abelian)
-    sym1 = MatrixSymmetry([[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
-    @testset "constructor" begin
-        sym1p = MatrixSymmetry(
-            MatrixOperation.([[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
-        )
-        @test sym1 == sym1p
+    @testset "Int" begin
+        # C4 group (Abelian)
+        sym1 = MatrixSymmetry([[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+        @testset "constructor" begin
+            sym1p = MatrixSymmetry(
+                MatrixOperation.([[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+            )
+            @test sym1 == sym1p
+        end
+        @testset "type traits" begin
+            @test eltype(sym1) <: MatrixOperation{2, Int}
+            @test eltype(typeof(sym1)) <: MatrixOperation{2, Int}
+            @test valtype(sym1) <: MatrixOperation{2, Int}
+            @test valtype(typeof(sym1)) <: MatrixOperation{2, Int}
+            sym2 = MatrixSymmetry([[1.0 0.0; 0 1], [-1 0; 0 -1], [0.0 -1.0; 1.0 0.0], [0 1; -1 0]])
+            @test eltype(sym2) <: MatrixOperation{2, Float64}
+        end
+        @testset "iterator properties" begin
+            S = sym1
+            @test Base.IteratorSize(S) == Base.HasShape{1}()
+            @test length(S) == 4
+            @test size(S) == (4,)
+            @test keys(S) == 1:4
+            @test collect(S) == MatrixOperation.([[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+            @test S[3] == MatrixOperation([0 -1; 1 0])
+            @test_throws BoundsError S[10]
+            @test S[2:end] == MatrixOperation.([[-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+            @test S[:] == MatrixOperation.([[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+            @test first(S) == MatrixOperation([1 0; 0 1])
+            @test last(S) == MatrixOperation([0 1; -1 0])
+            @test firstindex(S) == 1
+            @test lastindex(S) == 4
+        end
+        @testset "element access" begin
+            @test sym1[1] == MatrixOperation([1 0; 0 1])
+            @test sym1[2] == MatrixOperation([-1 0; 0 -1])
+            @test sym1[3] == MatrixOperation([0 -1; 1 0])
+            @test sym1[4] == MatrixOperation([0 1; -1 0])
+            @test_throws BoundsError sym1[-1]
+            @test_throws BoundsError sym1[0]
+            @test_throws BoundsError sym1[5]
+            sym1_collect1 = [sym1[i] for i in 1:length(sym1)]
+            sym1_collect2 = [sym1[i] for i in eachindex(sym1)]
+            sym1_collect3 = elements(sym1)
+            @test sym1_collect1 == sym1_collect2 == sym1_collect3
+            @test length(sym1_collect1) == length(sym1)
+            @test isa(sym1_collect1, Vector{MatrixOperation{2, Int}})
+        end
+        @testset "group" begin
+            @test group(sym1) == FiniteGroup([
+                1 2 3 4;
+                2 1 4 3;
+                3 4 2 1;
+                4 3 1 2
+            ])
+        end
     end
-    @testset "type traits" begin
-        @test eltype(sym1) <: MatrixOperation{2, Int}
-        @test eltype(typeof(sym1)) <: MatrixOperation{2, Int}
-        @test valtype(sym1) <: MatrixOperation{2, Int}
-        @test valtype(typeof(sym1)) <: MatrixOperation{2, Int}
-        sym2 = MatrixSymmetry([[1.0 0.0; 0 1], [-1 0; 0 -1], [0.0 -1.0; 1.0 0.0], [0 1; -1 0]])
-        @test eltype(sym2) <: MatrixOperation{2, Float64}
+
+    @testset "Float64" begin
+        sym1 = MatrixSymmetry([[1.0 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+        @testset "constructor" begin
+            sym1p = MatrixSymmetry(
+                MatrixOperation.([[1.0 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+            )
+            @test sym1 == sym1p
+        end
+        @testset "type traits" begin
+            @test eltype(sym1) <: MatrixOperation{2, Float64}
+            @test eltype(typeof(sym1)) <: MatrixOperation{2, Float64}
+            @test valtype(sym1) <: MatrixOperation{2, Float64}
+            @test valtype(typeof(sym1)) <: MatrixOperation{2, Float64}
+        end
     end
-    @testset "iterator properties" begin
-        S = sym1
-        @test Base.IteratorSize(S) == Base.HasShape{1}()
-        @test length(S) == 4
-        @test size(S) == (4,)
-        @test keys(S) == 1:4
-        @test collect(S) == MatrixOperation.([[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
-        @test S[3] == MatrixOperation([0 -1; 1 0])
-        @test_throws BoundsError S[10]
-        @test S[2:end] == MatrixOperation.([[-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
-        @test S[:] == MatrixOperation.([[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
-        @test first(S) == MatrixOperation([1 0; 0 1])
-        @test last(S) == MatrixOperation([0 1; -1 0])
-        @test firstindex(S) == 1
-        @test lastindex(S) == 4
-    end
-    @testset "element access" begin
-        @test sym1[1] == MatrixOperation([1 0; 0 1])
-        @test sym1[2] == MatrixOperation([-1 0; 0 -1])
-        @test sym1[3] == MatrixOperation([0 -1; 1 0])
-        @test sym1[4] == MatrixOperation([0 1; -1 0])
-        @test_throws BoundsError sym1[-1]
-        @test_throws BoundsError sym1[0]
-        @test_throws BoundsError sym1[5]
-        sym1_collect1 = [sym1[i] for i in 1:length(sym1)]
-        sym1_collect2 = [sym1[i] for i in eachindex(sym1)]
-        sym1_collect3 = elements(sym1)
-        @test sym1_collect1 == sym1_collect2 == sym1_collect3
-        @test length(sym1_collect1) == length(sym1)
-        @test isa(sym1_collect1, Vector{MatrixOperation{2, Int}})
-    end
-    @testset "group" begin
-        @test group(sym1) == FiniteGroup([
-            1 2 3 4;
-            2 1 4 3;
-            3 4 2 1;
-            4 3 1 2
-        ])
+
+    @testset "ComplexF64" begin
+        sym1 = MatrixSymmetry([[1.0+0im 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+        @testset "constructor" begin
+            sym1p = MatrixSymmetry(
+                MatrixOperation.([[1.0 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+            )
+            @test sym1 != sym1p  # RHS float
+            sym1p = MatrixSymmetry(
+                MatrixOperation.([[1.0+1E-12im 0.0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+            )
+            @test sym1 == sym1p
+        end
+        @testset "type traits" begin
+            @test eltype(sym1) <: MatrixOperation{2, ComplexF64}
+            @test eltype(typeof(sym1)) <: MatrixOperation{2, ComplexF64}
+            @test valtype(sym1) <: MatrixOperation{2, ComplexF64}
+            @test valtype(typeof(sym1)) <: MatrixOperation{2, ComplexF64}
+        end
     end
 end
+
 
 @testset "DirectProductSymmetry" begin
     sym1 = MatrixSymmetry([[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
