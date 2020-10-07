@@ -348,8 +348,25 @@ end
 Check whether the given subset is a subgroup of `group`.
 """
 function issubgroup(group::FiniteGroup, subset::AbstractSet{<:Integer})
+    @warn "deprecated issubgroup(group, subset). Use issubgroup(subset, group) instead."
     return all(group_product(group, x, y) in subset for x in subset for y in subset)
 end
+
+
+"""
+    issubgroup(subset, group)
+
+Check whether the given subset is a subgroup of `group`.
+
+# Arguments
+- `subset`: Either a set or a vector. A vector is converted into a set.
+- `group`
+"""
+function issubgroup(subset::AbstractSet{<:Integer}, group::FiniteGroup)
+    return all(group_product(group, x, y) in subset for x in subset for y in subset)
+end
+
+issubgroup(subset::AbstractVector{<:Integer}, group::FiniteGroup) = issubgroup(Set(subset), group)
 
 
 """
@@ -358,11 +375,27 @@ end
 Check whether the given subset is a normal subgroup of `group`.
 """
 function isnormalsubgroup(group::FiniteGroup, subset::AbstractSet{<:Integer})
-    issubgroup(group, subset) || return false
+    @warn "deprecated isnormalsubgroup(group, subset). Use isnormalsubgroup(subset, group) instead."
+    issubgroup(subset, group) || return false
     ∘ = group_product(group)
     ginv = group_inverse(group)
     return all((y ∘ x ∘ ginv(y) in subset) for x in subset, y in elements(group))
 end
+
+"""
+    isnormalsubgroup(subset, group)
+
+Check whether the given subset is a normal subgroup of `group`.
+"""
+function isnormalsubgroup(subset::AbstractSet{<:Integer}, group::FiniteGroup)
+    issubgroup(subset, group) || return false
+    ∘ = group_product(group)
+    ginv = group_inverse(group)
+    return all((y ∘ x ∘ ginv(y) in subset) for x in subset, y in elements(group))
+end
+
+isnormalsubgroup(subset::AbstractVector{<:Integer}, group::FiniteGroup) = isnormalsubgroup(Set(subset), group)
+
 
 
 """
@@ -498,10 +531,31 @@ function ishomomorphic(
     product::Function=Base.:(*),
     equal::Function=Base.:(==)
 )
+    @warn "deprecated signature of ishomomorphic. Use ishomomorphic(representation, group) instead."
     ord_group = group_order(group)
     if length(representation) != ord_group
         return false
     end
+    for i in 1:ord_group, j in 1:ord_group
+        if !equal(
+            product(representation[i], representation[j]),
+            representation[ group_product(group, i, j)]
+        )
+            return false
+        end
+    end
+    return true
+end
+
+
+function ishomomorphic(
+    representation::AbstractVector,
+    group::FiniteGroup;
+    product::Function=Base.:(*),
+    equal::Function=Base.:(==)
+)
+    ord_group = group_order(group)
+    length(representation) != ord_group && return false
     for i in 1:ord_group, j in 1:ord_group
         if !equal(
             product(representation[i], representation[j]),
