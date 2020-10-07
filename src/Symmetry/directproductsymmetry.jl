@@ -46,3 +46,23 @@ end
 function Base.IteratorSize(::Type{<:DirectProductSymmetry{E, <:NTuple{N, <:Any}}}) where {E, N}
     return Base.HasShape{N}()
 end
+
+
+
+function group(m::DirectProductSymmetry)
+    tsub = (x -> group_multiplication_table(group(x))).(m.symmetries)
+    nsub = size.(tsub, 1)
+    n = prod(nsub)
+    t = Matrix{Int}(undef, (n, n))
+    range_sub = tuple([1:x for x in nsub]...)
+    ind = LinearIndices(range_sub)
+
+    D = length(nsub)
+    for (i1, s1) in enumerate(CartesianIndices(range_sub))
+        for (i2, s2) in enumerate(CartesianIndices(range_sub))
+            s3 = CartesianIndex([ti[s1i, s2i] for (ti, s1i, s2i) in zip(tsub, s1.I, s2.I)]...)
+            t[ind[s1], ind[s2]] = ind[s3]
+        end
+    end
+    return FiniteGroup(t)
+end

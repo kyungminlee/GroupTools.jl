@@ -42,4 +42,19 @@ function elements(arg::SemidirectProductSymmetry)
     return [x*y for x in arg.normal, y in arg.rest]
 end
 
-group(m::SemidirectProductSymmetry) = m.group
+function group(m::SemidirectProductSymmetry)
+    tn = group_multiplication_table(group(m.normal))
+    tr = group_multiplication_table(group(m.rest))
+
+    nn = size(tn, 1)
+    nr = size(tr, 1)
+    t = Matrix{Int}(undef, (nn*nr, nn*nr))
+    ind = LinearIndices((1:n1, 1:n2))
+    for (i1, s1) in enumerate(CartesianIndices((1:n1, 1:n2)))
+        for (i2, s2) in enumerate(CartesianIndices((1:n1, 1:n2)))
+            s3 = CartesianIndex(tn[s1[1], s2[1]], tr[s1[2], s2[2]])
+            t[ind[s1], ind[s2]] = ind[s3]
+        end
+    end
+    return FiniteGroup(t)
+end
