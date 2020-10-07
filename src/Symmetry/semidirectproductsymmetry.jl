@@ -4,8 +4,6 @@ export elements
 struct SemidirectProductSymmetry{E, S1<:AbstractSymmetry, S2<:AbstractSymmetry}<:AbstractSymmetry
     normal::S1
     rest::S2
-    # elements::Vector{E}
-    # group::FiniteGroup
 
     function SemidirectProductSymmetry(normal::S1, rest::S2) where {S1<:AbstractSymmetry, S2<:AbstractSymmetry}
         E1 = eltype(S1)
@@ -20,11 +18,6 @@ struct SemidirectProductSymmetry{E, S1<:AbstractSymmetry, S2<:AbstractSymmetry}<
                 end
             end
         end
-        # generators = E[]
-        # append!(generators, elements(normal))
-        # append!(generators, elements(rest))
-        # element_list = generate_group_elements(generators)
-        # group = FiniteGroup(generate_multiplication_table(element_list))
         return new{E, S1, S2}(normal, rest)
     end
 end
