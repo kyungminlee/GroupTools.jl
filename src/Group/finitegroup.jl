@@ -352,6 +352,19 @@ end
 
 
 """
+    isnormalsubgroup(group, subset::AbstractSet{<:Integer})
+
+Check whether the given subset is a normal subgroup of `group`.
+"""
+function isnormalsubgroup(group::FiniteGroup, subset::AbstractSet{<:Integer})
+    issubgroup(group, subset) || return false
+    ∘ = group_product(group)
+    ginv = group_inverse(group)
+    return all((y ∘ x ∘ ginv(y) in subset) for x in subset, y in elements(group))
+end
+
+
+"""
     minimal_generating_set(group)
 
 Get minimally generating set of the finite group.
