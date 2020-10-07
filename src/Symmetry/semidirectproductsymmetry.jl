@@ -38,12 +38,10 @@ Base.size(x::SemidirectProductSymmetry) = (length(x.normal), length(x.rest))
 Base.firstindex(::SemidirectProductSymmetry) = 1
 Base.lastindex(x::SemidirectProductSymmetry) = length(x)
 
-function Base.getindex(sym::SemidirectProductSymmetry, i::Integer)
-    s = CartesianIndices((length(sym.normal), length(sym.rest)))[i]
-    return sym.normal[s[1]] * sym.rest[s[2]]
-end
-Base.getindex(sym::SemidirectProductSymmetry, i::AbstractVector{<:Integer}) = [Base.getindex(sym, j) for j in i]
+Base.getindex(sym::SemidirectProductSymmetry, s::CartesianIndex{2}) = sym.normal[s[1]] * sym.rest[s[2]]
 Base.getindex(sym::SemidirectProductSymmetry, s1::Integer, s2::Integer) = sym.normal[s1] * sym.rest[s2]
+Base.getindex(sym::SemidirectProductSymmetry, i::Integer) = sym[CartesianIndices((length(sym.normal), length(sym.rest)))[i]]
+Base.getindex(sym::SemidirectProductSymmetry, i::AbstractVector) = [sym[j] for j in i]
 Base.iterate(sym::SemidirectProductSymmetry, i::Integer=1) = (0 < i <= length(sym)) ? (sym[i], i+1) : nothing
 # == END Iterator stuff ==
 
