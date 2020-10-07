@@ -131,6 +131,9 @@ function Base.:(==)(lhs::FiniteGroup, rhs::FiniteGroup)
     return (lhs.multiplication_table == rhs.multiplication_table)
 end
 
+Base.length(group::FiniteGroup) = size(group.multiplication_table, 1)
+
+
 """
     element(group, idx)
 
