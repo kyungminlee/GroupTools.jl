@@ -28,7 +28,7 @@ Base.eltype(::Type{SemidirectProductSymmetry{E, S1, S2}}) where {E, S1, S2} = E
 Base.valtype(::Type{SemidirectProductSymmetry{E, S1, S2}}) where {E, S1, S2} = E
 Base.valtype(::SemidirectProductSymmetry{E, S1, S2}) where {E, S1, S2} = E
 
-Base.IteratorSize(::SemidirectProductSymmetry) = HasShape{2}()
+Base.IteratorSize(::SemidirectProductSymmetry) = Base.HasShape{2}()
 Base.length(x::SemidirectProductSymmetry) = length(x.normal) * length(x.rest)
 Base.size(x::SemidirectProductSymmetry) = (length(x.normal), length(x.rest))
 Base.firstindex(::SemidirectProductSymmetry) = 1
