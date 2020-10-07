@@ -28,12 +28,15 @@ Base.keys(x::DirectProductSymmetry) = CartesianIndices(size(x))
 Base.firstindex(::DirectProductSymmetry) = 1
 Base.lastindex(x::DirectProductSymmetry) = length(x)
 
-function Base.getindex(x::DirectProductSymmetry{E, <:NTuple{N, <:Any}}, s::CartesianIndex{N}) where {E, N}
+function Base.getindex(x::DirectProductSymmetry{E, <:Tuple{Vararg{Any, N}}}, s::CartesianIndex{N}) where {E, N}
     return DirectProductOperation([Base.getindex(sym, j) for (sym, j) in zip(x.symmetries, s.I)]...)
 end
-Base.getindex(x::DirectProductSymmetry, i::Integer) = x[CartesianIndices(length.(x.symmetries))[i]]
+function Base.getindex(x::DirectProductSymmetry, i::Integer)
+    s = CartesianIndices(length.(x.symmetries))[i]
+    return x[s]
+end
 Base.getindex(x::DirectProductSymmetry, i::AbstractVector) = [x[j] for j in i]
-function Base.getindex(x::DirectProductSymmetry{E, <:NTuple{N, <:Any}}, s::Vararg{<:Integer, N}) where {E, N}
+function Base.getindex(x::DirectProductSymmetry{E, <:Tuple{Vararg{Any, N}}}, s::Vararg{<:Integer, N}) where {E, N}
     return DirectProductOperation([Base.getindex(sym, j) for (sym, j) in zip(x.symmetries, s)]...)
 end
 
