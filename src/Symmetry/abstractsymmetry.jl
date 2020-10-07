@@ -5,14 +5,16 @@ abstract type AbstractSymmetry end
 # Base.eltype(::Type{<:AbstractSymmetry}) = error("Not implemented")
 # Base.valtype(::Type{<:AbstractSymmetry}) = error("Not implemented")
 
+
+# Base.IteratorSize(::Type{<:AbstractSymmetry}) = error("Not implemented")
 # Base.length(x::AbstractSymmetry) = error("Not implemented")
 # Base.size(x::AbstractSymmetry) = error("Not implemented")
 # Base.keys(x::AbstractSymmetry) = error("Not implemented")
 
 # Base.getindex(x::AbstractSymmetry, i::Integer) = error("Not implemented")
 # Base.getindex(x::AbstractSymmetry, i::AbstractVector{<:Integer}) = error("Not implemented")
+# Base.getindex(x::AbstractSymmetry, i::AbstractVector{<:Bool}) = error("Not implemented")
 # Base.getindex(x::AbstractSymmetry, s::Vararg{<:Integer}) = error("Not implemented")
 # Base.getindex(x::AbstractSymmetry, s::CartesianIndex) = error("Not implemented")
 # Base.iterate(x::AbstractSymmetry, i::Integer=1) = error("Not implemented")
 # elements(x::AbstractSymmetry) = error("Not implemented")
-# Base.IteratorSize(::Type{<:AbstractSymmetry}) = error("Not implemented")
