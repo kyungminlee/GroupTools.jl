@@ -97,6 +97,10 @@ end
         @test sym3_collect2 == sym3_collect3
 
         @test size([x for x in sym3]) == (4, 3)
+        for i in 1:4, j in 1:3
+            @test sym3[i, j] == DirectProductOperation(sym1[i], sym2[j])
+        end
+        @test sym3[2:4] == sym3_collect1[2:4]
     end
 end
 
