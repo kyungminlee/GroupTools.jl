@@ -42,19 +42,9 @@ function Base.getindex(sym::SemidirectProductSymmetry, i::Integer)
     s = CartesianIndices((length(sym.normal), length(sym.rest)))[i]
     return sym.normal[s[1]] * sym.rest[s[2]]
 end
-
-function Base.getindex(sym::SemidirectProductSymmetry, i::AbstractVector{<:Integer})
-    return [Base.getindex(sym, j) for j in i]
-end
-
-function Base.getindex(sym::SemidirectProductSymmetry, s1::Integer, s2::Integer)
-    return sym.normal[s1] * sym.rest[s2]
-end
-
-function Base.iterate(sym::SemidirectProductSymmetry, i::Integer=1)
-    return (0 < i <= length(sym)) ? (sym[i], i+1) : nothing
-end
-
+Base.getindex(sym::SemidirectProductSymmetry, i::AbstractVector{<:Integer}) = [Base.getindex(sym, j) for j in i]
+Base.getindex(sym::SemidirectProductSymmetry, s1::Integer, s2::Integer) = sym.normal[s1] * sym.rest[s2]
+Base.iterate(sym::SemidirectProductSymmetry, i::Integer=1) = (0 < i <= length(sym)) ? (sym[i], i+1) : nothing
 # == END Iterator stuff ==
 
 function elements(arg::SemidirectProductSymmetry)
@@ -65,12 +55,12 @@ function group(m::SemidirectProductSymmetry)
     tn = group_multiplication_table(group(m.normal))
     tr = group_multiplication_table(group(m.rest))
 
-    nn = size(tn, 1)
-    nr = size(tr, 1)
+    nn = length(m.normal)
+    nr = length(m.rest)
     t = Matrix{Int}(undef, (nn*nr, nn*nr))
-    ind = LinearIndices((1:n1, 1:n2))
-    for (i1, s1) in enumerate(CartesianIndices((1:n1, 1:n2)))
-        for (i2, s2) in enumerate(CartesianIndices((1:n1, 1:n2)))
+    ind = LinearIndices((1:nn, 1:nr))
+    for (i1, s1) in enumerate(CartesianIndices((1:nn, 1:nr)))
+        for (i2, s2) in enumerate(CartesianIndices((1:nn, 1:nr)))
             s3 = CartesianIndex(tn[s1[1], s2[1]], tr[s1[2], s2[2]])
             t[ind[s1], ind[s2]] = ind[s3]
         end
