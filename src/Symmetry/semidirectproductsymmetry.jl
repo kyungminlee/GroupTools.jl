@@ -22,8 +22,17 @@ struct SemidirectProductSymmetry{E, S1<:AbstractSymmetry, S2<:AbstractSymmetry}<
     end
 end
 
+# == BEGIN Iterator stuff ==
+
 Base.eltype(::Type{SemidirectProductSymmetry{E, S1, S2}}) where {E, S1, S2} = E
 Base.valtype(::Type{SemidirectProductSymmetry{E, S1, S2}}) where {E, S1, S2} = E
+Base.valtype(::SemidirectProductSymmetry{E, S1, S2}) where {E, S1, S2} = E
+
+Base.IteratorSize(::SemidirectProductSymmetry) = HasShape{2}()
+Base.length(x::SemidirectProductSymmetry) = length(x.normal) * length(x.rest)
+Base.size(x::SemidirectProductSymmetry) = (length(x.normal), length(x.rest))
+Base.firstindex(::SemidirectProductSymmetry) = 1
+Base.lastindex(x::SemidirectProductSymmetry) = length(x)
 
 function Base.getindex(sym::SemidirectProductSymmetry, i::Integer)
     s = CartesianIndices((length(sym.normal), length(sym.rest)))[i]
@@ -37,6 +46,12 @@ end
 function Base.getindex(sym::SemidirectProductSymmetry, s1::Integer, s2::Integer)
     return sym.normal[s1] * sym.rest[s2]
 end
+
+function Base.iterate(sym::SemidirectProductSymmetry, i::Integer=1)
+    return (0 < i <= length(sym)) ? (sym[i], i+1) : nothing
+end
+
+# == END Iterator stuff ==
 
 function elements(arg::SemidirectProductSymmetry)
     return [x*y for x in arg.normal, y in arg.rest]
