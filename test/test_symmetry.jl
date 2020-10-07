@@ -65,24 +65,39 @@ end
     sym2 = MatrixSymmetry([[1 0; 0 1], [0 -1; 1 -1], [-1 1; -1 0]])
     sym3 = DirectProductSymmetry(sym1, sym2)
 
-    @test length(sym1) == 4
-    @test length(sym2) == 3
-    @test length(sym3) == 12
+    @testset "type traits" begin
+        E = DirectProductOperation{Tuple{MatrixOperation{2, Int}, MatrixOperation{2, Int}}}
+        @test eltype(sym3) == E
+        @test eltype(typeof(sym3)) == E
+        @test valtype(sym3) == E
+        @test valtype(typeof(sym3)) == E
+    end
 
-    @test size(sym1) == (4,)
-    @test size(sym2) == (3,)
-    @test size(sym3) == (4, 3)
+    @testset "equality" begin
+        sym1p = MatrixSymmetry([[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+        sym2p = MatrixSymmetry([[1 0; 0 1], [0 -1; 1 -1], [-1 1; -1 0]])
+        @test sym3 == DirectProductSymmetry(sym1, sym2)
+        @test sym3 != DirectProductSymmetry(sym2, sym1)
+    end
 
-    @test Base.IteratorSize(sym3) == Base.HasShape{2}()
-    sym3_collect1 = [sym3[i] for i in 1:length(sym3)]
-    sym3_collect2 = [sym3[i] for i in eachindex(sym3)]
-    sym3_collect3 = elements(sym3)
+    @testset "iterator" begin
+        @test Base.IteratorSize(sym3) == Base.HasShape{2}()
 
-    @test sym3_collect1 != sym3_collect2
-    @test collect(Iterators.flatten(sym3_collect1)) == collect(Iterators.flatten(sym3_collect2))
-    @test sym3_collect2 == sym3_collect3
+        @test length(sym3) == 12
+        @test size(sym3) == (4, 3)
+        @test firstindex(sym3) == 1
+        @test lastindex(sym3) == 12
 
-    @test size([x for x in sym3]) == (4, 3)
+        sym3_collect1 = [sym3[i] for i in 1:length(sym3)]
+        sym3_collect2 = [sym3[i] for i in eachindex(sym3)]
+        sym3_collect3 = elements(sym3)
+
+        @test sym3_collect1 != sym3_collect2
+        @test collect(Iterators.flatten(sym3_collect1)) == collect(Iterators.flatten(sym3_collect2))
+        @test sym3_collect2 == sym3_collect3
+
+        @test size([x for x in sym3]) == (4, 3)
+    end
 end
 
 @testset "SemidirectProductSymmetry" begin
