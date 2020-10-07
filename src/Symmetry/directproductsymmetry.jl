@@ -16,6 +16,11 @@ LinearAlgebra.cross(sym::AbstractSymmetry...) = DirectProductSymmetry(sym...)
 
 Base.eltype(::Type{DirectProductSymmetry{E, S}}) where {E, S} = E
 Base.valtype(::Type{DirectProductSymmetry{E, S}}) where {E, S} = E
+Base.valtype(::DirectProductSymmetry{E, S}) where {E, S} = E
+
+function Base.IteratorSize(::Type{<:DirectProductSymmetry{E, <:NTuple{N, <:Any}}}) where {E, N}
+    return Base.HasShape{N}()
+end
 
 Base.length(x::DirectProductSymmetry) = prod(length.(x.symmetries))
 Base.size(x::DirectProductSymmetry) = length.(x.symmetries)
@@ -47,10 +52,6 @@ end
 
 function elements(x::DirectProductSymmetry)
     return [DirectProductOperation(y...) for y in Iterators.product(x.symmetries...)]
-end
-
-function Base.IteratorSize(::Type{<:DirectProductSymmetry{E, <:NTuple{N, <:Any}}}) where {E, N}
-    return Base.HasShape{N}()
 end
 
 function Base.:(==)(lhs::S, rhs::S) where {S<:DirectProductSymmetry}
