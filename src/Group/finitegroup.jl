@@ -7,6 +7,7 @@ export group_inverse
 
 export generate_subgroup
 export issubgroup
+export isnormalsubgroup
 export isabelian
 export minimal_generating_set
 export group_multiplication_table
