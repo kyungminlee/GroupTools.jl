@@ -23,6 +23,33 @@ using LinearAlgebra
             8 4 5 2 3 7 6 1;
         ])
     end
+
+    @testset "iterator" begin
+        G = FiniteGroup([
+            1 2 3 4 5 6;
+            2 3 1 6 4 5;
+            3 1 2 5 6 4;
+            4 5 6 1 2 3;
+            5 6 4 3 1 2;
+            6 4 5 2 3 1;
+        ])
+        @test eltype(G) == Int
+        @test eltype(typeof(G)) == Int
+        @test valtype(G) == Int
+        @test valtype(typeof(G)) == Int
+        @test length(G) == 6
+        @test keys(G) == 1:6
+        @test collect(G) == [1,2,3,4,5,6]
+        @test G[3] == 3
+        @test_throws BoundsError G[10]
+        @test G[2:end] == 2:6
+        @test G[:] == 1:6
+        @test first(G) == 1
+        @test last(G) == 6
+        @test firstindex(G) == 1
+        @test lastindex(G) == 6
+    end
+
     @testset "FiniteGroup-Abelian" begin
         @test_throws ArgumentError FiniteGroup([1 1 1; 1 1 1])
         @test_throws ArgumentError FiniteGroup([1 1 1; 1 1 1; 1 1 1])
@@ -88,21 +115,20 @@ using LinearAlgebra
         @test generate_subgroup(group, 2) == BitSet([1,2,3])
         @test generate_subgroup(group, [1,2]) == BitSet([1,2,3])
 
-        @test issubgroup(group, Set([1]))
-        @test !issubgroup(group, Set([1,2]))
+        @test issubgroup(Set([1]), group)
+        @test !issubgroup(Set([1,2]), group)
         @test minimal_generating_set(group) == [2]
 
         @test generate_multiplication_table([[1 0; 0 1], [1 0; 0 -1]]) == [1 2; 2 1]
         @test_throws ArgumentError generate_multiplication_table([[1 0; 0 1], [1 0; 0 1]]) # duplicate
         @test_throws KeyError generate_multiplication_table([[1 0; 0 1], [0 -1; 1 -1]]) # not closed
 
-        @test ishomomorphic(group, 1:3; product=gp)
-        @test !ishomomorphic(group, 1:2; product=gp)
+        @test ishomomorphic(1:3, group; product=gp)
+        @test !ishomomorphic(1:2, group; product=gp)
     end
 
     @testset "FiniteGroup-Nonabelian" begin
-        # C3v, element#2 = C3, element#4 = σᵥₐ
-        # (non-abelian)
+        # C3v, 1=I, 2=C3, 4=σᵥₐ (non-abelian)
         group = FiniteGroup([
             1 2 3 4 5 6;
             2 3 1 6 4 5;
@@ -111,31 +137,34 @@ using LinearAlgebra
             5 6 4 3 1 2;
             6 4 5 2 3 1;
         ])
-        generators = minimal_generating_set(group)
-        @test generators == [2, 4]
-        @test generate_subgroup(group, generators) == BitSet(1:6) # completely generates
 
-        ϕ = [1, 3, 4, 5, 2, 6] # group isomorphism
-        mtab1 = group_multiplication_table(group)
-        mtab2 = zeros(Int, (6,6))
-        for x in 1:6, y in 1:6
-            # ϕ(x)⋅ϕ(y) = ϕ(x⋅y)
-            mtab2[ϕ[x], ϕ[y]] = ϕ[mtab1[x,y]]
+        @testset "generators" begin
+            generators = minimal_generating_set(group)
+            @test generators == [2, 4]
+            @test generate_subgroup(group, generators) == BitSet(1:6) # completely generates
         end
-        group2 = FiniteGroup(mtab2)
 
-        # ϕ: group  →  group2
-        #       x   ↦  ϕ(x)
-        ϕ2 = group_isomorphism(group, group2)
-        mtab3 = zeros(Int, (6,6))
-        for x in 1:6, y in 1:6
-            # ϕ(x)⋅ϕ(y) = ϕ(x⋅y)
-            mtab3[ϕ2[x], ϕ2[y]] = ϕ2[mtab1[x,y]]
+        @testset "conjugacy classes" begin
+            @test group.conjugacy_classes == [[1], [2,3], [4,5,6]]
+            @test issubgroup(Set([1]), group)
+            @test !issubgroup(Set([2,3]), group)
+
+            @test issubgroup(Set([1,2,3]), group)
+            @test isnormalsubgroup(Set([1,2,3]), group)
+            @test issubgroup(Set([1,4]), group)
+            @test !isnormalsubgroup(Set([1,4]), group)
+
+            @test issubgroup([1], group)
+            @test !issubgroup([2,3], group)
+
+            @test issubgroup([1,2,3], group)
+            @test isnormalsubgroup([1,2,3], group)
+            @test issubgroup([1,4], group)
+            @test !isnormalsubgroup([1,4], group)
         end
-        @test !isnothing(group_isomorphism(group2, FiniteGroup(mtab3)))  # ϕ and ϕ2 are equivalent
 
-        for ϕ in permutations(2:6)
-            ϕ = vcat([1], ϕ)
+        @testset "group isomorphism" begin
+            ϕ = [1, 3, 4, 5, 2, 6] # group isomorphism
             mtab1 = group_multiplication_table(group)
             mtab2 = zeros(Int, (6,6))
             for x in 1:6, y in 1:6
@@ -143,7 +172,28 @@ using LinearAlgebra
                 mtab2[ϕ[x], ϕ[y]] = ϕ[mtab1[x,y]]
             end
             group2 = FiniteGroup(mtab2)
-            @test !isnothing(group_isomorphism(group, group2))
+
+            # ϕ: group  →  group2
+            #       x   ↦  ϕ(x)
+            ϕ2 = group_isomorphism(group, group2)
+            mtab3 = zeros(Int, (6,6))
+            for x in 1:6, y in 1:6
+                # ϕ(x)⋅ϕ(y) = ϕ(x⋅y)
+                mtab3[ϕ2[x], ϕ2[y]] = ϕ2[mtab1[x,y]]
+            end
+            @test !isnothing(group_isomorphism(group2, FiniteGroup(mtab3)))  # ϕ and ϕ2 are equivalent
+
+            for ϕ in permutations(2:6)
+                ϕ = vcat([1], ϕ)
+                mtab1 = group_multiplication_table(group)
+                mtab2 = zeros(Int, (6,6))
+                for x in 1:6, y in 1:6
+                    # ϕ(x)⋅ϕ(y) = ϕ(x⋅y)
+                    mtab2[ϕ[x], ϕ[y]] = ϕ[mtab1[x,y]]
+                end
+                group2 = FiniteGroup(mtab2)
+                @test !isnothing(group_isomorphism(group, group2))
+            end
         end
     end
 
@@ -188,9 +238,9 @@ using LinearAlgebra
         ])
         @test isnothing(group_isomorphism(group1, group2))
         @test group1 != group2
-        @test ishomomorphic(group1, 1:4, product=group_product(group1))
-        @test !ishomomorphic(group1, 1:4, product=group_product(group1p))
-        @test !ishomomorphic(group1, 1:4, product=group_product(group2))
+        @test ishomomorphic(1:4, group1; product=group_product(group1))
+        @test !ishomomorphic(1:4, group1; product=group_product(group1p))
+        @test !ishomomorphic(1:4, group1; product=group_product(group2))
 
         let # generate elements of group C₄ with a generator C₄
             m = [0 -1; 1 0]
@@ -199,6 +249,15 @@ using LinearAlgebra
             group_generated = FiniteGroup(generate_multiplication_table(element_list))
             @test !isnothing(group_isomorphism(group_generated, group1))
         end
+        let
+            ∘(x,y) = mod(x+y, 4)
+            els = generate_group_elements([1]; product=(∘))
+            @test els == [0,2,1,3]
+            g = FiniteGroup(generate_multiplication_table(els, ∘))
+            @test !isnothing(group_isomorphism(group1, g))
+        end
+
+        @test_throws OverflowError generate_group_elements([1]; product=(+))
     end # @testset "group isomorphism"
 
     @testset "group isomorphism 2" begin

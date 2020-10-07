@@ -7,6 +7,7 @@ export group_inverse
 
 export generate_subgroup
 export issubgroup
+export isnormalsubgroup
 export isabelian
 export minimal_generating_set
 export group_multiplication_table
@@ -130,6 +131,17 @@ end
 function Base.:(==)(lhs::FiniteGroup, rhs::FiniteGroup)
     return (lhs.multiplication_table == rhs.multiplication_table)
 end
+
+Base.eltype(::Type{FiniteGroup}) = Int
+Base.valtype(::Type{FiniteGroup}) = Int
+Base.valtype(::FiniteGroup) = Int
+
+Base.length(group::FiniteGroup) = size(group.multiplication_table, 1)
+Base.keys(group::FiniteGroup) = Base.OneTo(group_order(group))
+Base.iterate(group::FiniteGroup, i::Integer=1) = 0 < i <= group_order(group) ? (i, i+1) : nothing
+Base.getindex(group::FiniteGroup, idx...) = Base.OneTo(group_order(group))[idx...]
+Base.firstindex(::FiniteGroup) = 1
+Base.lastindex(group::FiniteGroup) = group_order(group)
 
 """
     element(group, idx)
@@ -338,14 +350,65 @@ function generate_subgroup(
 end
 
 
+# COV_EXCL_START
 """
     issubgroup(group, subset)
 
 Check whether the given subset is a subgroup of `group`.
 """
 function issubgroup(group::FiniteGroup, subset::AbstractSet{<:Integer})
+    @warn "deprecated issubgroup(group, subset). Use issubgroup(subset, group) instead."
     return all(group_product(group, x, y) in subset for x in subset for y in subset)
 end
+# COV_EXCL_STOP
+
+
+"""
+    issubgroup(subset, group)
+
+Check whether the given subset is a subgroup of `group`.
+
+# Arguments
+- `subset`: Either a set or a vector. A vector is converted into a set.
+- `group`
+"""
+function issubgroup(subset::AbstractSet{<:Integer}, group::FiniteGroup)
+    return all(group_product(group, x, y) in subset for x in subset for y in subset)
+end
+
+issubgroup(subset::AbstractVector{<:Integer}, group::FiniteGroup) = issubgroup(Set(subset), group)
+
+
+# COV_EXCL_START
+"""
+    isnormalsubgroup(group, subset::AbstractSet{<:Integer})
+
+Check whether the given subset is a normal subgroup of `group`.
+"""
+function isnormalsubgroup(group::FiniteGroup, subset::AbstractSet{<:Integer})
+    @warn "deprecated isnormalsubgroup(group, subset). Use isnormalsubgroup(subset, group) instead."
+    issubgroup(subset, group) || return false
+    ∘ = group_product(group)
+    ginv = group_inverse(group)
+    return all((y ∘ x ∘ ginv(y) in subset) for x in subset, y in elements(group))
+end
+# COV_EXCL_STOP
+
+
+"""
+    isnormalsubgroup(subset, group)
+
+Check whether the given subset is a normal subgroup of `group`.
+"""
+function isnormalsubgroup(subset::AbstractSet{<:Integer}, group::FiniteGroup)
+    issubgroup(subset, group) || return false
+    ∘ = group_product(group)
+    ginv = group_inverse(group)
+    return all((y ∘ x ∘ ginv(y) in subset) for x in subset, y in elements(group))
+end
+
+isnormalsubgroup(subset::AbstractVector{<:Integer}, group::FiniteGroup) = isnormalsubgroup(Set(subset), group)
+
 
 
 """
@@ -469,6 +532,7 @@ function generate_multiplication_table(
 end
 
 
+# COV_EXCL_START
 """
     ishomomorphic(group, representation; product=(*), equal=(==))
 
@@ -481,10 +545,31 @@ function ishomomorphic(
     product::Function=Base.:(*),
     equal::Function=Base.:(==)
 )
+    @warn "deprecated signature of ishomomorphic. Use ishomomorphic(representation, group) instead."
     ord_group = group_order(group)
     if length(representation) != ord_group
         return false
     end
+    for i in 1:ord_group, j in 1:ord_group
+        if !equal(
+            product(representation[i], representation[j]),
+            representation[ group_product(group, i, j)]
+        )
+            return false
+        end
+    end
+    return true
+end
+# COV_EXCL_STOP
+
+function ishomomorphic(
+    representation::AbstractVector,
+    group::FiniteGroup;
+    product::Function=Base.:(*),
+    equal::Function=Base.:(==)
+)
+    ord_group = group_order(group)
+    length(representation) != ord_group && return false
     for i in 1:ord_group, j in 1:ord_group
         if !equal(
             product(representation[i], representation[j]),
@@ -569,14 +654,14 @@ function generate_group_elements(
         while change
             change = false
             for g1 in generators, g2 in element_set
-                g3 = g1 * g2
+                g3 = product(g1, g2)
                 if !(g3 in element_set)
                     change = true
                     push!(element_set, g3)
                     break
                 end
             end
-            if length(element_set) > 4096
+            if length(element_set) > max_order
                 throw(OverflowError("number of elements larger than max_order $max_order"))
             end
         end
@@ -584,7 +669,7 @@ function generate_group_elements(
     end
     n = length(element_list)
     # Reorder elements by element order. Generators comes before other elements with the same order.
-    mtab = generate_multiplication_table(element_list)
+    mtab = generate_multiplication_table(element_list, product)
     priority_list = Vector{Tuple{Int, Int}}(undef, n) # [(l, b) | l is order, b is "bonus"]
     fill!(priority_list, (0, n))
     for (ig, g) in enumerate(generators)

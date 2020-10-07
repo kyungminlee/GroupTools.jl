@@ -42,6 +42,7 @@ using GroupTools
             @test length(u0) == 1
             @test size(u0) == ()
             @test eltype(u0) == typeof(u0)
+
         end
 
         @testset "integer" begin

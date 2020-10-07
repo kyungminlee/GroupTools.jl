@@ -3,43 +3,41 @@ export MatrixOperation
 import LinearAlgebra
 import MathExpr
 
-struct MatrixOperation{D, R<:Number} <: AbstractSymmetryOperation
+struct MatrixOperation{D, R<:Number}<:AbstractSymmetryOperation
     matrix::Matrix{R}
 
     function MatrixOperation{D, R}(matrix::AbstractMatrix) where {D, R}
-        size(matrix) != (D, D) && throw(ArgumentError("dimensions must be ($D,$D) != $(size(matrix))"))
+        size(matrix) != (D, D) && throw(DimensionMismatch("matrix dimensions are not ($D,$D): dimensions are $(size(matrix))"))
         return new{D, R}(matrix)
     end
 
     function MatrixOperation{R}(matrix::AbstractMatrix) where {R}
-        D, D2 = size(matrix)
-        D != D2 && throw(ArgumentError("dimensions must be square, not ($D,$D2)"))
+        D = LinearAlgebra.checksquare(matrix)
         return new{D, R}(matrix)
     end
 
     function MatrixOperation(matrix::AbstractMatrix{R}) where {R}
-        D, D2 = size(matrix)
-        D != D2 && throw(ArgumentError("dimensions must be square, not ($D,$D2)"))
+        D = LinearAlgebra.checksquare(matrix)
         return new{D, R}(matrix)
     end
 
     function MatrixOperation(value::R) where {R}
-        iszero(value) && throw(ArgumentError("value cannot be zero $(value)"))
+        iszero(value) && throw(DomainError("value cannot be zero $(value)"))
         return new{1, R}(ones(R, (1,1))*value)
     end
 
     function MatrixOperation{R}(value::Number) where {R}
-        iszero(value) && throw(ArgumentError("value cannot be zero $(value)"))
+        iszero(value) && throw(DomainError("value cannot be zero $(value)"))
         return new{1, R}(ones(R, (1,1))*value)
     end
 
-    function MatrixOperation{D, R}(value::R) where {D, R}
-        iszero(value) && throw(ArgumentError("value cannot be zero $(value)"))
-        return new{D, R}(Matrix(LinearAlgebra.I, (D, D))*value)
+    function MatrixOperation{D, R}(value::Number) where {D, R}
+        iszero(value) && throw(DomainError("value cannot be zero $(value)"))
+        return new{D, R}(Matrix(LinearAlgebra.I, (D, D))*R(value))
     end
 end
 
-Base.hash(x::MatrixOperation) = Base.hash(x.matrix)
+Base.hash(x::M, h::UInt) where {M<:MatrixOperation} = Base.hash(M, Base.hash(x.matrix, h))
 
 Base.:(==)(lhs::U, rhs::U) where {U<:MatrixOperation} = lhs.matrix == rhs.matrix
 
@@ -47,8 +45,6 @@ Base.inv(arg::U) where {U<:MatrixOperation} = U(MathExpr.inverse(arg.matrix))
 Base.conj(arg::U) where {U<:MatrixOperation} = U(conj(arg.matrix))
 Base.transpose(arg::U) where {U<:MatrixOperation} = U(transpose(arg.matrix))
 Base.adjoint(arg::U) where {U<:MatrixOperation} = U(adjoint(arg.matrix))
-
-
 
 Base.:(*)(lhs::U, rhs::U) where {U<:MatrixOperation} = U(lhs.matrix * rhs.matrix)
 Base.:(*)(lhs::U, rhs::Number) where {U<:MatrixOperation} = U(lhs.matrix * rhs)
@@ -73,6 +69,3 @@ function Base.isapprox(
 ) where {D, R}
     return isapprox(lhs.matrix, rhs.matrix; atol=atol, rtol=rtol)
 end
-
-# apply_operation(symop::MatrixOperation, tgt::AbstractVector) = symop.matrix * tgt
-# (symop::MatrixOperation)(tgt::AbstractVector) = symop.matrix * tgt
