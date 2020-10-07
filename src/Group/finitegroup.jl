@@ -645,14 +645,14 @@ function generate_group_elements(
         while change
             change = false
             for g1 in generators, g2 in element_set
-                g3 = g1 * g2
+                g3 = product(g1, g2)
                 if !(g3 in element_set)
                     change = true
                     push!(element_set, g3)
                     break
                 end
             end
-            if length(element_set) > 4096
+            if length(element_set) > max_order
                 throw(OverflowError("number of elements larger than max_order $max_order"))
             end
         end
@@ -660,7 +660,7 @@ function generate_group_elements(
     end
     n = length(element_list)
     # Reorder elements by element order. Generators comes before other elements with the same order.
-    mtab = generate_multiplication_table(element_list)
+    mtab = generate_multiplication_table(element_list, product)
     priority_list = Vector{Tuple{Int, Int}}(undef, n) # [(l, b) | l is order, b is "bonus"]
     fill!(priority_list, (0, n))
     for (ig, g) in enumerate(generators)
