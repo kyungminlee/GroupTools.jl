@@ -217,6 +217,7 @@ end # @testset "DirectProductSymmetry"
                 MatrixOperation{3,Int64}([0 -1 0; 1 0 0; 0 0 -1])
             ]
             @test vcat(els1...) == els2
+            @test elements(symp) == els1
         end
 
         @testset "equality" begin
