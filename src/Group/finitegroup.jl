@@ -132,8 +132,13 @@ function Base.:(==)(lhs::FiniteGroup, rhs::FiniteGroup)
     return (lhs.multiplication_table == rhs.multiplication_table)
 end
 
+Base.eltype(::Type{FiniteGroup}) = Int
 Base.length(group::FiniteGroup) = size(group.multiplication_table, 1)
-
+Base.keys(group::FiniteGroup) = Base.OneTo(group_order(group))
+Base.iterate(group::FiniteGroup, i::Integer=1) = 0 < i <= group_order(group) ? (i, i+1) : nothing
+Base.getindex(group::FiniteGroup, idx...) = Base.OneTo(group_order(group))[idx...]
+Base.firstindex(::FiniteGroup) = 1
+Base.lastindex(group::FiniteGroup) = group_order(group)
 
 """
     element(group, idx)
