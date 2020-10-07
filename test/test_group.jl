@@ -23,6 +23,33 @@ using LinearAlgebra
             8 4 5 2 3 7 6 1;
         ])
     end
+
+    @testset "iterator" begin
+        G = FiniteGroup([
+            1 2 3 4 5 6;
+            2 3 1 6 4 5;
+            3 1 2 5 6 4;
+            4 5 6 1 2 3;
+            5 6 4 3 1 2;
+            6 4 5 2 3 1;
+        ])
+        @test eltype(G) == Int
+        @test eltype(typeof(G)) == Int
+        @test valtype(G) == Int
+        @test valtype(typeof(G)) == Int
+        @test length(G) == 6
+        @test keys(G) == 1:6
+        @test collect(G) == [1,2,3,4,5,6]
+        @test G[3] == 3
+        @test_throws BoundsError G[10]
+        @test G[2:end] == 2:6
+        @test G[:] == 1:6
+        @test first(G) == 1
+        @test last(G) == 6
+        @test firstindex(G) == 1
+        @test lastindex(G) == 6
+    end
+
     @testset "FiniteGroup-Abelian" begin
         @test_throws ArgumentError FiniteGroup([1 1 1; 1 1 1])
         @test_throws ArgumentError FiniteGroup([1 1 1; 1 1 1; 1 1 1])
