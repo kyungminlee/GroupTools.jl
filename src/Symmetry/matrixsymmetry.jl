@@ -48,6 +48,8 @@ struct MatrixSymmetry{M<:MatrixOperation}<:AbstractSymmetry
     end
 end
 
+Base.IteratorSize(::Type{<:MatrixSymmetry}) = Base.HasShape{1}()
+
 Base.eltype(::Type{MatrixSymmetry{M}}) where M = M
 Base.valtype(::Type{MatrixSymmetry{M}}) where M = M
 Base.valtype(::MatrixSymmetry{M}) where M = M
@@ -55,6 +57,8 @@ Base.valtype(::MatrixSymmetry{M}) where M = M
 Base.length(x::MatrixSymmetry) = length(x.elements)
 Base.size(x::MatrixSymmetry) = (length(x.elements),)
 Base.keys(x::MatrixSymmetry) = Base.OneTo(length(x))
+Base.firstindex(::MatrixSymmetry) = 1
+Base.lastindex(x::MatrixSymmetry) = length(x.elements)
 
 Base.getindex(x::MatrixSymmetry, i) = Base.getindex(x.elements, i)
 
@@ -63,5 +67,3 @@ Base.iterate(x::MatrixSymmetry, i) = Base.iterate(x.elements, i)
 
 elements(m::MatrixSymmetry) = m.elements
 group(m::MatrixSymmetry) = m.group
-
-Base.IteratorSize(::Type{<:MatrixSymmetry}) = Base.HasShape{1}()
