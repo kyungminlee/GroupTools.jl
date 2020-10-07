@@ -6,15 +6,27 @@ using GroupTools
     sym1 = MatrixSymmetry([[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
     @testset "type traits" begin
         @test eltype(sym1) <: MatrixOperation{2, Int}
+        @test eltype(typeof(sym1)) <: MatrixOperation{2, Int}
+        @test valtype(sym1) <: MatrixOperation{2, Int}
         @test valtype(typeof(sym1)) <: MatrixOperation{2, Int}
         sym2 = MatrixSymmetry([[1.0 0.0; 0 1], [-1 0; 0 -1], [0.0 -1.0; 1.0 0.0], [0 1; -1 0]])
         @test eltype(sym2) <: MatrixOperation{2, Float64}
     end
     @testset "iterator properties" begin
-        @test Base.IteratorSize(sym1) == Base.HasShape{1}()
-        @test length(sym1) == 4
-        @test size(sym1) == (4,)
-        @test keys(sym1) == 1:4
+        S = sym1
+        @test Base.IteratorSize(S) == Base.HasShape{1}()
+        @test length(S) == 4
+        @test size(S) == (4,)
+        @test keys(S) == 1:4
+        @test collect(S) == MatrixOperation.([[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+        @test S[3] == MatrixOperation([0 -1; 1 0])
+        @test_throws BoundsError S[10]
+        @test S[2:end] == MatrixOperation.([[-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+        @test S[:] == MatrixOperation.([[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+        @test first(S) == MatrixOperation([1 0; 0 1])
+        @test last(S) == MatrixOperation([0 1; -1 0])
+        @test firstindex(S) == 1
+        @test lastindex(S) == 4
     end
     @testset "element access" begin
         @test sym1[1] == MatrixOperation([1 0; 0 1])
