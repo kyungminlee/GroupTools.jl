@@ -1,5 +1,6 @@
 export SemidirectProductSymmetry
 export elements
+export ⋊
 
 struct SemidirectProductSymmetry{E, S1<:AbstractSymmetry, S2<:AbstractSymmetry}<:AbstractSymmetry
     normal::S1
@@ -22,8 +23,11 @@ struct SemidirectProductSymmetry{E, S1<:AbstractSymmetry, S2<:AbstractSymmetry}<
     end
 end
 
-# == BEGIN Iterator stuff ==
+function ⋊(normal::S1, rest::S2) where {S1<:AbstractSymmetry, S2<:AbstractSymmetry}
+    return SemidirectProductSymmetry(normal, rest)
+end
 
+# == BEGIN Iterator stuff ==
 Base.eltype(::Type{SemidirectProductSymmetry{E, S1, S2}}) where {E, S1, S2} = E
 Base.valtype(::Type{SemidirectProductSymmetry{E, S1, S2}}) where {E, S1, S2} = E
 Base.valtype(::SemidirectProductSymmetry{E, S1, S2}) where {E, S1, S2} = E
