@@ -96,8 +96,7 @@ using GroupTools
             @test valtype(typeof(sym1)) <: MatrixOperation{2, ComplexF64}
         end
     end
-end
-
+end # @testset "MatrixSymmetry"
 
 @testset "DirectProductSymmetry" begin
     sym1 = MatrixSymmetry([[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
@@ -166,7 +165,7 @@ end
         ])
         @test !isnothing(group_isomorphism(group(sym), G))
     end
-end
+end # @testset "DirectProductSymmetry"
 
 @testset "SemidirectProductSymmetry" begin
     @testset "4/m" begin
@@ -175,7 +174,7 @@ end
             [1 0 0; 0 1 0; 0 0 1],
             [0 -1 0; 1 0 0; 0 0 1],
             [-1 0 0; 0 -1 0; 0 0 1],
-            [0 1 0; -1 0 0; 0 0 1]
+            [0 1 0; -1 0 0; 0 0 1],
         ])
         sym2 = MatrixSymmetry([
             [1 0 0; 0 1 0; 0 0 1],
@@ -197,6 +196,9 @@ end
             @test firstindex(symp) == 1
             @test lastindex(symp) == 8
             @test symp[2] == MatrixOperation([0 -1 0; 1 0 0; 0 0 1])
+            @test symp[4:5] == MatrixOperation.([[0 1 0; -1 0 0; 0 0 1], [-1 0 0; 0 -1 0; 0 0 -1]])
+            @test symp[3,2] == sym1[3] * sym2[2]
+
             @test_throws BoundsError symp[100]
             @test_throws BoundsError symp[-1]
             @test_throws BoundsError symp[0]
@@ -285,4 +287,4 @@ end
             [-1 1; 0 1],
         ])
     end
-end
+end # @ testset "SemidirectProductSymmetry"
