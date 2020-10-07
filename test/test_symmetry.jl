@@ -63,5 +63,56 @@ end
     @test collect(Iterators.flatten(sym3_collect1)) == collect(Iterators.flatten(sym3_collect2))
     @test sym3_collect2 == sym3_collect3
 
-    @test size( [x for x in sym3] ) == (4,3)
+    @test size([x for x in sym3]) == (4, 3)
+end
+
+@testset "SemidirectProductSymmetry" begin
+    # 4/m (C₄ₕ) = 4 ⋊ -1
+    sym1 = MatrixSymmetry([
+        [1 0 0; 0 1 0; 0 0 1],
+        [0 -1 0; 1 0 0; 0 0 1],
+        [-1 0 0; 0 -1 0; 0 0 1],
+        [0 1 0; -1 0 0; 0 0 1]
+    ])
+    sym2 = MatrixSymmetry([
+        [1 0 0; 0 1 0; 0 0 1],
+        [-1 0 0; 0 -1 0; 0 0 -1],
+    ])
+    symp = sym1 ⋊ sym2
+    # @show collect(symp)
+    els1 = collect(symp)
+    @test size(els1) == (4,2)
+    @test length(els1) == 8
+    els2 = [
+        MatrixOperation{3,Int64}([1 0 0; 0 1 0; 0 0 1])
+        MatrixOperation{3,Int64}([0 -1 0; 1 0 0; 0 0 1])
+        MatrixOperation{3,Int64}([-1 0 0; 0 -1 0; 0 0 1])
+        MatrixOperation{3,Int64}([0 1 0; -1 0 0; 0 0 1])
+        MatrixOperation{3,Int64}([-1 0 0; 0 -1 0; 0 0 -1])
+        MatrixOperation{3,Int64}([0 1 0; -1 0 0; 0 0 -1])
+        MatrixOperation{3,Int64}([1 0 0; 0 1 0; 0 0 -1])
+        MatrixOperation{3,Int64}([0 -1 0; 1 0 0; 0 0 -1])
+    ]
+    @test vcat(els1...) == els2
+
+    G = FiniteGroup([
+        1  2  3  4  5  6  7  8;
+        2  1  4  3  6  5  8  7;
+        3  4  2  1  7  8  6  5;
+        4  3  1  2  8  7  5  6;
+        5  6  7  8  1  2  3  4;
+        6  5  8  7  2  1  4  3;
+        7  8  6  5  3  4  2  1;
+        8  7  5  6  4  3  1  2
+    ])
+    @test !isnothing(group_isomorphism(group(symp), G))
+
+    sym3 = MatrixSymmetry([ones(Int, (1,1)), -ones(Int, (1,1))])
+
+    sym4 = cross(symp, sym3, sym3)
+    @test size(sym4) == (8, 2, 2)
+    @test length(sym4) == 32
+
+    # test order of elements of sym4
+    @test collect(sym4) == [DirectProductOperation(x,y,z) for z in sym3 for y in sym3 for x in symp]
 end
