@@ -62,10 +62,11 @@ end
 isidentity(arg::MatrixOperation) = arg.matrix == LinearAlgebra.I
 
 function Base.isapprox(
-    lhs::MatrixOperation{D, R},
-    rhs::MatrixOperation{D, R};
+    lhs::MatrixOperation{D, R1},
+    rhs::MatrixOperation{D, R2};
     atol::Real=0,
-    rtol::Real=Base.rtoldefault(real(R))
-) where {D, R}
-    return isapprox(lhs.matrix, rhs.matrix; atol=atol, rtol=rtol)
+    rtol::Real=Base.rtoldefault(real(R1), real(R2), atol),
+    nans::Bool=false
+) where {D, R1, R2}
+    return isapprox(lhs.matrix, rhs.matrix; atol=atol, rtol=rtol, nans=nans, norm=norm)
 end

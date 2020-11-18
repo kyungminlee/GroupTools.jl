@@ -26,8 +26,8 @@ Base.:(==)(lhs::P, rhs::P) where {P<:DirectProductOperation} = all(lhs.operation
 
 Base.inv(obj::DirectProductOperation) = DirectProductOperation(Base.inv.(obj.operations))
 
-function Base.isapprox(lhs::P, rhs::P; atol::Real=0, rtol::Real=Base.rtoldefault(Float64)) where {P<:DirectProductOperation}
-    return all(isapprox.(lhs.operations, rhs.operations; atol=atol, rtol=rtol))
+function Base.isapprox(lhs::P, rhs::P; atol::Real=0, rtol::Real=Base.rtoldefault(Float64), nans::Bool=false) where {P<:DirectProductOperation}
+    return all(isapprox.(lhs.operations, rhs.operations; atol=atol, rtol=rtol, nans=nans))
 end
 
 isidentity(obj::DirectProductOperation) = all(isidentity, obj.operations)
