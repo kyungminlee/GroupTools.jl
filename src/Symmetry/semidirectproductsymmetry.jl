@@ -26,11 +26,16 @@ function ⋊(normal::S1, rest::S2) where {S1<:AbstractSymmetry, S2<:AbstractSymm
     return SemidirectProductSymmetry(normal, rest)
 end
 
+function ⋉(rest::S2, normal::S1) where {S1<:AbstractSymmetry, S2<:AbstractSymmetry}
+    return SemidirectProductSymmetry(normal, rest)
+end
+
 # == BEGIN Iterator stuff ==
 Base.eltype(::Type{SemidirectProductSymmetry{E, S1, S2}}) where {E, S1, S2} = E
 Base.valtype(::Type{SemidirectProductSymmetry{E, S1, S2}}) where {E, S1, S2} = E
 Base.valtype(::SemidirectProductSymmetry{E, S1, S2}) where {E, S1, S2} = E
 
+# iterate over elements
 Base.IteratorSize(::SemidirectProductSymmetry) = Base.HasShape{2}()
 Base.length(x::SemidirectProductSymmetry) = length(x.normal) * length(x.rest)
 Base.size(x::SemidirectProductSymmetry) = (length(x.normal), length(x.rest))
