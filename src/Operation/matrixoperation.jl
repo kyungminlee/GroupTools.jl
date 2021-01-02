@@ -3,6 +3,11 @@ export MatrixOperation
 import LinearAlgebra
 import MathExpr
 
+"""
+    MatrixOperation{D, R<:Number}<:AbstractSymmetryOperation
+
+Matrix as a symmetry operation.
+"""
 struct MatrixOperation{D, R<:Number}<:AbstractSymmetryOperation
     matrix::Matrix{R}
 

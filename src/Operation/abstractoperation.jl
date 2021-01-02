@@ -1,5 +1,8 @@
 export AbstractSymmetryOperation
 
+"""
+    AbstractSymmetryOperation
+"""
 abstract type AbstractSymmetryOperation end
 
 Base.IteratorSize(::Type{T}) where {T<:AbstractSymmetryOperation} = Base.HasShape{0}()

@@ -2,6 +2,14 @@ export DirectProductOperation
 export isidentity
 import LinearAlgebra.×
 
+"""
+    DirectProductOperation{Ops}
+
+Direct product of symmetry operations.
+math```
+  d = (g, h)
+```
+"""
 struct DirectProductOperation{Ops<:Tuple{Vararg{AbstractSymmetryOperation}}}<:AbstractSymmetryOperation
     operations::Ops
     function DirectProductOperation(ops::Vararg{AbstractSymmetryOperation})
