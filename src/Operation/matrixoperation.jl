@@ -11,17 +11,17 @@ Matrix as a symmetry operation.
 struct MatrixOperation{D, R<:Number}<:AbstractSymmetryOperation
     matrix::Matrix{R}
 
-    function MatrixOperation{D, R}(matrix::AbstractMatrix) where {D, R}
+    function MatrixOperation{D, R}(matrix::AbstractMatrix) where {D, R<:Number}
         size(matrix) != (D, D) && throw(DimensionMismatch("matrix dimensions are not ($D,$D): dimensions are $(size(matrix))"))
         return new{D, R}(matrix)
     end
 
-    function MatrixOperation{R}(matrix::AbstractMatrix) where {R}
+    function MatrixOperation{R}(matrix::AbstractMatrix) where {R<:Number}
         D = LinearAlgebra.checksquare(matrix)
         return new{D, R}(matrix)
     end
 
-    function MatrixOperation(matrix::AbstractMatrix{R}) where {R}
+    function MatrixOperation(matrix::AbstractMatrix{R}) where {R<:Number}
         D = LinearAlgebra.checksquare(matrix)
         return new{D, R}(matrix)
     end

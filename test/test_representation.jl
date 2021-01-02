@@ -1,8 +1,6 @@
 using Test
 using GroupTools
 
-
-
 @testset "FiniteGroupRepresentation" begin
     # C₃ (or Z₃)
     group_z3 = FiniteGroup([
@@ -33,6 +31,12 @@ using GroupTools
     @test dimension(rep1) == 1
     @test dimension(rep2) == 1
     @test dimension(rep3) == 2
+
+    @test ismonomial(rep0)
+    @test ismonomial(rep1)
+    @test ismonomial(rep2)
+    @test ismonomial(rep3)
+    @test !ismonomial(rep4)            
 
     @test [x[1] for x in get_irrep_iterator(rep0, 1)] == [1, 2, 3]
     @test [x[1] for x in get_irrep_iterator(rep3, 1)] == [1, 2, 3]
@@ -82,6 +86,12 @@ end
     @test dimension(rep1) == 1
     @test dimension(rep2) == 1
     @test dimension(rep3) == 2
+
+    @test ismonomial(rep0)
+    @test ismonomial(rep1)
+    @test ismonomial(rep2)
+    @test ismonomial(rep3)
+    @test !ismonomial(rep4)            
 
     # @test [x[1] for x in get_irrep_iterator(rep0, 1)] == [1, 2, 3]
     # @test [x[1] for x in get_irrep_iterator(rep3, 1)] == [1, 2, 3]

@@ -5,6 +5,7 @@ export dimension
 
 export FiniteGroupRepresentation
 export get_irrep_iterator
+export ismonomial
 
 abstract type AbstractRepresentation end
 
@@ -58,4 +59,8 @@ operation.
 """
 function get_irrep_iterator(rep::FiniteGroupRepresentation, d::Integer)
     return ((x, m[d,d]) for (x, m) in zip(rep.group, rep.matrices))
+end
+
+function ismonomial(rep::FiniteGroupRepresentation)
+    return all(abs(x) ≈ 0 || abs(x) ≈ 1 for m in rep.matrices for x in m)
 end
