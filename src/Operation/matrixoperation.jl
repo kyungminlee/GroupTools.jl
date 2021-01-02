@@ -70,8 +70,7 @@ function Base.isapprox(
     lhs::MatrixOperation{D, R1},
     rhs::MatrixOperation{D, R2};
     atol::Real=0,
-    rtol::Real=Base.rtoldefault(real(R1), real(R2), atol),
-    nans::Bool=false
+    rtol::Real=Base.rtoldefault(real(R1), real(R2), atol)
 ) where {D, R1, R2}
-    return isapprox(lhs.matrix, rhs.matrix; atol=atol, rtol=rtol, nans=nans, norm=norm)
+    return isapprox(lhs.matrix, rhs.matrix; atol=atol, rtol=rtol)
 end
