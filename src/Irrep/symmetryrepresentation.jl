@@ -10,7 +10,7 @@ struct SymmetryRepresentation{S<:AbstractSymmetry, K<:Number}<:AbstractRepresent
         matrices::AbstractVector{<:AbstractMatrix{K}},
     ) where {
         S<:AbstractSymmetry,
-        K<:Union{<:AbstractFloat, <:Complex{<:AbstractFloat}}
+        K<:Number
     }
         G = group(symmetry)
         rep = FiniteGroupRepresentation(G, matrices)
@@ -19,15 +19,39 @@ struct SymmetryRepresentation{S<:AbstractSymmetry, K<:Number}<:AbstractRepresent
 
     function SymmetryRepresentation(
         symmetry::S,
-        matrices::AbstractVector{<:AbstractMatrix{K}},
+        matrices::AbstractVector{K},
     ) where {
         S<:AbstractSymmetry,
-        K<:Union{<:Integer, <:Complex{<:Integer}, <:Rational, <:Complex{<:Rational}},
+        K<:Number
     }
         G = group(symmetry)
-        ishomomorphic(matrices, G) || throw(ArgumentError("rep is not homomorphic to the group"))
-        return new{S, K}(symmetry, matrices)
+        rep = FiniteGroupRepresentation(G, matrices)
+        return new{S, K}(symmetry, rep)
     end
+
+    # function SymmetryRepresentation(
+    #     symmetry::S,
+    #     matrices::AbstractVector{<:AbstractMatrix{K}},
+    # ) where {
+    #     S<:AbstractSymmetry,
+    #     K<:Union{<:AbstractFloat, <:Complex{<:AbstractFloat}}
+    # }
+    #     G = group(symmetry)
+    #     rep = FiniteGroupRepresentation(G, matrices)
+    #     return new{S, K}(symmetry, rep)
+    # end
+
+    # function SymmetryRepresentation(
+    #     symmetry::S,
+    #     matrices::AbstractVector{<:AbstractMatrix{K}},
+    # ) where {
+    #     S<:AbstractSymmetry,
+    #     K<:Union{<:Integer, <:Complex{<:Integer}, <:Rational, <:Complex{<:Rational}},
+    # }
+    #     G = group(symmetry)
+    #     ishomomorphic(matrices, G) || throw(ArgumentError("rep is not homomorphic to the group"))
+    #     return new{S, K}(symmetry, matrices)
+    # end
 end
 
 function slice(rep::SymmetryRepresentation{K, S}, d::Integer) where {K, S}
@@ -67,9 +91,10 @@ function ismonomial(rep::SymmetryRepresentation)
 end
 
 symmetry(rep::SymmetryRepresentation) = rep.symmetry
+dimension(rep::SymmetryRepresentation) = dimension(rep.group_representation)
 
 function get_irrep_iterator(rep::SymmetryRepresentation, d::Integer)
-    return ((x, m[d,d]) for (x, m) in zip(rep.symmetry, rep.matrices))
+    return ((x, m[d,d]) for (x, m) in zip(rep.symmetry, rep.group_representation.matrices))
 end
 
 struct DirectProductSymmetryRepresentation{K<:Number, S<:DirectProductSymmetry}<:AbstractRepresentation
