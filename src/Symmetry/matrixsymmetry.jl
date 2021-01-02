@@ -26,8 +26,9 @@ function default_normalize(::Type{ComplexF64})
 end
 
 function default_normalize(::Type{T}) where {T<:Union{<:Integer, <:Rational, <:Complex{<:Integer}, <:Complex{<:Rational}}}
-    normalize(x::AbstractArray{T}) = identity(x)
-    normalize(x::MatrixOperation{D, T}) where D = identity(x)
+    normalize(x::T) = x
+    normalize(x::AbstractArray{T}) = x
+    normalize(x::MatrixOperation{D, T}) where D = x
     return normalize
 end
 

@@ -2,10 +2,9 @@ export SemidirectProductSymmetry
 export elements
 export ⋊
 
-struct SemidirectProductSymmetry{E, S1<:AbstractSymmetry, S2<:AbstractSymmetry}<:AbstractSymmetry
+struct SemidirectProductSymmetry{E<:AbstractSymmetryOperation, S1<:AbstractSymmetry, S2<:AbstractSymmetry}<:AbstractSymmetry
     normal::S1
     rest::S2
-
     function SemidirectProductSymmetry(normal::S1, rest::S2) where {S1<:AbstractSymmetry, S2<:AbstractSymmetry}
         E1 = eltype(S1)
         E2 = eltype(S2)

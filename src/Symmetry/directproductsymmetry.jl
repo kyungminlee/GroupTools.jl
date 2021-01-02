@@ -3,7 +3,7 @@ export elements
 
 import LinearAlgebra
 
-struct DirectProductSymmetry{E<:AbstractSymmetryOperation, S<:Tuple{Vararg{AbstractSymmetry}}}<:AbstractSymmetry
+struct DirectProductSymmetry{E<:DirectProductOperation, S<:Tuple{Vararg{AbstractSymmetry}}}<:AbstractSymmetry
     symmetries::S
     function DirectProductSymmetry(sym::AbstractSymmetry...)
         E = DirectProductOperation{Tuple{eltype.(sym)...}}
