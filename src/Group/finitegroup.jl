@@ -519,14 +519,15 @@ Generate a multiplication table from elements with product.
 """
 function generate_multiplication_table(
     elements::AbstractVector{ElementType},
-    product::Function=Base.:(*)
+    product::Function=Base.:(*);
+    hash::Function=hash
 ) where {ElementType}
-    element_lookup = Dict(k=>i for (i, k) in enumerate(elements))
+    element_lookup = Dict(hash(k)=>i for (i, k) in enumerate(elements))
     ord_group = length(elements)
     length(element_lookup) != ord_group && throw(ArgumentError("elements not unique"))
     mtab = zeros(Int, (ord_group, ord_group))
     for i in 1:ord_group, j in 1:ord_group
-        mtab[i,j] = element_lookup[ product(elements[i], elements[j]) ]
+        mtab[i,j] = element_lookup[ hash(product(elements[i], elements[j])) ]
     end
     return mtab
 end
