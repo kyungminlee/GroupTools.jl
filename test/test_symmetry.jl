@@ -84,10 +84,12 @@ using GroupTools
                 MatrixOperation.([[1.0 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
             )
             @test sym1 != sym1p  # RHS float
+
+            # the elements are different...
             sym1p = MatrixSymmetry(
                 MatrixOperation.([[1.0+1E-12im 0.0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
             )
-            @test sym1 == sym1p
+            @test sym1 != sym1p
         end
         @testset "type traits" begin
             @test eltype(sym1) <: MatrixOperation{2, ComplexF64}
