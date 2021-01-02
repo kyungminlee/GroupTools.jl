@@ -15,7 +15,7 @@ struct IdentityOperation <: AbstractSymmetryOperation end
 
 ## operators
 Base.:(==)(::IdentityOperation, ::IdentityOperation) = true
-Base.isapprox(::IdentityOperation, ::IdentityOperation; atol::Real=0, rtol::Real=0, nans::Bool=false) = true
+Base.isapprox(::IdentityOperation, ::IdentityOperation; atol::Real=0, rtol::Real=0) = true
 Base.:(*)(lhs::IdentityOperation, ::IdentityOperation) = lhs
 Base.:(*)(lhs::AbstractSymmetryOperation, ::IdentityOperation) = lhs
 Base.:(*)(::IdentityOperation, rhs::AbstractSymmetryOperation) = rhs

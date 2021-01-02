@@ -7,7 +7,7 @@ import LinearAlgebra.×
 
 Direct product of symmetry operations.
 math```
-  d = (g, h)
+  g = (g_1, g_2, \\ldots)
 ```
 """
 struct DirectProductOperation{Ops<:Tuple{Vararg{AbstractSymmetryOperation}}}<:AbstractSymmetryOperation
@@ -34,8 +34,8 @@ Base.:(==)(lhs::P, rhs::P) where {P<:DirectProductOperation} = all(lhs.operation
 
 Base.inv(obj::DirectProductOperation) = DirectProductOperation(Base.inv.(obj.operations))
 
-function Base.isapprox(lhs::P, rhs::P; atol::Real=0, rtol::Real=Base.rtoldefault(Float64), nans::Bool=false) where {P<:DirectProductOperation}
-    return all(isapprox.(lhs.operations, rhs.operations; atol=atol, rtol=rtol, nans=nans))
+function Base.isapprox(lhs::P, rhs::P; atol::Real=0, rtol::Real=Base.rtoldefault(Float64)) where {P<:DirectProductOperation}
+    return all(isapprox.(lhs.operations, rhs.operations; atol=atol, rtol=rtol))
 end
 
 isidentity(obj::DirectProductOperation) = all(isidentity, obj.operations)
