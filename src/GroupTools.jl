@@ -14,7 +14,7 @@ include("Symmetry/matrixsymmetry.jl")
 include("Symmetry/directproductsymmetry.jl")
 include("Symmetry/semidirectproductsymmetry.jl")
 
-include("Irrep/finitegrouprepresentation.jl")
-include("Irrep/symmetryrepresentation.jl")
+include("Representation/finitegrouprepresentation.jl")
+include("Representation/symmetryrepresentation.jl")
 
 end # module
