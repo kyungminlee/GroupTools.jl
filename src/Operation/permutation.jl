@@ -17,7 +17,7 @@ Create a permutation of integers from 1 to n.
 The convention for the permutation is that map[i] gets mapped to i.
 In other words, map tells you where each element is from.
 """
-struct Permutation
+struct Permutation<:AbstractSymmetryOperation
     map ::Vector{Int}
     order ::Int
     function Permutation(perms::AbstractVector{<:Integer}; max_order=2048)
