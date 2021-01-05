@@ -40,6 +40,10 @@ function Base.getindex(x::DirectProductSymmetry{E, <:Tuple{Vararg{Any, N}}}, s::
     return DirectProductOperation([Base.getindex(sym, j) for (sym, j) in zip(x.symmetries, s)]...)
 end
 
+function Base.CartesianIndices(p::DirectProductSymmetry)
+    return CartesianIndices(tuple([eachindex(s) for s in p.symmetries]...))
+end
+
 function Base.iterate(x::DirectProductSymmetry, i::Integer=1)
     return (0 < i <= length(x)) ? (x[i], i+1) : nothing
 end
