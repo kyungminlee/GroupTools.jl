@@ -44,9 +44,6 @@ struct MatrixSymmetry{M<:MatrixOperation}<:AbstractSymmetry
     end
 
     function MatrixSymmetry(elements::AbstractVector{MatrixOperation{D, S}}; normalize::Function=default_normalize(S)) where {D, S}
-        # elements_normal = normalize.(elements)
-        # group = FiniteGroup(generate_multiplication_table(elements_normal, (x, y) -> normalize(x*y)))
-        # return new{MatrixOperation{D, S}}(elements_normal, group)
         group = FiniteGroup(generate_multiplication_table(elements;
         hash=(x)->hash(normalize(x))
         ))
