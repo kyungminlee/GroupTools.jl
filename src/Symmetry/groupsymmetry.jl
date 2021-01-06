@@ -1,21 +1,35 @@
 export GroupElement
 export symmetryelements
 
-struct GroupElement{P<:Function}
+struct GroupElement{P<:Function, I<:Function}
     value::Int
     product::P
-    function GroupElement(value::Integer, product::P) where {P<:Function}
-        return new{P}(value, product)
+    inverse::I
+    function GroupElement(value::Integer, product::P, inverse::I) where {P<:Function, I<:Function}
+        return new{P, I}(value, product, inverse)
+    end
+
+    function GroupElement{P, I}(value::Integer, product::P, inverse::I) where {P<:Function, I<:Function}
+        return new{P, I}(value, product, inverse)
     end
 end
 
 function symmetryelements(group::FiniteGroup)
     p = group_product(group)
-    return [GroupElement(x, p) for x in 1:grouo_order(group)]
+    i = group_inverse(group)
+    return [GroupElement(x, p, i) for x in 1:group_order(group)]
 end
 
-Base.:(*)(lhs::E, rhs::E) where {E<:GroupElement} = lhs.product(lhs.value, rhs.value)
-Base.:(==)(lhs::E, rhs::E) where {E<:GroupElement} = lhs.value == rhs.value
+function Base.:(*)(lhs::GroupElement{P, I}, rhs::GroupElement{P, I}) where {P, I}
+    @boundscheck begin
+        if lhs.product !== rhs.product || lhs.inverse !== rhs.inverse
+            throw(ArgumentError("lhs and rhs do not have same product or inverse"))
+        end
+    end
+    return GroupElement(lhs.product(lhs.value, rhs.value), lhs.product, lhs.inverse)
+end
+Base.:(==)(lhs::GroupElement{P, I}, rhs::GroupElement{P, I}) where {P, I} = lhs.value == rhs.value && lhs.product === rhs.product && lhs.inverse === rhs.inverse
+Base.inv(lhs::GroupElement{P, I}) where {P, I} = GroupElement{P, I}(lhs.inverse(lhs.value), lhs.product, lhs.inverse)
 
 """
     finitegroupsymmetry
