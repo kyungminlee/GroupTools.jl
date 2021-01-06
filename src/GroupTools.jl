@@ -10,6 +10,7 @@ include("Group/abstractgroup.jl")
 include("Group/finitegroup.jl")
 
 include("Symmetry/abstractsymmetry.jl")
+include("Symmetry/genericsymmetry.jl")
 include("Symmetry/matrixsymmetry.jl")
 include("Symmetry/directproductsymmetry.jl")
 include("Symmetry/semidirectproductsymmetry.jl")
