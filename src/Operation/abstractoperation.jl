@@ -2,6 +2,8 @@ export AbstractSymmetryOperation
 
 """
     AbstractSymmetryOperation
+
+Abstract symmetry operation type.
 """
 abstract type AbstractSymmetryOperation end
 
