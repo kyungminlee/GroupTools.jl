@@ -27,6 +27,31 @@ using GroupTools
     @test group(sym1) == FiniteGroup([1 2 3; 2 3 1; 3 1 2])
 end
 
+@testset "finite group symmetry" begin
+    @testset "GroupElement" begin
+        el = GroupElement(1, *, inv)
+        el.value == 1
+    end
+    group_c3 = FiniteGroup([1 2 3; 2 3 1; 3 1 2])
+    group_c2 = FiniteGroup([1 2; 2 1])
+    elems = symmetryelements(group_c3)
+    @test [el.value for el in elems] == [1,2,3]
+    @test all(el.product == group_product(group_c3) for el in elems)
+    @test all(el.inverse == group_inverse(group_c3) for el in elems)
+
+    @test inv(elems[1]) == elems[1]
+    @test inv(elems[2]) != elems[2]
+    @test inv(elems[2]) == elems[3]
+    @test inv(elems[3]) == elems[2]
+
+    @test elems[1] * elems[2] == elems[2]
+    @test elems[2] * elems[3] == elems[1]
+
+    elems_c2 = symmetryelements(group_c2)
+    @test elems[1] != elems_c2[1]
+    @test elems[2] != elems_c2[2]
+end
+
 @testset "matrix symmetry" begin
     @testset "Int" begin
         @testset "one-dimensional" begin
@@ -35,7 +60,6 @@ end
             sym2 = matrixsymmetry(elems)
             @test sym1.group == sym2.group  # (element types are different. TODO: is it necessary?)
         end
-
 
         # C4 group (Abelian)
         sym1 = matrixsymmetry([[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
