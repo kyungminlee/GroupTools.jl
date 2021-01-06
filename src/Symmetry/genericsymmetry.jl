@@ -10,14 +10,14 @@ struct GenericSymmetry{ElementType}<:AbstractSymmetry
         return new{ElementType}(elements, group)
     end
 
-    function GenericSymmetry(elements::AbstractVector{E}; hash::Function=Base.hash) where {E}
-        group = FiniteGroup(generate_multiplication_table(elements; hash=hash))
+    function GenericSymmetry(elements::AbstractVector{E}; normalize::Function=Base.identity) where {E}
+        group = FiniteGroup(generate_multiplication_table(elements; normalize=normalize))
         return new{E}(elements, group)
     end
 
-    function GenericSymmetry{E}(elements::AbstractVector; hash::Function=Base.hash) where {E}
+    function GenericSymmetry{E}(elements::AbstractVector; normalize::Function=Base.identity) where {E}
         elements_vec::Vector{E} = elements
-        group = FiniteGroup(generate_multiplication_table(elements_vec; hash=hash))
+        group = FiniteGroup(generate_multiplication_table(elements_vec; normalize=normalize))
         return new{E}(elements, group)
     end
 end

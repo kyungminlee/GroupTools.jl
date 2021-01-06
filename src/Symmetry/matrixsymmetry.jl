@@ -38,7 +38,7 @@ function matrixsymmetry(
     elements::AbstractVector{MatrixOperation{D, S}};
     normalize::Function=_default_normalize(S)
 ) where {D, S}
-    return GenericSymmetry(elements; hash=(x::MatrixOperation)->hash(normalize.(x.matrix)))
+    return GenericSymmetry(elements; normalize=(x::MatrixOperation)->MatrixOperation(normalize.(x.matrix)))
 end
 
 function matrixsymmetry(
@@ -46,7 +46,7 @@ function matrixsymmetry(
     normalize::Function=_default_normalize(S)
 ) where {S}
     elements = MatrixOperation.(matrices)
-    return GenericSymmetry(elements; hash=(x::MatrixOperation)->hash(normalize.(x.matrix)))
+    return GenericSymmetry(elements; normalize=(x::MatrixOperation)->MatrixOperation(normalize.(x.matrix)))
 end
 
 function matrixsymmetry(
@@ -54,5 +54,5 @@ function matrixsymmetry(
     normalize::Function=_default_normalize(S)
 ) where {S}
     elements = MatrixOperation.(matrices)
-    return GenericSymmetry(elements; hash=(x::MatrixOperation)->hash(normalize.(x.matrix)))
+    return GenericSymmetry(elements; normalize=(x::MatrixOperation)->MatrixOperation(normalize.(x.matrix)))
 end

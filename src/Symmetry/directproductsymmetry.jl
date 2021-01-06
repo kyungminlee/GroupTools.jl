@@ -1,26 +1,7 @@
-#export DirectProductSymmetry
-#export elements
+export DirectProductSymmetry
+export elements
 import LinearAlgebra
-export directproduct
 
-function directproduct(symmetries::AbstractSymmetry...)
-    E = DirectProductOperation{Tuple{eltype.(symmetries)...}}
-    lengths = length.(symmetries)
-    indices = CartesianIndices(tuple([1:n for n in lengths]...))
-    elements = reshape([
-        DirectProductOperation([s[i] for (s, i) in zip(symmetries, index.I)]...)
-        for index in indices
-    ], length(indices))
-    groups = [group(s) for s in symmetries]
-    # products = [s.product for s in symmetries]
-    g = directproduct(groups...)
-    # p = directproduct(E, products...)
-    return GenericSymmetry{E}(elements, g) #, p)
-end
-
-LinearAlgebra.cross(symmetries::AbstractSymmetry...) = directproduct(symmetries...)
-
-#=
 struct DirectProductSymmetry{E<:DirectProductOperation, S<:Tuple{Vararg{AbstractSymmetry}}}<:AbstractSymmetry
     symmetries::S
     function DirectProductSymmetry(sym::AbstractSymmetry...)
@@ -91,6 +72,3 @@ function group(m::DirectProductSymmetry)
     end
     return FiniteGroup(t)
 end
-
-
-=#
