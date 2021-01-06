@@ -4,33 +4,20 @@ export finitegroupsymmetry
 struct GenericSymmetry{ElementType}<:AbstractSymmetry
     elements::Vector{ElementType}
     group::FiniteGroup
-    # product::Function
 
     function GenericSymmetry{ElementType}(
         elements::AbstractVector,
         group::FiniteGroup,
-        # product::Function
     ) where {ElementType}
         #TODO: should I check for isomorphism between product and group_product?
-        # return new{ElementType}(elements, group, product)
         return new{ElementType}(elements, group)
     end
-
-    # function GenericSymmetry(elements::AbstractVector{E}; product::Function=Base.:(*), hash::Function=Base.hash) where {E}
-    #     group = FiniteGroup(generate_multiplication_table(elements; product=product, hash=hash))
-    #     return new{E}(elements, group, product)
-    # end
 
     function GenericSymmetry(elements::AbstractVector{E}; hash::Function=Base.hash) where {E}
         group = FiniteGroup(generate_multiplication_table(elements; hash=hash))
         return new{E}(elements, group)
     end
 
-    # function GenericSymmetry{E}(elements::AbstractVector; product::Function=Base.:(*), hash::Function=Base.hash) where {E}
-    #     elements_vec::Vector{E} = elements
-    #     group = FiniteGroup(generate_multiplication_table(elements_vec; product=product, hash=hash))
-    #     return new{E}(elements, group, product)
-    # end
     function GenericSymmetry{E}(elements::AbstractVector; hash::Function=Base.hash) where {E}
         elements_vec::Vector{E} = elements
         group = FiniteGroup(generate_multiplication_table(elements_vec; hash=hash))
