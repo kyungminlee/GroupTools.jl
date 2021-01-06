@@ -29,6 +29,14 @@ end
 
 @testset "matrix symmetry" begin
     @testset "Int" begin
+        @testset "one-dimensional" begin
+            elems = [1, -1]
+            sym1 = GenericSymmetry(elems)
+            sym2 = matrixsymmetry(elems)
+            @test sym1.group == sym2.group  # (element types are different. TODO: is it necessary?)
+        end
+
+
         # C4 group (Abelian)
         sym1 = matrixsymmetry([[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
         @testset "constructor" begin
@@ -87,6 +95,14 @@ end
     end
 
     @testset "Float64" begin
+        @testset "one-dimensional" begin
+            normalize = GroupTools._default_normalize(ComplexF64)
+            elems = [1, cis(2π/3), cis(4π/3)]
+            sym1 = GenericSymmetry(elems; hash=x->hash(normalize(x)))
+            sym2 = matrixsymmetry(elems)
+            @test sym1.group == sym2.group
+        end
+
         sym1 = matrixsymmetry([[1.0 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
         @testset "constructor" begin
             sym1p = matrixsymmetry(
