@@ -1,4 +1,4 @@
-export matrix_symmetry
+export matrixsymmetry
 
 export elements
 export group
@@ -32,14 +32,14 @@ function default_normalize(::Type{T}) where {T<:Union{<:Integer, <:Rational, <:C
     return normalize
 end
 
-function matrix_symmetry(
+function matrixsymmetry(
     elements::AbstractVector{MatrixOperation{D, S}};
     normalize::Function=default_normalize(S)
 ) where {D, S}
     return GenericSymmetry(elements; hash=(x::MatrixOperation)->hash(normalize(x.matrix)))
 end
 
-function matrix_symmetry(
+function matrixsymmetry(
     matrices::AbstractVector{<:AbstractMatrix{S}};
     normalize::Function=default_normalize(S)
 ) where {S}
@@ -47,7 +47,7 @@ function matrix_symmetry(
     return GenericSymmetry(elements; hash=(x::MatrixOperation)->hash(normalize(x.matrix)))
 end
 
-function matrix_symmetry(
+function matrixsymmetry(
     matrices::AbstractVector{S};
     normalize::Function=default_normalize(S)
 ) where {S}
