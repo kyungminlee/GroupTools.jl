@@ -2,22 +2,26 @@ using Test
 using LinearAlgebra
 using GroupTools
 
-@testset "MatrixSymmetry" begin
+@testset "matrix symmetry" begin
     @testset "Int" begin
         # C4 group (Abelian)
-        sym1 = MatrixSymmetry([[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+        #sym1 = MatrixSymmetry([[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+        sym1 = matrix_symmetry([[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
         @testset "constructor" begin
-            sym1p = MatrixSymmetry(
-                MatrixOperation.([[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
-            )
-            @test sym1 == sym1p
+        # sym1p = MatrixSymmetry(
+        #     MatrixOperation.([[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+        # )
+        sym1p = matrix_symmetry(
+            MatrixOperation.([[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+        )
+        @test sym1 == sym1p
         end
         @testset "type traits" begin
             @test eltype(sym1) <: MatrixOperation{2, Int}
             @test eltype(typeof(sym1)) <: MatrixOperation{2, Int}
             @test valtype(sym1) <: MatrixOperation{2, Int}
             @test valtype(typeof(sym1)) <: MatrixOperation{2, Int}
-            sym2 = MatrixSymmetry([[1.0 0.0; 0 1], [-1 0; 0 -1], [0.0 -1.0; 1.0 0.0], [0 1; -1 0]])
+            sym2 = matrix_symmetry([[1.0 0.0; 0 1], [-1 0; 0 -1], [0.0 -1.0; 1.0 0.0], [0 1; -1 0]])
             @test eltype(sym2) <: MatrixOperation{2, Float64}
         end
         @testset "iterator properties" begin
@@ -62,9 +66,13 @@ using GroupTools
     end
 
     @testset "Float64" begin
-        sym1 = MatrixSymmetry([[1.0 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+        # sym1 = MatrixSymmetry([[1.0 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+        sym1 = matrix_symmetry([[1.0 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
         @testset "constructor" begin
-            sym1p = MatrixSymmetry(
+            # sym1p = MatrixSymmetry(
+            #     MatrixOperation.([[1.0 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+            # )
+            sym1p = matrix_symmetry(
                 MatrixOperation.([[1.0 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
             )
             @test sym1 == sym1p
@@ -78,15 +86,22 @@ using GroupTools
     end
 
     @testset "ComplexF64" begin
-        sym1 = MatrixSymmetry([[1.0+0im 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+        # sym1 = MatrixSymmetry([[1.0+0im 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+        sym1 = matrix_symmetry([[1.0+0im 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
         @testset "constructor" begin
-            sym1p = MatrixSymmetry(
+            # sym1p = MatrixSymmetry(
+            #     MatrixOperation.([[1.0 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+            # )
+            sym1p = matrix_symmetry(
                 MatrixOperation.([[1.0 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
             )
             @test sym1 != sym1p  # RHS float
 
             # the elements are different...
-            sym1p = MatrixSymmetry(
+            # sym1p = MatrixSymmetry(
+            #     MatrixOperation.([[1.0+1E-12im 0.0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+            # )
+            sym1p = matrix_symmetry(
                 MatrixOperation.([[1.0+1E-12im 0.0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
             )
             @test sym1 != sym1p
@@ -101,8 +116,8 @@ using GroupTools
 end # @testset "MatrixSymmetry"
 
 @testset "DirectProductSymmetry" begin
-    sym1 = MatrixSymmetry([[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
-    sym2 = MatrixSymmetry([[1 0; 0 1], [0 -1; 1 -1], [-1 1; -1 0]])
+    sym1 = matrix_symmetry([[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+    sym2 = matrix_symmetry([[1 0; 0 1], [0 -1; 1 -1], [-1 1; -1 0]])
     sym3 = DirectProductSymmetry(sym1, sym2)
 
     @testset "type traits" begin
@@ -114,8 +129,8 @@ end # @testset "MatrixSymmetry"
     end
 
     @testset "equality" begin
-        sym1p = MatrixSymmetry([[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
-        sym2p = MatrixSymmetry([[1 0; 0 1], [0 -1; 1 -1], [-1 1; -1 0]])
+        sym1p = matrix_symmetry([[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+        sym2p = matrix_symmetry([[1 0; 0 1], [0 -1; 1 -1], [-1 1; -1 0]])
         @test sym3 == DirectProductSymmetry(sym1, sym2)
         @test sym3 != DirectProductSymmetry(sym2, sym1)
     end
@@ -144,13 +159,13 @@ end # @testset "MatrixSymmetry"
     end
 
     @testset "4×Z₂" begin
-        sym_c4 = MatrixSymmetry([
+        sym_c4 = matrix_symmetry([
             [1 0 0; 0 1 0; 0 0 1],
             [0 -1 0; 1 0 0; 0 0 1],
             [-1 0 0; 0 -1 0; 0 0 1],
             [0 1 0; -1 0 0; 0 0 1]
         ])
-        sym_z2 = MatrixSymmetry([
+        sym_z2 = matrix_symmetry([
             ones(Int, (1,1)),
             -ones(Int, (1,1)),
         ])
@@ -172,13 +187,13 @@ end # @testset "DirectProductSymmetry"
 @testset "SemidirectProductSymmetry" begin
     @testset "4/m" begin
         # 4/m (C₄ₕ) = 4 ⋊ -1
-        sym1 = MatrixSymmetry([
+        sym1 = matrix_symmetry([
             [1 0 0; 0 1 0; 0 0 1],
             [0 -1 0; 1 0 0; 0 0 1],
             [-1 0 0; 0 -1 0; 0 0 1],
             [0 1 0; -1 0 0; 0 0 1],
         ])
-        sym2 = MatrixSymmetry([
+        sym2 = matrix_symmetry([
             [1 0 0; 0 1 0; 0 0 1],
             [-1 0 0; 0 -1 0; 0 0 -1],
         ])
@@ -223,13 +238,13 @@ end # @testset "DirectProductSymmetry"
         end
 
         @testset "equality" begin
-            sym1p = MatrixSymmetry([
+            sym1p = matrix_symmetry([
                 [1 0 0; 0 1 0; 0 0 1],
                 [0 -1 0; 1 0 0; 0 0 1],
                 [-1 0 0; 0 -1 0; 0 0 1],
                 [0 1 0; -1 0 0; 0 0 1]
             ])
-            sym2p = MatrixSymmetry([
+            sym2p = matrix_symmetry([
                 [1 0 0; 0 1 0; 0 0 1],
                 [-1 0 0; 0 -1 0; 0 0 -1],
             ])
@@ -252,7 +267,7 @@ end # @testset "DirectProductSymmetry"
             ])
             @test !isnothing(group_isomorphism(group(symp), G))
 
-            sym3 = MatrixSymmetry([ones(Int, (1,1)), -ones(Int, (1,1))])
+            sym3 = matrix_symmetry([ones(Int, (1,1)), -ones(Int, (1,1))])
 
             sym4 = cross(symp, sym3, sym3)
             @test size(sym4) == (8, 2, 2)
@@ -264,18 +279,18 @@ end # @testset "DirectProductSymmetry"
     end
 
     @testset "3m1" begin
-        sym_c3 = MatrixSymmetry([
+        sym_c3 = matrix_symmetry([
             [ 1  0;  0  1],
             [ 0 -1;  1 -1],
             [-1  1; -1  0],
         ])
-        sym_m = MatrixSymmetry([
+        sym_m = matrix_symmetry([
             [ 1  0;  0  1],
             [ 0 -1; -1  0]
         ])
         sym_3m1 = sym_c3 ⋊ sym_m
         @test_throws ArgumentError sym_m ⋊ sym_c3
-        sym_z2 = MatrixSymmetry([ones(Int, (1,1)), -ones(Int, (1,1))])
+        sym_z2 = matrix_symmetry([ones(Int, (1,1)), -ones(Int, (1,1))])
 
         sym = cross(sym_3m1, sym_z2)
         @test size(sym) == (6, 2)

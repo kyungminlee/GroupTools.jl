@@ -62,7 +62,7 @@ end
         sin(2π/3)  cos(2π/3) 0;
                 0          0 1])
     op3 = op2^2
-    symmetry_c3 = MatrixSymmetry([op1, op2, op3])
+    symmetry_c3 = matrix_symmetry([op1, op2, op3])
     rep0 = SymmetryRepresentation(symmetry_c3, [1.0, 1.0, 1.0])
     rep1 = SymmetryRepresentation(symmetry_c3, [1.0, cis(2π/3), cis(4π/3)])
     rep2 = SymmetryRepresentation(symmetry_c3, [1.0, cis(4π/3), cis(2π/3)])

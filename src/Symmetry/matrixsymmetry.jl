@@ -1,4 +1,4 @@
-export MatrixSymmetry
+export matrix_symmetry
 
 export elements
 export group
@@ -32,45 +32,69 @@ function default_normalize(::Type{T}) where {T<:Union{<:Integer, <:Rational, <:C
     return normalize
 end
 
-struct MatrixSymmetry{M<:MatrixOperation}<:AbstractSymmetry
-    elements::Vector{M}
-    group::FiniteGroup
-
-    function MatrixSymmetry(matrices::AbstractVector{<:AbstractMatrix{S}}; normalize::Function=default_normalize(S)) where {S}
-        D = size(matrices[1], 1)
-        elements = MatrixOperation.(matrices)
-        group = FiniteGroup(generate_multiplication_table(elements; hash=x->hash(normalize(x))))
-        return new{MatrixOperation{D, S}}(elements, group)
-    end
-
-    function MatrixSymmetry(elements::AbstractVector{MatrixOperation{D, S}}; normalize::Function=default_normalize(S)) where {D, S}
-        group = FiniteGroup(generate_multiplication_table(elements;
-        hash=(x)->hash(normalize(x))
-        ))
-        return new{MatrixOperation{D, S}}(elements, group)        
-    end
+function matrix_symmetry(
+    elements::AbstractVector{MatrixOperation{D, S}};
+    normalize::Function=default_normalize(S)
+) where {D, S}
+    return GenericSymmetry(elements; hash=x->hash(normalize(x)))
 end
 
-Base.IteratorSize(::Type{<:MatrixSymmetry}) = Base.HasShape{1}()
-
-Base.eltype(::Type{MatrixSymmetry{M}}) where M = M
-Base.valtype(::Type{MatrixSymmetry{M}}) where M = M
-Base.valtype(::MatrixSymmetry{M}) where M = M
-
-Base.length(x::MatrixSymmetry) = length(x.elements)
-Base.size(x::MatrixSymmetry) = (length(x.elements),)
-Base.keys(x::MatrixSymmetry) = Base.OneTo(length(x))
-Base.firstindex(::MatrixSymmetry) = 1
-Base.lastindex(x::MatrixSymmetry) = length(x.elements)
-
-Base.getindex(x::MatrixSymmetry, i) = Base.getindex(x.elements, i)
-
-Base.iterate(x::MatrixSymmetry) = Base.iterate(x.elements)
-Base.iterate(x::MatrixSymmetry, i) = Base.iterate(x.elements, i)
-
-function Base.:(==)(lhs::MS, rhs::MS) where {MS<:MatrixSymmetry}
-    return lhs.elements == rhs.elements && lhs.group == rhs.group
+function matrix_symmetry(
+    matrices::AbstractVector{<:AbstractMatrix{S}};
+    normalize::Function=default_normalize(S)
+) where {S}
+    elements = MatrixOperation.(matrices)
+    return GenericSymmetry(elements; hash=x->hash(normalize(x)))
 end
 
-elements(m::MatrixSymmetry) = m.elements
-group(m::MatrixSymmetry) = m.group
+function matrix_symmetry(
+    matrices::AbstractVector{S};
+    normalize::Function=default_normalize(S)
+) where {S}
+    elements = MatrixOperation.(matrices)
+    return GenericSymmetry(elements; hash=x->hash(normalize(x)))
+end
+
+
+# struct MatrixSymmetry{M<:MatrixOperation}<:AbstractSymmetry
+#     elements::Vector{M}
+#     group::FiniteGroup
+
+#     function MatrixSymmetry(matrices::AbstractVector{<:AbstractMatrix{S}}; normalize::Function=default_normalize(S)) where {S}
+#         D = size(matrices[1], 1)
+#         elements = MatrixOperation.(matrices)
+#         group = FiniteGroup(generate_multiplication_table(elements; hash=x->hash(normalize(x))))
+#         return new{MatrixOperation{D, S}}(elements, group)
+#     end
+
+#     function MatrixSymmetry(elements::AbstractVector{MatrixOperation{D, S}}; normalize::Function=default_normalize(S)) where {D, S}
+#         group = FiniteGroup(generate_multiplication_table(elements;
+#         hash=(x)->hash(normalize(x))
+#         ))
+#         return new{MatrixOperation{D, S}}(elements, group)        
+#     end
+# end
+
+# Base.IteratorSize(::Type{<:MatrixSymmetry}) = Base.HasShape{1}()
+
+# Base.eltype(::Type{MatrixSymmetry{M}}) where M = M
+# Base.valtype(::Type{MatrixSymmetry{M}}) where M = M
+# Base.valtype(::MatrixSymmetry{M}) where M = M
+
+# Base.length(x::MatrixSymmetry) = length(x.elements)
+# Base.size(x::MatrixSymmetry) = (length(x.elements),)
+# Base.keys(x::MatrixSymmetry) = Base.OneTo(length(x))
+# Base.firstindex(::MatrixSymmetry) = 1
+# Base.lastindex(x::MatrixSymmetry) = length(x.elements)
+
+# Base.getindex(x::MatrixSymmetry, i) = Base.getindex(x.elements, i)
+
+# Base.iterate(x::MatrixSymmetry) = Base.iterate(x.elements)
+# Base.iterate(x::MatrixSymmetry, i) = Base.iterate(x.elements, i)
+
+# function Base.:(==)(lhs::MS, rhs::MS) where {MS<:MatrixSymmetry}
+#     return lhs.elements == rhs.elements && lhs.group == rhs.group
+# end
+
+# elements(m::MatrixSymmetry) = m.elements
+# group(m::MatrixSymmetry) = m.group
