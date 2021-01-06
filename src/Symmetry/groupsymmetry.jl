@@ -23,7 +23,11 @@ Base.:(==)(lhs::E, rhs::E) where {E<:GroupElement} = lhs.value == rhs.value
 Group multiplication table as a symmetry.
 """
 function finitegroupsymmetry(multiplicationtable::AbstractMatrix{<:Integer})
-    group = FiniteGroup(multiplicationtable)
+    return finitegroupsymmetry(FiniteGroup(multiplicationtable))
+end
+
+function finitegroupsymmetry(group::FiniteGroup)
     elems = symmetryelements(group)
     return new{typeof(first(elems))}(elems, group)
 end
+

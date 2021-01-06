@@ -99,7 +99,6 @@ using LinearAlgebra
         @test gp(BitSet([1,2]), 2) == BitSet([2,3])
         @test gp(BitSet([1,2]), BitSet([1,2])) == BitSet([1,2,3])
 
-
         @test group_inverse(group, 1) == 1
         @test group_inverse(group, 2) == 3
         @test group_inverse(group, 3) == 2
