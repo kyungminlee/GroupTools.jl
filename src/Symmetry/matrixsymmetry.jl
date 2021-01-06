@@ -9,7 +9,7 @@ function default_normalize(::Type{Float64})
         return (y == -0.0) ? 0.0 : y
     end
     normalize(x::AbstractArray{Float64}) = normalize.(x)
-    normalize(x::MatrixOperation{D, Float64}) where D = MatrixOperation{D, Float64}(normalize(x.matrix))
+    # normalize(x::MatrixOperation{D, Float64}) where D = MatrixOperation{D, Float64}(normalize(x.matrix))
     return normalize
 end
 
@@ -21,14 +21,14 @@ function default_normalize(::Type{ComplexF64})
         return ComplexF64(ry, iy)
     end
     normalize(x::AbstractArray{ComplexF64}) = _normalize.(x)
-    normalize(x::MatrixOperation{D, ComplexF64}) where D = MatrixOperation{D, ComplexF64}(normalize(x.matrix))
+    # normalize(x::MatrixOperation{D, ComplexF64}) where D = MatrixOperation{D, ComplexF64}(normalize(x.matrix))
     return normalize
 end
 
 function default_normalize(::Type{T}) where {T<:Union{<:Integer, <:Rational, <:Complex{<:Integer}, <:Complex{<:Rational}}}
     normalize(x::T) = x
     normalize(x::AbstractArray{T}) = x
-    normalize(x::MatrixOperation{D, T}) where D = x
+    # normalize(x::MatrixOperation{D, T}) where D = x
     return normalize
 end
 
@@ -36,7 +36,7 @@ function matrix_symmetry(
     elements::AbstractVector{MatrixOperation{D, S}};
     normalize::Function=default_normalize(S)
 ) where {D, S}
-    return GenericSymmetry(elements; hash=x->hash(normalize(x)))
+    return GenericSymmetry(elements; hash=(x::MatrixOperation)->hash(normalize(x.matrix)))
 end
 
 function matrix_symmetry(
@@ -44,7 +44,7 @@ function matrix_symmetry(
     normalize::Function=default_normalize(S)
 ) where {S}
     elements = MatrixOperation.(matrices)
-    return GenericSymmetry(elements; hash=x->hash(normalize(x)))
+    return GenericSymmetry(elements; hash=(x::MatrixOperation)->hash(normalize(x.matrix)))
 end
 
 function matrix_symmetry(
@@ -52,7 +52,7 @@ function matrix_symmetry(
     normalize::Function=default_normalize(S)
 ) where {S}
     elements = MatrixOperation.(matrices)
-    return GenericSymmetry(elements; hash=x->hash(normalize(x)))
+    return GenericSymmetry(elements; hash=(x::MatrixOperation)->hash(normalize(x.matrix)))
 end
 
 
