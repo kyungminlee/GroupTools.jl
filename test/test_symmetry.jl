@@ -5,16 +5,12 @@ using GroupTools
 @testset "matrix symmetry" begin
     @testset "Int" begin
         # C4 group (Abelian)
-        #sym1 = MatrixSymmetry([[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
         sym1 = matrixsymmetry([[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
         @testset "constructor" begin
-        # sym1p = MatrixSymmetry(
-        #     MatrixOperation.([[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
-        # )
-        sym1p = matrixsymmetry(
-            MatrixOperation.([[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
-        )
-        @test sym1 == sym1p
+            sym1p = matrixsymmetry(
+                MatrixOperation.([[1 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+            )
+            @test sym1 == sym1p
         end
         @testset "type traits" begin
             @test eltype(sym1) <: MatrixOperation{2, Int}
@@ -66,12 +62,8 @@ using GroupTools
     end
 
     @testset "Float64" begin
-        # sym1 = MatrixSymmetry([[1.0 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
         sym1 = matrixsymmetry([[1.0 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
         @testset "constructor" begin
-            # sym1p = MatrixSymmetry(
-            #     MatrixOperation.([[1.0 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
-            # )
             sym1p = matrixsymmetry(
                 MatrixOperation.([[1.0 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
             )
@@ -86,21 +78,14 @@ using GroupTools
     end
 
     @testset "ComplexF64" begin
-        # sym1 = MatrixSymmetry([[1.0+0im 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
         sym1 = matrixsymmetry([[1.0+0im 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
         @testset "constructor" begin
-            # sym1p = MatrixSymmetry(
-            #     MatrixOperation.([[1.0 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
-            # )
             sym1p = matrixsymmetry(
                 MatrixOperation.([[1.0 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
             )
             @test sym1 != sym1p  # RHS float
 
             # the elements are different...
-            # sym1p = MatrixSymmetry(
-            #     MatrixOperation.([[1.0+1E-12im 0.0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
-            # )
             sym1p = matrixsymmetry(
                 MatrixOperation.([[1.0+1E-12im 0.0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
             )
