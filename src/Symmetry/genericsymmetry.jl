@@ -5,10 +5,7 @@ struct GenericSymmetry{ElementType}<:AbstractSymmetry
     elements::Vector{ElementType}
     group::FiniteGroup
 
-    function GenericSymmetry{ElementType}(
-        elements::AbstractVector,
-        group::FiniteGroup,
-    ) where {ElementType}
+    function GenericSymmetry{ElementType}(elements::AbstractVector, group::FiniteGroup) where {ElementType}
         #TODO: should I check for isomorphism between product and group_product?
         return new{ElementType}(elements, group)
     end
@@ -21,7 +18,7 @@ struct GenericSymmetry{ElementType}<:AbstractSymmetry
     function GenericSymmetry{E}(elements::AbstractVector; hash::Function=Base.hash) where {E}
         elements_vec::Vector{E} = elements
         group = FiniteGroup(generate_multiplication_table(elements_vec; hash=hash))
-        return new{E}(elements, group, product)
+        return new{E}(elements, group)
     end
 end
 
