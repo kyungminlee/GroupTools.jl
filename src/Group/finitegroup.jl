@@ -518,8 +518,8 @@ end
 Generate a multiplication table from elements with product.
 """
 function generate_multiplication_table(
-    elements::AbstractVector{ElementType},
-    product::Function=Base.:(*);
+    elements::AbstractVector{ElementType};
+    product::Function=Base.:(*),
     hash::Function=hash
 ) where {ElementType}
     element_lookup = Dict(hash(k)=>i for (i, k) in enumerate(elements))
@@ -670,7 +670,7 @@ function generate_group_elements(
     end
     n = length(element_list)
     # Reorder elements by element order. Generators comes before other elements with the same order.
-    mtab = generate_multiplication_table(element_list, product)
+    mtab = generate_multiplication_table(element_list; product=product)
     priority_list = Vector{Tuple{Int, Int}}(undef, n) # [(l, b) | l is order, b is "bonus"]
     fill!(priority_list, (0, n))
     for (ig, g) in enumerate(generators)
