@@ -2,6 +2,31 @@ using Test
 using LinearAlgebra
 using GroupTools
 
+@testset "GenericSymmetry" begin
+    normalize = GroupTools._default_normalize(ComplexF64)
+    elems = [1, cis(2π/3), cis(4π/3)]
+    sym1 = GenericSymmetry(elems; hash=x->hash(normalize(x)))
+    sym2 = GenericSymmetry{ComplexF64}(elems; hash=x->hash(normalize(x)))
+
+    @test eltype(sym1) <: ComplexF64
+    @test eltype(typeof(sym1)) <: ComplexF64
+    @test valtype(sym1) <: ComplexF64
+    @test valtype(typeof(sym1)) <: ComplexF64
+
+    @test length(sym1) == 3
+    @test size(sym1) == (3,)
+    @test keys(sym1) == 1:3
+    @test firstindex(sym1) == 1
+    @test lastindex(sym1) == 3
+    @test collect(sym1) == elems
+    @test sym1[1] == elems[1]
+    @test sym1[2] == elems[2]
+    @test sym1[3] == elems[3]
+    @test sym1 == sym2
+    @test elements(sym1) == elems
+    @test group(sym1) == FiniteGroup([1 2 3; 2 3 1; 3 1 2])
+end
+
 @testset "matrix symmetry" begin
     @testset "Int" begin
         # C4 group (Abelian)
