@@ -258,8 +258,8 @@ end # @testset "DirectProductSymmetry"
             sym3 = matrixsymmetry([ones(Int, (1,1)), -ones(Int, (1,1))])
 
             sym4 = cross(symp, sym3, sym3)
-            @show typeof(sym4)
             # @test size(sym4) == (8, 2, 2)
+            @test size(sym4) == (32,)
             @test length(sym4) == 32
 
             # test order of elements of sym4
