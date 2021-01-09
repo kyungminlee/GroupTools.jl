@@ -40,7 +40,10 @@ Base.keys(x::DirectProductSymmetryRepresentation) = CartesianIndices(size(x))
 Base.firstindex(::DirectProductSymmetryRepresentation) = 1
 Base.lastindex(x::DirectProductSymmetryRepresentation) = length(x)
 
-function Base.getindex(x::DirectProductSymmetryRepresentation{S, K, <:Tuple{Vararg{Any, N}}}, s::CartesianIndex{N}) where {S, K, N}
+function Base.getindex(
+    x::DirectProductSymmetryRepresentation{S, K, <:Tuple{Vararg{Any, N}}},
+    s::CartesianIndex{N}
+) where {S, K, N}
     return kron([Base.getindex(rep, j) for (rep, j) in zip(x.representations, s.I)]...)
 end
 function Base.getindex(x::DirectProductSymmetryRepresentation, i::Integer)
@@ -48,13 +51,27 @@ function Base.getindex(x::DirectProductSymmetryRepresentation, i::Integer)
     return x[s]
 end
 Base.getindex(x::DirectProductSymmetryRepresentation, i::AbstractVector) = [x[j] for j in i]
-function Base.getindex(x::DirectProductSymmetryRepresentation{S, K, <:Tuple{Vararg{Any, N}}}, s::Vararg{<:Integer, N}) where {S, K, N}
+function Base.getindex(
+    x::DirectProductSymmetryRepresentation{S, K, <:Tuple{Vararg{Any, N}}},
+    s::Vararg{<:Integer, N}
+) where {S, K, N}
     return kron([Base.getindex(rep, j) for (rep, j) in zip(x.representations, s)]...)
 end
 
 function Base.iterate(x::DirectProductSymmetryRepresentation, i::Integer=1)
     return (0 < i <= length(x)) ? (x[i], i+1) : nothing
 end
+
+function get_irrep_iterator(rep::DirectProductSymmetryRepresentation)
+    sym = symmetry(rep)
+    return zip(sym, rep)
+end
+
+function get_irrep_iterator(rep::DirectProductSymmetryRepresentation, d::Integer)
+    sym = symmetry(rep)
+    return ((x, m[d,d]) for (x, m) in zip(sym, rep))
+end
+
 
 
 # export DirectProductSymmetryRepresentation
