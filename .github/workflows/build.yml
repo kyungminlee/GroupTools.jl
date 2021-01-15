@@ -1,9 +1,7 @@
-name: Check packages
-
+name: Build
 on: [push, pull_request]
-
 jobs:
-  build_and_test:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -23,13 +21,11 @@ jobs:
           JULIA_NUM_THREADS: "2"
       - name: Submit coverage
         run: |
-          julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
-      #   env:
-      #     CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      #     COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
-      # - name: Documentation
-      #   run: |
-      #     julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
-      #     julia --project=docs/ docs/make.jl
-      #   env:
-      #     DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
+          julia -e 'using Pkg; Pkg.add("Coverage")'
+          julia -e 'using Coverage; Codecov.submit(Codecov.process_folder())'
+      - name: Documentation
+        run: |
+          julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
+          julia --project=docs/ docs/make.jl
+        env:
+          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
