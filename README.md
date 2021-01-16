@@ -1,14 +1,8 @@
 # GroupTools.jl
 
-**Documentation**:
-[![Docs Stable][docs-stable-img]][docs-stable-url]
-[![Docs Dev][docs-dev-img]][docs-dev-url]
-
-**Build status**:
-[![Build][githubaction-img]][githubaction-url]
-
-**Code coverage**:
-[![CodeCov][codecov-img]][codecov-url]
+| **Documentation** | **Build Status** | **Code Coverage** |
+|:-----------------:|:----------------:|:-----------------:|
+| [![**STABLE**][docs-stable-img]][docs-stable-url] [![**DEV**][docs-dev-img]][docs-dev-url] | [![Build][githubaction-img]][githubaction-url] | [![Code Coverage][codecov-img]][codecov-url] |
 
 [docs-stable-img]: https://img.shields.io/badge/docs-stable-blue.svg
 [docs-stable-url]: http://kyungminlee.org/GroupTools.jl/stable
