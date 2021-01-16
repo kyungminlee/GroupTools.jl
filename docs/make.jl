@@ -9,8 +9,11 @@ makedocs(
     authors="Kyungmin Lee",
     checkdocs=:all,
     pages = [
-      "Home" => "index.md",
+       "Home" => "index.md",
     ]
-  )
+)
 
-deploydocs(repo="github.com/kyungminlee/GroupTools.jl.git", devbranch = "dev")
+deploydocs(;
+    repo="github.com/kyungminlee/GroupTools.jl.git",
+    devbranch="dev",
+)
