@@ -13,6 +13,9 @@ Base.convert(::Type{Phase{T}}, x::Phase) where {T} = Phase(convert(T, x.fraction
 Base.promote_rule(::Type{C}, ::Type{<:Phase}) where {C<:Complex} = C
 Base.promote_rule(::Type{R}, ::Type{<:Phase}) where {R<:Real} = R
 
+# Need this when scalar types are different
+Base.:(==)(x::Phase, y::Phase) = x.fraction == y.fraction
+
 Base.:(*)(x::Phase, y::Phase) = Phase(x.fraction + y.fraction)
 Base.:(/)(x::Phase, y::Phase) = Phase(x.fraction - y.fraction)
 Base.:(^)(x::Phase, y::Integer) = Phase(x.fraction * y)
