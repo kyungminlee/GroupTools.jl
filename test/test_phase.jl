@@ -6,6 +6,9 @@ using GroupTools
     @test Phase(0) == Phase(1//1)
     @test typeof(Phase(0)) != typeof(Phase(1//1))
     
+    @test typeof(Phase{Float64}(0)) == Phase{Float64}
+    @test Phase{Float64}(1//4) == Phase(1/4)
+
     p1 = Phase(3//7)
     p2 = Phase(0.3)
     let arr = [p1, p2]
@@ -32,6 +35,12 @@ using GroupTools
     @test_throws InexactError convert(Int, p1)
     @test_throws InexactError convert(Complex{Int}, p1)
 
+    p0 = Phase(0)
+    @test convert(Int, p0) == 1
+    @test convert(Complex{Int}, p0) == 1 + 0im
+    @test convert(Float64, p0) == 1.0
+    @test convert(ComplexF64, p0) == 1.0 + 0.0im
+
     p4 = Phase(1//2)
     @test typeof(convert(Int, p4)) == Int
     @test typeof(convert(Complex{Int}, p4)) == Complex{Int}
@@ -40,11 +49,13 @@ using GroupTools
     @test convert(Complex{Int}, p4) ==  -1 + 0im
     @test isapprox(convert(Float64, p4), -1.0)
 
+    let arr = [1.0, p1]
+        @test eltype(arr) == ComplexF64
+        @test arr[2] == cis(2π*3/7)
+    end
 
-    p0 = Phase(0)
-    @test convert(Int, p0) == 1
-    @test convert(Complex{Int}, p0) == 1 + 0im
-    @test convert(Float64, p0) == 1.0
-    @test convert(ComplexF64, p0) == 1.0 + 0.0im
-
+    let arr = [1.0 + 0.0im, p1]
+        @test eltype(arr) == ComplexF64
+        @test arr[2] == cis(2π*3/7)
+    end
 end
