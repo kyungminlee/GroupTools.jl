@@ -1,6 +1,7 @@
 export MatrixOperation
 
 import LinearAlgebra
+import LinearAlgebraX
 import MathExpr
 
 """
@@ -46,7 +47,7 @@ Base.hash(x::M, h::UInt) where {M<:MatrixOperation} = Base.hash(M, Base.hash(x.m
 
 Base.:(==)(lhs::U, rhs::U) where {U<:MatrixOperation} = lhs.matrix == rhs.matrix
 
-Base.inv(arg::U) where {U<:MatrixOperation} = U(MathExpr.inverse(arg.matrix))
+Base.inv(arg::U) where {U<:MatrixOperation} = U(LinearAlgebraX.invx(arg.matrix))
 Base.conj(arg::U) where {U<:MatrixOperation} = U(conj(arg.matrix))
 Base.transpose(arg::U) where {U<:MatrixOperation} = U(transpose(arg.matrix))
 Base.adjoint(arg::U) where {U<:MatrixOperation} = U(adjoint(arg.matrix))
@@ -58,7 +59,7 @@ function Base.:(^)(lhs::U, rhs::Integer) where {U<:MatrixOperation}
     if rhs >= 0
         return U(lhs.matrix^rhs)
     else
-        minv = MathExpr.inverse(lhs.matrix)
+        minv = LinearAlgebraX.invx(lhs.matrix)
         return U(minv^(-rhs))
     end
 end
