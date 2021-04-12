@@ -1,9 +1,8 @@
 export DirectProductSymmetry
 export elements
-
 import LinearAlgebra
 
-struct DirectProductSymmetry{E<:AbstractSymmetryOperation, S<:Tuple{Vararg{AbstractSymmetry}}}<:AbstractSymmetry
+struct DirectProductSymmetry{E<:DirectProductOperation, S<:Tuple{Vararg{AbstractSymmetry}}}<:AbstractSymmetry
     symmetries::S
     function DirectProductSymmetry(sym::AbstractSymmetry...)
         E = DirectProductOperation{Tuple{eltype.(sym)...}}
@@ -38,6 +37,10 @@ end
 Base.getindex(x::DirectProductSymmetry, i::AbstractVector) = [x[j] for j in i]
 function Base.getindex(x::DirectProductSymmetry{E, <:Tuple{Vararg{Any, N}}}, s::Vararg{<:Integer, N}) where {E, N}
     return DirectProductOperation([Base.getindex(sym, j) for (sym, j) in zip(x.symmetries, s)]...)
+end
+
+function Base.CartesianIndices(p::DirectProductSymmetry)
+    return CartesianIndices(tuple([eachindex(s) for s in p.symmetries]...))
 end
 
 function Base.iterate(x::DirectProductSymmetry, i::Integer=1)

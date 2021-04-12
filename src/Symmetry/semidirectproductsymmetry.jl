@@ -2,10 +2,9 @@ export SemidirectProductSymmetry
 export elements
 export ⋊
 
-struct SemidirectProductSymmetry{E, S1<:AbstractSymmetry, S2<:AbstractSymmetry}<:AbstractSymmetry
+struct SemidirectProductSymmetry{E<:AbstractSymmetryOperation, S1<:AbstractSymmetry, S2<:AbstractSymmetry}<:AbstractSymmetry
     normal::S1
     rest::S2
-
     function SemidirectProductSymmetry(normal::S1, rest::S2) where {S1<:AbstractSymmetry, S2<:AbstractSymmetry}
         E1 = eltype(S1)
         E2 = eltype(S2)
@@ -27,11 +26,16 @@ function ⋊(normal::S1, rest::S2) where {S1<:AbstractSymmetry, S2<:AbstractSymm
     return SemidirectProductSymmetry(normal, rest)
 end
 
+function ⋉(rest::S2, normal::S1) where {S1<:AbstractSymmetry, S2<:AbstractSymmetry}
+    return SemidirectProductSymmetry(normal, rest)
+end
+
 # == BEGIN Iterator stuff ==
 Base.eltype(::Type{SemidirectProductSymmetry{E, S1, S2}}) where {E, S1, S2} = E
 Base.valtype(::Type{SemidirectProductSymmetry{E, S1, S2}}) where {E, S1, S2} = E
 Base.valtype(::SemidirectProductSymmetry{E, S1, S2}) where {E, S1, S2} = E
 
+# iterate over elements
 Base.IteratorSize(::SemidirectProductSymmetry) = Base.HasShape{2}()
 Base.length(x::SemidirectProductSymmetry) = length(x.normal) * length(x.rest)
 Base.size(x::SemidirectProductSymmetry) = (length(x.normal), length(x.rest))

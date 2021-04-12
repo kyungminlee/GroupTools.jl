@@ -1,7 +1,16 @@
 export DirectProductOperation
 export isidentity
 import LinearAlgebra.×
+export directproduct
 
+"""
+    DirectProductOperation{Ops}
+
+Direct product of symmetry operations.
+math```
+  g = (g_1, g_2, \\ldots)
+```
+"""
 struct DirectProductOperation{Ops<:Tuple{Vararg{AbstractSymmetryOperation}}}<:AbstractSymmetryOperation
     operations::Ops
     function DirectProductOperation(ops::Vararg{AbstractSymmetryOperation})
@@ -31,3 +40,10 @@ function Base.isapprox(lhs::P, rhs::P; atol::Real=0, rtol::Real=Base.rtoldefault
 end
 
 isidentity(obj::DirectProductOperation) = all(isidentity, obj.operations)
+
+function directproduct(::Type{E}, products::Function...) where {E<:DirectProductOperation}
+    function product(lhs::E, rhs::E)
+        return DirectProductOperation([p(l, r) for (p, l, r) in zip(products, lhs.operations, rhs.operations)]...)
+    end
+    return product
+end

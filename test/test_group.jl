@@ -99,7 +99,6 @@ using LinearAlgebra
         @test gp(BitSet([1,2]), 2) == BitSet([2,3])
         @test gp(BitSet([1,2]), BitSet([1,2])) == BitSet([1,2,3])
 
-
         @test group_inverse(group, 1) == 1
         @test group_inverse(group, 2) == 3
         @test group_inverse(group, 3) == 2
@@ -253,7 +252,7 @@ using LinearAlgebra
             ∘(x,y) = mod(x+y, 4)
             els = generate_group_elements([1]; product=(∘))
             @test els == [0,2,1,3]
-            g = FiniteGroup(generate_multiplication_table(els, ∘))
+            g = FiniteGroup(generate_multiplication_table(els; product=∘))
             @test !isnothing(group_isomorphism(group1, g))
         end
 

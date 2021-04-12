@@ -17,7 +17,7 @@ Create a permutation of integers from 1 to n.
 The convention for the permutation is that map[i] gets mapped to i.
 In other words, map tells you where each element is from.
 """
-struct Permutation
+struct Permutation<:AbstractSymmetryOperation
     map ::Vector{Int}
     order ::Int
     function Permutation(perms::AbstractVector{<:Integer}; max_order=2048)
@@ -113,14 +113,26 @@ Base.:(==)(p1 ::Permutation, p2::Permutation) = p1.map == p2.map
 
 (p::Permutation)(i::Integer) = p.map[i]
 
+function (p::Permutation)(v::AbstractVector{T}) where {T}
+    n = length(v)
+    if n != length(p.map)
+        throw(ArgumentError("permutation needs $(length(p.map)) elements"))
+    end
+    w = Vector{T}(undef, n)
+    for i in 1:n
+        w[p.map[i]] = v[i]
+    end
+    return w
+end
+
 
 function Base.isless(p1 ::Permutation, p2::Permutation)
     return Base.isless(p1.order, p2.order) || ((p1.order == p2.order) && Base.isless(p1.map, p2.map))
 end
 
 
-function Base.hash(p::Permutation, h::UInt=UInt(0x0))
-    return Base.hash(p.map, hash(Permutation, h))
+function Base.hash(p::Permutation, h::UInt)
+    return Base.hash(Permutation, hash(p.map, h))
 end
 
 """

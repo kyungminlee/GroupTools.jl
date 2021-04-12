@@ -518,15 +518,16 @@ end
 Generate a multiplication table from elements with product.
 """
 function generate_multiplication_table(
-    elements::AbstractVector{ElementType},
-    product::Function=Base.:(*)
+    elements::AbstractVector{ElementType};
+    product::Function=Base.:(*),
+    normalize::Function=Base.identity
 ) where {ElementType}
-    element_lookup = Dict(k=>i for (i, k) in enumerate(elements))
+    element_lookup = Dict(normalize(k)=>i for (i, k) in enumerate(elements))
     ord_group = length(elements)
     length(element_lookup) != ord_group && throw(ArgumentError("elements not unique"))
     mtab = zeros(Int, (ord_group, ord_group))
     for i in 1:ord_group, j in 1:ord_group
-        mtab[i,j] = element_lookup[ product(elements[i], elements[j]) ]
+        mtab[i,j] = element_lookup[ normalize(product(elements[i], elements[j])) ]
     end
     return mtab
 end
@@ -669,7 +670,7 @@ function generate_group_elements(
     end
     n = length(element_list)
     # Reorder elements by element order. Generators comes before other elements with the same order.
-    mtab = generate_multiplication_table(element_list, product)
+    mtab = generate_multiplication_table(element_list; product=product)
     priority_list = Vector{Tuple{Int, Int}}(undef, n) # [(l, b) | l is order, b is "bonus"]
     fill!(priority_list, (0, n))
     for (ig, g) in enumerate(generators)
