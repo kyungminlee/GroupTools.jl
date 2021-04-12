@@ -47,7 +47,8 @@ Base.hash(x::M, h::UInt) where {M<:MatrixOperation} = Base.hash(M, Base.hash(x.m
 
 Base.:(==)(lhs::U, rhs::U) where {U<:MatrixOperation} = lhs.matrix == rhs.matrix
 
-Base.inv(arg::U) where {U<:MatrixOperation} = U(LinearAlgebraX.invx(arg.matrix))
+Base.inv(arg::MatrixOperation{D, I}) where {D, I<:Union{<:Integer, <:Rational, <:Complex{<:Integer}, <:Complex{<:Rational}}} = MatrixOperation{D, I}(LinearAlgebraX.invx(arg.matrix))
+Base.inv(arg::MatrixOperation{D, F}) where {D, F<:Union{<:AbstractFloat, <:Complex{<:AbstractFloat}}} = MatrixOperation{D, F}(LinearAlgebra.inv(arg.matrix))
 Base.conj(arg::U) where {U<:MatrixOperation} = U(conj(arg.matrix))
 Base.transpose(arg::U) where {U<:MatrixOperation} = U(transpose(arg.matrix))
 Base.adjoint(arg::U) where {U<:MatrixOperation} = U(adjoint(arg.matrix))
