@@ -113,6 +113,18 @@ Base.:(==)(p1 ::Permutation, p2::Permutation) = p1.map == p2.map
 
 (p::Permutation)(i::Integer) = p.map[i]
 
+function (p::Permutation)(v::AbstractVector{T}) where {T}
+    n = length(v)
+    if n != length(p.map)
+        throw(ArgumentError("permutation needs $(length(p.map)) elements"))
+    end
+    w = Vector{T}(undef, n)
+    for i in 1:n
+        w[p.map[i]] = v[i]
+    end
+    return w
+end
+
 
 function Base.isless(p1 ::Permutation, p2::Permutation)
     return Base.isless(p1.order, p2.order) || ((p1.order == p2.order) && Base.isless(p1.map, p2.map))
