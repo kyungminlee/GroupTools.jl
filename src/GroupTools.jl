@@ -5,6 +5,7 @@ include("Operation/identityoperation.jl")
 include("Operation/productoperation.jl")
 include("Operation/matrixoperation.jl")
 include("Operation/permutation.jl")
+include("Operation/phase.jl")
 
 include("Group/abstractgroup.jl")
 include("Group/finitegroup.jl")
