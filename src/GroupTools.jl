@@ -18,8 +18,4 @@ include("Symmetry/matrixsymmetry.jl")
 include("Symmetry/directproductsymmetry.jl")
 include("Symmetry/semidirectproductsymmetry.jl")
 
-include("Representation/finitegrouprepresentation.jl")
-include("Representation/symmetryrepresentation.jl")
-include("Representation/directproductsymmetryrepresentation.jl")
-
 end # module
