@@ -64,6 +64,7 @@ function Base.:(==)(x::GeneralizedPermutation, y::GeneralizedPermutation)
     return x.order == y.order && x.map == y.map && x.phase == y.phase
 end
 
+
 function Base.Matrix{T}(gp::GeneralizedPermutation) where {T<:Number}
     n = length(gp.map)
     out = zeros(T, (n, n))
@@ -74,6 +75,7 @@ function Base.Matrix{T}(gp::GeneralizedPermutation) where {T<:Number}
 end
 
 Base.Matrix(gp::GeneralizedPermutation) = Base.Matrix{ComplexF64}(gp)
+
 
 """
 Permutation:
@@ -105,17 +107,20 @@ function Base.:(*)(x::GeneralizedPermutation, y::GeneralizedPermutation)
 end
 
 
-function Base.inv(p::GeneralizedPermutation{T}) where {T}
+function Base.inv(p::GeneralizedPermutation{A}) where {A}
     n = length(p.map)
     outmap = Vector{Int}(undef, n)
-    outphase = Vector{Phase{T}}(undef, n)
+    outphase = Vector{Phase{A}}(undef, n)
     for (i, (x, ϕ)) in enumerate(zip(p.map, p.phase))
         outmap[x] = i
-        outphase[x] = conj(ϕ)
+        outphase[x] = inv(ϕ)
     end
     return GeneralizedPermutation(outmap, outphase)
 end
 
+function Base.conj(p::GeneralizedPermutation{A}) where {A}
+    return GeneralizedPermutation{A}(p.map, conj.(p.phase), p.order)
+end
 
 function isidentity(p::GeneralizedPermutation)
     return p.map == 1:length(p.map) && all(isone, p.phase)
@@ -138,4 +143,17 @@ function Base.isless(p1::GeneralizedPermutation, p2::GeneralizedPermutation)
     isless(p1.phase, p2.phase) && return true
     # isless(p2.phase, p1.phase) && return false
     return false
+end
+
+
+function (p::GeneralizedPermutation)(v::AbstractVector{T}) where {T<:Number}
+    n = length(p.map)
+    if n != length(v)
+        throw(DimensionMismatch("GeneralizedPermutation has length $(length(p.map)), and v has $(length(v))"))
+    end
+    out = Vector{ComplexF64}(undef, n)
+    for (j, (i, ϕ)) in enumerate(zip(p.map, p.phase))
+        out[i] = v[j] * ϕ
+    end
+    return out
 end
