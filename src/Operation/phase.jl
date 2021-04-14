@@ -24,18 +24,21 @@ Base.conj(x::Phase) = Phase(-x.fraction)
 
 
 function Base.convert(::Type{Complex{R}}, phase::Phase) where {R<:AbstractFloat}
-    return convert(Complex{R}, cis(2*pi*phase.fraction))
+    r = cospi(2*phase.fraction)
+    i = sinpi(2*phase.fraction)
+    return Complex{R}(r, i)
+    #return convert(Complex{R}, cis(2*pi*phase.fraction))
 end
 
 function Base.convert(::Type{R}, phase::Phase) where {R<:AbstractFloat}
     iszero(mod(phase.fraction * 2, one(R))) || throw(InexactError(Symbol("$R"), R, phase))
-    return convert(R, cos(2*pi*phase.fraction))
+    return convert(R, cospi(2*phase.fraction))
 end
 
 function Base.convert(::Type{R}, phase::Phase{T}) where {R<:Integer, T}
-    if phase.fraction == zero(T)
+    if iszero(phase.fraction)
         return one(R)
-    elseif phase.fraction * 2 == one(T)
+    elseif isone(phase.fraction * 2)
         return -one(R)
     end
     throw(InexactError(Symbol("$R"), R, phase))
@@ -51,8 +54,8 @@ function Base.convert(::Type{Complex{R}}, phase::Phase{T}) where {R<:Integer, T}
 end
 
 Base.angle(x::Phase{T}) where {T} = pi*(mod(2*x.fraction+one(T), 2*one(T)) - one(T))
-Base.real(phase::Phase) = cos(2*pi*phase.fraction)
-Base.imag(phase::Phase) = sin(2*pi*phase.fraction)
+Base.real(phase::Phase) = cospi(2*phase.fraction)
+Base.imag(phase::Phase) = sinpi(2*phase.fraction)
 
 # Independent of type
 Base.hash(p::Phase, h::UInt) = hash(Phase, hash(p.fraction, h))
