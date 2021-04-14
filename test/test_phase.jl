@@ -49,14 +49,24 @@ using GroupTools
     @test convert(Complex{Int}, p4) ==  -1 + 0im
     @test isapprox(convert(Float64, p4), -1.0)
 
+    let arr = [1, p1]
+        @test eltype(arr) == ComplexF64
+        @test isapprox(arr[2], cis(2π*3/7))
+    end
+    
+    let arr = [1+0im, p1]
+        @test eltype(arr) == ComplexF64
+        @test isapprox(arr[2], cis(2π*3/7))
+    end
+
     let arr = [1.0, p1]
         @test eltype(arr) == ComplexF64
-        @test arr[2] == cis(2π*3/7)
+        @test isapprox(arr[2], cis(2π*3/7))
     end
 
     let arr = [1.0 + 0.0im, p1]
         @test eltype(arr) == ComplexF64
-        @test arr[2] == cis(2π*3/7)
+        @test isapprox(arr[2], cis(2π*3/7))
     end
 
     @testset "hash" begin

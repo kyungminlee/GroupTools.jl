@@ -10,8 +10,11 @@ end
 Base.promote_rule(::Type{Phase{T1}}, ::Type{Phase{T2}}) where {T1, T2} = Phase{promote_type(T1, T2)}
 Base.convert(::Type{Phase{T}}, x::Phase) where {T} = Phase(convert(T, x.fraction))
 
-Base.promote_rule(::Type{C}, ::Type{<:Phase}) where {C<:Complex} = C
-Base.promote_rule(::Type{R}, ::Type{<:Phase}) where {R<:Real} = Complex{R}
+Base.promote_rule(::Type{Complex{R}}, ::Type{<:Phase}) where {R<:AbstractFloat} = Complex{R}
+Base.promote_rule(::Type{R}, ::Type{<:Phase}) where {R<:AbstractFloat} = Complex{R}
+
+Base.promote_rule(::Type{Complex{R}}, ::Type{<:Phase}) where {R<:Real} = ComplexF64
+Base.promote_rule(::Type{R}, ::Type{<:Phase}) where {R<:Real} = ComplexF64
 
 # Need this when scalar types are different
 Base.:(==)(x::Phase, y::Phase) = x.fraction == y.fraction
