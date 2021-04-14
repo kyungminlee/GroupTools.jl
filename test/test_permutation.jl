@@ -103,10 +103,10 @@ end
     end
 
     @testset "hash" begin
-        gp1 = GeneralizedPermutation([2=>Phase(0//1), 3=>Phase(1//4), 1=>Phase(2//4), 4=>Phase(3//4)])
+        gp1  = GeneralizedPermutation([2=>Phase(0//1), 3=>Phase(1//4), 1=>Phase(2//4), 4=>Phase(3//4)])
         gp1p = GeneralizedPermutation([2=>Phase(0//1), 3=>Phase(1//4), 1=>Phase(2//4), 4=>Phase(3//4)])
-        gp2 = GeneralizedPermutation([2=>Phase(0//1), 3=>Phase(0//1), 1=>Phase(0//1), 4=>Phase(0//1)])
-        gp3 = GeneralizedPermutation([1=>Phase(0//1), 2=>Phase(1//4), 3=>Phase(2//4), 4=>Phase(3//4)])
+        gp2  = GeneralizedPermutation([2=>Phase(0//1), 3=>Phase(0//1), 1=>Phase(0//1), 4=>Phase(0//1)])
+        gp3  = GeneralizedPermutation([1=>Phase(0//1), 2=>Phase(1//4), 3=>Phase(2//4), 4=>Phase(3//4)])
         
         @test gp1 == gp1p && hash(gp1) == hash(gp1p)
         @test gp1 != gp2 && hash(gp1) != hash(gp2)
