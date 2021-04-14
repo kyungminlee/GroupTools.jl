@@ -57,3 +57,59 @@ using GroupTools
     @test generate_group(p1, p2) == Set([p0, p1, p2, p3])
 
 end
+
+
+@testset "GeneralizedPermutation" begin
+    @testset "Constructors" begin
+        gp1 = GeneralizedPermutation([2=>Phase(0//1), 3=>Phase(1//4), 1=>Phase(2//4), 4=>Phase(3//4)])
+        gp2 = GeneralizedPermutation([2, 3, 1, 4], Phase.([0//1, 1//4, 2//4, 3//4]))
+        gp3 = GeneralizedPermutation([2, 3, 1, 4], Phase.([0//1, 0//1, 0//1, 0//1]))
+        gp4 = GeneralizedPermutation([2, 3, 1, 4], Phase.([0, 0, 0, 0]))
+        @test gp1 == gp2
+        @test gp3 == gp4
+        @test gp1 != gp3 && gp2 != gp3 && gp1 != gp4 && gp2 != gp4
+
+        @test gp1.order == 12
+        @test gp3.order == 3
+    end
+
+    @testset "Matrix" begin
+        gp1 = GeneralizedPermutation([2=>Phase(0//1), 3=>Phase(1//4), 1=>Phase(2//4), 4=>Phase(3//4)])
+        m_gp1 = Matrix(gp1)
+        @test typeof(m_gp1) == Matrix{ComplexF64}
+        @test isapprox(m_gp1, [
+            0  0   -1   0;
+            1  0    0   0;
+            0  im   0   0;
+            0  0    0 -im;
+        ])
+    end
+
+    @testset "product and inverse" begin
+        gp1 = GeneralizedPermutation([2=>Phase(0//1), 3=>Phase(1//4), 1=>Phase(2//4), 4=>Phase(3//4)])
+        gp2 = GeneralizedPermutation([2=>Phase(0//1), 1=>Phase(1//7), 4=>Phase(2//7), 3=>Phase(3//7)])
+        m_gp1 = Matrix(gp1)
+        m_gp2 = Matrix(gp2)
+        m_gp3 = Matrix(gp1 * gp2)
+        gp3_m = m_gp1 * m_gp2
+        @test isapprox(m_gp3, gp3_m)
+
+        gp4 = GeneralizedPermutation([4=>Phase(5//6), 1=>Phase(1//6), 3=>Phase(2//6), 2=>Phase(3//6)])
+    
+        @test (gp1 * gp2) * gp4 == gp1 * (gp2 * gp4)
+
+        @test isidentity(gp1 * inv(gp1))
+        @test isidentity(inv(gp1) * gp1)
+    end
+
+    @testset "hash" begin
+        gp1 = GeneralizedPermutation([2=>Phase(0//1), 3=>Phase(1//4), 1=>Phase(2//4), 4=>Phase(3//4)])
+        gp1p = GeneralizedPermutation([2=>Phase(0//1), 3=>Phase(1//4), 1=>Phase(2//4), 4=>Phase(3//4)])
+        gp2 = GeneralizedPermutation([2=>Phase(0//1), 3=>Phase(0//1), 1=>Phase(0//1), 4=>Phase(0//1)])
+        gp3 = GeneralizedPermutation([1=>Phase(0//1), 2=>Phase(1//4), 3=>Phase(2//4), 4=>Phase(3//4)])
+        
+        @test gp1 == gp1p && hash(gp1) == hash(gp1p)
+        @test gp1 != gp2 && hash(gp1) != hash(gp2)
+        @test gp1 != gp3 && hash(gp1) != hash(gp3)
+    end
+end
