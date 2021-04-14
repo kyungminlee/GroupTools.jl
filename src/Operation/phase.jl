@@ -20,6 +20,7 @@ Base.:(*)(x::Phase, y::Phase) = Phase(x.fraction + y.fraction)
 Base.:(/)(x::Phase, y::Phase) = Phase(x.fraction - y.fraction)
 Base.:(^)(x::Phase, y::Integer) = Phase(x.fraction * y)
 Base.inv(x::Phase) = Phase(-x.fraction)
+Base.conj(x::Phase) = Phase(-x.fraction)
 
 
 function Base.convert(::Type{Complex{R}}, phase::Phase) where {R<:AbstractFloat}
@@ -53,3 +54,5 @@ Base.angle(x::Phase{T}) where {T} = pi*(mod(2*x.fraction+one(T), 2*one(T)) - one
 Base.real(phase::Phase) = cos(2*pi*phase.fraction)
 Base.imag(phase::Phase) = sin(2*pi*phase.fraction)
 
+# Independent of type
+Base.hash(p::Phase, h::UInt) = hash(Phase, hash(p.fraction, h))
