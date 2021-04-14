@@ -157,3 +157,13 @@ function (p::GeneralizedPermutation)(v::AbstractVector{T}) where {T<:Number}
     end
     return out
 end
+
+function (p::GeneralizedPermutation)(i::Integer, a::Number)
+    return (p.map[i], p.phase[i] * a)
+end
+
+
+function (p::GeneralizedPermutation)(ia::Tuple{<:Integer, <:Number})
+    i, a = ia
+    return (p.map[i], p.phase[i] * a)
+end
