@@ -5,11 +5,15 @@ struct GeneralizedPermutation{AngleScalar<:Union{<:Integer, <:Rational}}<:Abstra
     phase::Vector{Phase{AngleScalar}}
     order::Int
 
+    function GeneralizedPermutation{T}(map, phase, order) where {T}
+        return new{T}(map, phase, order)
+    end
+
     function GeneralizedPermutation(
         map::AbstractVector{<:Integer},
-        phase::AbstractVector{Phase{T}};
+        phase::AbstractVector{Phase{A}};
         maxorder::Integer=2048
-    ) where {T}
+    ) where {A}
         n = length(map)
         if n != length(phase)
             throw(ArgumentError("map and phase must be of the same length ($(length(map)) != $(length(phase))"))
@@ -27,7 +31,7 @@ struct GeneralizedPermutation{AngleScalar<:Union{<:Integer, <:Rational}}<:Abstra
         order = 1
         let # compute cycle length
             current_map = Vector{Int}(map)
-            current_phase = Vector{Phase{T}}(phase)
+            current_phase = Vector{Phase{A}}(phase)
             while order <= maxorder && !(current_map == 1:n && all(isone, current_phase))
                 current_phase = phase[current_map] .* current_phase
                 current_map = map[current_map]
@@ -37,7 +41,16 @@ struct GeneralizedPermutation{AngleScalar<:Union{<:Integer, <:Rational}}<:Abstra
                 throw(OverflowError("cycle length exceeds maximum value (max = $maxorder)"))
             end
         end
-        return new{T}(map, phase, order)
+
+        return new{A}(map, phase, order)
+
+        # if all(iszero, phase)
+        #     return new{T, Int}(map, phase, order)
+        # elseif all(x -> iszero(2*x), phase)
+        #     return new{T, Float64}(map, phase, order)
+        # else
+        #     return new{T, ComplexF64}(map, phase, order)
+        # end
     end
 
     function GeneralizedPermutation(perms; maxorder::Integer=2048)
