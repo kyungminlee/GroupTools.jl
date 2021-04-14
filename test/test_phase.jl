@@ -68,22 +68,20 @@ using GroupTools
         end
         @testset "same value, different type (one)" begin
             pi = Phase(0)
-            pci = Phase(0+0im)
             pri64 = Phase(0//1)
             pri32 = Phase(Rational{Int32}(0, 1))
             pf = Phase(0.0)
 
-            for x in [pi, pci, pri64, pri32, pf], y in [pi, pci, pri64, pri32, pf]
+            for x in [pi, pri64, pri32, pf], y in [pi, pri64, pri32, pf]
                 @test x == y && hash(x) == hash(y) && hash(x, h0) == hash(y, h0)
             end
         end
         @testset "same value, different type (complex)" begin
-            pci = Phase(0+1im)
             pri64 = Phase(1//4)
-            pri32 = Phase(Rational{Int32}(0, 4))
+            pri32 = Phase(Rational{Int32}(1, 4))
             pf = Phase(0.25)
 
-            for x in [pci, pri64, pri32, pf], y in [pci, pri64, pri32, pf]
+            for x in [pri64, pri32, pf], y in [pri64, pri32, pf]
                 @test x == y && hash(x) == hash(y) && hash(x, h0) == hash(y, h0)
             end
         end
