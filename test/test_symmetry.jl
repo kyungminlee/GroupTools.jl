@@ -210,6 +210,7 @@ end # @testset "MatrixSymmetry"
 
     @testset "iterator" begin
         @test Base.IteratorSize(sym3) == Base.HasShape{2}()
+        @test CartesianIndices(sym3) == CartesianIndices((1:4, 1:3))
 
         @test length(sym3) == 12
         @test size(sym3) == (4, 3)
