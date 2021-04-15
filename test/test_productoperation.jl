@@ -7,7 +7,7 @@ using GroupTools
     @testset "construction" begin
         u0 = MatrixOperation([1.0 0.0; 0.0 1.0])
         u1 = MatrixOperation{ComplexF64}([0.0 1.0; 1.0 0.0])
-        @test isa(u0 × u1, DirectProductOperation)
+        @test isa(u0 ×ˢ u1, DirectProductOperation)
         @test isa(u1 * (-1), MatrixOperation)
         @test isa(u1 * 1, MatrixOperation)
         @test isa(u1 * cis(π/4), MatrixOperation)
@@ -18,19 +18,19 @@ using GroupTools
     @testset "equality" begin
         u0 = MatrixOperation([1 0; 0 1])
         u1 = MatrixOperation([0 1; 1 0])
-        p = u0 × u1
-        p2 = MatrixOperation([1 0; 0 1]) × MatrixOperation([0 1; 1 0])
-        p3 = MatrixOperation([0 1; 1 0]) × MatrixOperation([1 0; 0 1])
+        p = u0 ×ˢ u1
+        p2 = MatrixOperation([1 0; 0 1]) ×ˢ MatrixOperation([0 1; 1 0])
+        p3 = MatrixOperation([0 1; 1 0]) ×ˢ MatrixOperation([1 0; 0 1])
         @test p == p2
         @test p != p3
-        p2p = MatrixOperation([1 0; 0 1]) × MatrixOperation([0 1; 1 0])
+        p2p = MatrixOperation([1 0; 0 1]) ×ˢ MatrixOperation([0 1; 1 0])
         @test p2 == p2p
         @test p2 !== p2p
         @test hash(p2) == hash(p2p)
     end
 
     @testset "iterator" begin
-        p2 = MatrixOperation([1 0; 0 1]) × MatrixOperation([0 1; 1 0])
+        p2 = MatrixOperation([1 0; 0 1]) ×ˢ MatrixOperation([0 1; 1 0])
         p2c = collect(p2)
         @test length(p2c) == 1
         @test size(p2c) == ()
@@ -42,32 +42,44 @@ using GroupTools
     @testset "times" begin
         u1 = MatrixOperation([cospi(1/3) sinpi(1/3); -sinpi(1/3) cospi(1/3)])
         u2 = MatrixOperation(exp(0.25*pi*im))
-        p = u1 × u2
+        p = u1 ×ˢ u2
         @test p*p*p == p^3
-        p3 = MatrixOperation([-1.0 0.0; 0.0 -1.0]) × MatrixOperation(exp(0.75*pi*im))
+        p3 = MatrixOperation([-1.0 0.0; 0.0 -1.0]) ×ˢ MatrixOperation(exp(0.75*pi*im))
         @test isapprox(p*p*p, p3)
 
         u3 = MatrixOperation([0 1 0; 0 0 1; 1 0 0])
         u4 = IdentityOperation()
-        @test (u1 × u2) × u3 == u1 × (u2 × u3)
-        @test u1 × u2 × u3 × u4 == u1 × (u2 × u3) × u4 == (u1 × u2) × (u3 × u4)
+        @test (u1 ×ˢ u2) ×ˢ u3 == u1 ×ˢ (u2 ×ˢ u3)
+        @test u1 ×ˢ u2 ×ˢ u3 ×ˢ u4 == u1 ×ˢ (u2 ×ˢ u3) ×ˢ u4 == (u1 ×ˢ u2) ×ˢ (u3 ×ˢ u4)
     end
 
     @testset "isidentity" begin
         u0 = MatrixOperation([1 0; 0 1])
         u1 = MatrixOperation([0 1; 1 0])
-        p = u0 × u1
+        p = u0 ×ˢ u1
         @test !isidentity(p)
         @test isidentity(p*p)
         @test isidentity(p^2)
         @test isidentity(p^-2)
         @test !isidentity(p^3)
         @test !isidentity(p^-3)
-        @test isidentity(u0 × u0)
+        @test isidentity(u0 ×ˢ u0)
+    end
+
+    @testset "one and isone" begin
+        u0 = MatrixOperation([1 0; 0 1])
+        u1 = MatrixOperation([0 1; 1 0])
+        f1 = Phase(1//2)
+        p = u0 ×ˢ f1
+        @test !isone(p)
+        @test isone(p*p)
+        @test isone(p^2)
+        @test isone(p^-2)
+        @test !isone(p^3)
+        @test !isone(p^-3)
+        @test isone(one(p))
     end
 end
-
-
 
 # @testset "product" begin
 #     r0 = ProductOperation()
