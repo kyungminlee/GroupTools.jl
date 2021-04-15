@@ -2,7 +2,7 @@ export DirectProductSymmetry
 export elements
 export ×ˢ, directproduct
 
-struct DirectProductSymmetry{E<:DirectProductOperation, S<:Tuple{Vararg{AbstractSymmetry}}}<:AbstractSymmetry
+struct DirectProductSymmetry{E<:DirectProductOperation, S<:Tuple{Vararg{AbstractSymmetry}}}<:AbstractSymmetry{E}
     symmetries::S
     function DirectProductSymmetry(sym::AbstractSymmetry...)
         E = DirectProductOperation{Tuple{eltype.(sym)...}}

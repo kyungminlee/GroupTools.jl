@@ -1,6 +1,8 @@
 export AbstractSymmetry
+export element_name
+export element_names
 
-abstract type AbstractSymmetry end
+abstract type AbstractSymmetry{O} end
 
 # Base.eltype(::Type{<:AbstractSymmetry}) = error("Not implemented")
 # Base.valtype(::Type{<:AbstractSymmetry}) = error("Not implemented")
@@ -20,3 +22,8 @@ abstract type AbstractSymmetry end
 # Base.getindex(x::AbstractSymmetry, s::CartesianIndex) = error("Not implemented")
 # Base.iterate(x::AbstractSymmetry, i::Integer=1) = error("Not implemented")
 # elements(x::AbstractSymmetry) = error("Not implemented")
+# elementnames(x::AbstractSymmetry) = error("Not implemented")
+# elementname(x::AbstractSymmetry, i) = error("Not implemented")
+
+element_names(x::AbstractSymmetry) = string.(x)
+element_name(x::AbstractSymmetry, idx) = string.(x[idx])
