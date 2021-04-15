@@ -87,7 +87,10 @@ end
         @test isapprox(gp1(vec), m * vec)
 
         @test gp1(2, 5.0) == (3, 5.0im)
-        @show typeof(gp1(1, 5.0))        
+        
+        @test_throws InexactError Matrix{Int}(gp1)
+        m1 = Matrix{Complex{Int}}(gp1)
+        @test m1 == m
     end
 
     @testset "product and inverse and conjugate" begin

@@ -41,9 +41,7 @@ struct GeneralizedPermutation{AngleScalar<:Union{<:Integer, <:Rational}}<:Abstra
                 throw(OverflowError("cycle length exceeds maximum value (max = $maxorder)"))
             end
         end
-
         return new{A}(map, phase, order)
-
         # if all(iszero, phase)
         #     return new{T, Int}(map, phase, order)
         # elseif all(x -> iszero(2*x), phase)
@@ -54,7 +52,7 @@ struct GeneralizedPermutation{AngleScalar<:Union{<:Integer, <:Rational}}<:Abstra
     end
 
     function GeneralizedPermutation(perms; maxorder::Integer=2048)
-        map = [x[1] for x in perms]
+        map = Int[x[1] for x in perms]
         phase = [x[2] for x in perms]
         return GeneralizedPermutation(map, phase; maxorder=maxorder)
     end
@@ -63,7 +61,6 @@ end
 function Base.:(==)(x::GeneralizedPermutation, y::GeneralizedPermutation)
     return x.order == y.order && x.map == y.map && x.phase == y.phase
 end
-
 
 function Base.Matrix{T}(gp::GeneralizedPermutation) where {T<:Number}
     n = length(gp.map)
@@ -99,7 +96,10 @@ GeneralizedPermutation:
 function Base.:(*)(x::GeneralizedPermutation, y::GeneralizedPermutation)
     n = length(x.map)
     if n != length(y.map)
-        throw(ArgumentError("The two GeneralizedPermutations should have the same length: ($n != $(length(y.map)))"))
+        throw(ArgumentError(
+            "The two GeneralizedPermutations should have the same length: "*
+            "($n != $(length(y.map)))"
+        ))
     end
     map = x.map[y.map]
     phase = x.phase[y.map] .* y.phase
@@ -117,6 +117,7 @@ function Base.inv(p::GeneralizedPermutation{A}) where {A}
     end
     return GeneralizedPermutation(outmap, outphase)
 end
+
 
 function Base.conj(p::GeneralizedPermutation{A}) where {A}
     return GeneralizedPermutation{A}(p.map, conj.(p.phase), p.order)
