@@ -59,6 +59,12 @@ end
 
 @testset "GeneralizedPermutation" begin
     @testset "Constructors" begin
+        @test_throws ArgumentError GeneralizedPermutation([1,2,3,4], [Phase(0), Phase(1)])
+        @test_throws ArgumentError GeneralizedPermutation([1,1], [Phase(0), Phase(1)])
+        @test_throws ArgumentError GeneralizedPermutation([1,4], [Phase(0), Phase(1)])
+        GeneralizedPermutation([2, 3, 1, 4], Phase.([0//1, 1//4, 2//4, 3//4]); maxorder=12)
+        @test_throws OverflowError GeneralizedPermutation([2, 3, 1, 4], Phase.([0//1, 1//4, 2//4, 3//4]); maxorder=11)
+
         gp1 = GeneralizedPermutation([2=>Phase(0//1), 3=>Phase(1//4), 1=>Phase(2//4), 4=>Phase(3//4)])
         gp2 = GeneralizedPermutation([2, 3, 1, 4], Phase.([0//1, 1//4, 2//4, 3//4]))
         gp3 = GeneralizedPermutation([2, 3, 1, 4], Phase.([0//1, 0//1, 0//1, 0//1]))
@@ -69,6 +75,11 @@ end
 
         @test gp1.order == 12
         @test gp3.order == 3
+
+        g0 = one(gp1)
+        @test typeof(g0) == typeof(gp1)
+        @test g0.order == 1
+        @test g0 == GeneralizedPermutation(1:4, ones(Phase{Rational{Int}}, 4))
     end
 
     @testset "Matrix and vector application" begin
@@ -86,7 +97,10 @@ end
         vec = [1E0 + 1E1im, 1E2 + 1E3im, 1E4 + 1E5im, 1E5 + 1E6im]
         @test isapprox(gp1(vec), m * vec)
 
+        @test_throws DimensionMismatch gp1([1,2,])
+
         @test gp1(2, 5.0) == (3, 5.0im)
+        @test gp1((2, 5.0)) == (3, 5.0im)
         
         @test_throws InexactError Matrix{Int}(gp1)
         m1 = Matrix{Complex{Int}}(gp1)
@@ -112,6 +126,20 @@ end
         @test conj(gp1) == GeneralizedPermutation([2=>Phase(0//1), 3=>Phase(3//4), 1=>Phase(2//4), 4=>Phase(1//4)])
     end
 
+    @testset "power" begin
+        g0 = GeneralizedPermutation([1=>Phase(0//1), 2=>Phase(0//1), 3=>Phase(0//1), 4=>Phase(0//1)])
+        g1 = GeneralizedPermutation([2=>Phase(0//1), 3=>Phase(1//4), 1=>Phase(2//4), 4=>Phase(3//4)])
+        g2 = g1 * g1
+        g3 = g2 * g1
+        g4 = g3 * g1
+        g5 = g4 * g1
+        g6 = g5 * g1
+        gm1 = inv(g1)
+        gm2 = gm1 * gm1
+        g = [gm2, gm1, g0, g1, g2, g3, g4, g5, g6]
+        @test g == [g1^n for n in -2:6]
+    end
+
     @testset "hash" begin
         gp1  = GeneralizedPermutation([2=>Phase(0//1), 3=>Phase(1//4), 1=>Phase(2//4), 4=>Phase(3//4)])
         gp1p = GeneralizedPermutation([2=>Phase(0//1), 3=>Phase(1//4), 1=>Phase(2//4), 4=>Phase(3//4)])
@@ -121,5 +149,15 @@ end
         @test gp1 == gp1p && hash(gp1) == hash(gp1p)
         @test gp1 != gp2 && hash(gp1) != hash(gp2)
         @test gp1 != gp3 && hash(gp1) != hash(gp3)
+    end
+
+    @testset "isless" begin
+        g0 = GeneralizedPermutation([1,2,3,4], ones(Phase{Rational{Int}}, 4))
+        g1 = GeneralizedPermutation([2,3,4,1], Phase.([0//1, 1//4, 2//4, 3//4]))
+        g2 = GeneralizedPermutation([2,3,4,1], Phase.([0//1, 0//1, 0//1, 0//1]))
+        @test g0 < g1
+        @test !(g1 < g1)
+        @test !(g1 < g0)
+        @test g2 < g1
     end
 end
