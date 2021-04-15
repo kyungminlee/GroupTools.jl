@@ -27,7 +27,7 @@ struct MatrixOperation{D, R<:Number}<:AbstractSymmetryOperation
         return new{D, R}(matrix)
     end
 
-    function MatrixOperation(value::R) where {R}
+    function MatrixOperation(value::R) where {R<:Number}
         iszero(value) && throw(DomainError("value cannot be zero $(value)"))
         return new{1, R}(ones(R, (1,1))*value)
     end
