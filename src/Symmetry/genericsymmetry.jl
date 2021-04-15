@@ -1,7 +1,7 @@
 export GenericSymmetry
 export finitegroupsymmetry
 
-struct GenericSymmetry{ElementType}<:AbstractSymmetry
+struct GenericSymmetry{ElementType}<:AbstractSymmetry{ElementType}
     elements::Vector{ElementType}
     group::FiniteGroup
 
