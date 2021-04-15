@@ -16,7 +16,9 @@ Base.eltype(::Type{T}) where {T<:AbstractSymmetryOperation} = T
 
 
 function Base.:(^)(lhs::AbstractSymmetryOperation, p::Integer)
-    if p < 0
+    if p == 0
+        return one(lhs)
+    elseif p < 0
         pow = inv(lhs)
         p = -p
     else
