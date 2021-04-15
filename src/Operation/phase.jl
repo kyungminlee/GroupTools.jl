@@ -27,7 +27,7 @@ function Base.convert(::Type{Complex{R}}, phase::Phase) where {R<:AbstractFloat}
 end
 
 function Base.convert(::Type{R}, phase::Phase) where {R<:AbstractFloat}
-    iszero(mod(phase.fraction * 2, one(R))) || throw(InexactError(Symbol("$R"), R, phase))
+    iszero(mod(phase.fraction * 2, one(R))) || throw(InexactError(:convert, R, phase))
     return convert(R, cospi(2*phase.fraction))
 end
 
@@ -37,20 +37,30 @@ function Base.convert(::Type{R}, phase::Phase{T}) where {R<:Integer, T}
     elseif isone(phase.fraction * 2)
         return -one(R)
     end
-    throw(InexactError(Symbol("$R"), R, phase))
+    throw(InexactError(:convert, R, phase))
 end
 
 function Base.convert(::Type{Complex{R}}, phase::Phase{T}) where {R<:Integer, T}
-    if iszero(phase.fraction)
-        return one(Complex{R})
-    elseif isone(phase.fraction * 2)
-        return -one(Complex{R})
+    f4 = phase.fraction * 4
+    if iszero(f4)
+        return Complex{R}(one(R), zero(R))
+    elseif f4 == 1
+        return Complex{R}(zero(R), one(R))
+    elseif f4 == 2
+        return Complex{R}(-one(R), zero(R))
+    elseif f4 == 3
+        return Complex{R}(zero(R), -one(R))
+    else
+        throw(InexactError(:convert, Complex{R}, phase))
     end
-    throw(InexactError(Symbol("$(Complex{R})"), Complex{R}, phase))
 end
 
 Base.:(*)(x::Phase, y::Phase) = Phase(x.fraction + y.fraction)
 Base.:(/)(x::Phase, y::Phase) = Phase(x.fraction - y.fraction)
+Base.:(\)(x::Phase, y::Phase) = Phase(y.fraction - x.fraction)
+function Base.:(//)(x::Phase{<:Union{<:Integer, <:Rational{<:Integer}}}, y::Phase{<:Union{<:Integer, <:Rational{<:Integer}}})
+    return Phase(x.fraction - y.fraction)
+end
 Base.:(^)(x::Phase, y::Integer) = Phase(x.fraction * y)
 Base.inv(x::Phase) = Phase(-x.fraction)
 Base.conj(x::Phase) = Phase(-x.fraction)
