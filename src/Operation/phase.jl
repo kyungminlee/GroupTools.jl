@@ -1,6 +1,6 @@
 export Phase
 
-struct Phase{T<:Real} <: Number
+struct Phase{T<:Real} <: AbstractSymmetryOperation
     fraction::T
     Phase(::I) where {I<:Integer} = new{I}(zero(I))
     Phase(f::T) where {T<:Real} = new{T}(mod(f, one(T)))
