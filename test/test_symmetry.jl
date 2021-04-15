@@ -28,28 +28,46 @@ using GroupTools
 end
 
 @testset "finite group symmetry" begin
+    group_c3 = FiniteGroup([1 2 3; 2 3 1; 3 1 2])
+    group_c2 = FiniteGroup([1 2; 2 1])
     @testset "GroupElement" begin
         el = GroupElement(1, *, inv)
         el.value == 1
+
+        elems = symmetryelements(group_c3)
+        @test [el.value for el in elems] == [1,2,3]
+        @test all(el.product == group_product(group_c3) for el in elems)
+        @test all(el.inverse == group_inverse(group_c3) for el in elems)
+
+        @test inv(elems[1]) == elems[1]
+        @test inv(elems[2]) != elems[2]
+        @test inv(elems[2]) == elems[3]
+        @test inv(elems[3]) == elems[2]
+
+        @test elems[1] * elems[2] == elems[2]
+        @test elems[2] * elems[3] == elems[1]
+
+        elems_c2 = symmetryelements(group_c2)
+        @test elems[1] != elems_c2[1]
+        @test elems[2] != elems_c2[2]
+
+        @test_throws ArgumentError elems_c2[1] * elems[1]
     end
-    group_c3 = FiniteGroup([1 2 3; 2 3 1; 3 1 2])
-    group_c2 = FiniteGroup([1 2; 2 1])
-    elems = symmetryelements(group_c3)
-    @test [el.value for el in elems] == [1,2,3]
-    @test all(el.product == group_product(group_c3) for el in elems)
-    @test all(el.inverse == group_inverse(group_c3) for el in elems)
-
-    @test inv(elems[1]) == elems[1]
-    @test inv(elems[2]) != elems[2]
-    @test inv(elems[2]) == elems[3]
-    @test inv(elems[3]) == elems[2]
-
-    @test elems[1] * elems[2] == elems[2]
-    @test elems[2] * elems[3] == elems[1]
-
-    elems_c2 = symmetryelements(group_c2)
-    @test elems[1] != elems_c2[1]
-    @test elems[2] != elems_c2[2]
+    symmetry_c3 = finitegroupsymmetry(group_c3)
+    for i in 1:3, j in 1:3
+        k = group_product(group_c3, i, j)
+        xi = symmetry_c3[i]
+        xj = symmetry_c3[j]
+        xk = symmetry_c3[k]
+        xk2 = xi * xj
+        @test xk == xk2
+    end
+    for i in 1:3
+        j = group_inverse(group_c3, i)
+        xi = symmetry_c3[i]
+        xj = symmetry_c3[j]
+        @test xj == inv(xi)
+    end
 end
 
 @testset "matrix symmetry" begin
