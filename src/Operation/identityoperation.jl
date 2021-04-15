@@ -1,3 +1,4 @@
+# Trivial Symmetry Operation
 export IdentityOperation
 
 export apply_operation
@@ -10,6 +11,9 @@ export isidentity, istranslation, ispoint
 Represents identity operation
 """
 struct IdentityOperation <: AbstractSymmetryOperation end
+
+Base.one(x::IdentityOperation) = x
+Base.one(::Type{IdentityOperation}) = IdentityOperation()
 
 ## properties
 
