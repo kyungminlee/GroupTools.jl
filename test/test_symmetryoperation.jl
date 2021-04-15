@@ -43,6 +43,13 @@ using GroupTools
             @test size(u0) == ()
             @test eltype(u0) == typeof(u0)
 
+            @test typeof(one(v1)) == MatrixOperation{2, Float64}
+            @test one(v1) == MatrixOperation([1.0 0.0; 0.0 1.0])
+            @test isone(one(v1))
+            @test !isone(v1)
+           
+            @test typeof(one(MatrixOperation{2, Float64})) == MatrixOperation{2, Float64}
+            @test one(MatrixOperation{2, Float64}) == MatrixOperation([1.0 0.0; 0.0 1.0])
         end
 
         @testset "integer" begin
