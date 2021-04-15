@@ -1,6 +1,6 @@
 export Phase
 
-struct Phase{T<:Real} <: Number
+struct Phase{T<:Real} <: AbstractSymmetryOperation
     fraction::T
     Phase(::I) where {I<:Integer} = new{I}(zero(I))
     Phase(f::T) where {T<:Real} = new{T}(mod(f, one(T)))
@@ -10,46 +10,70 @@ end
 Base.promote_rule(::Type{Phase{T1}}, ::Type{Phase{T2}}) where {T1, T2} = Phase{promote_type(T1, T2)}
 Base.convert(::Type{Phase{T}}, x::Phase) where {T} = Phase(convert(T, x.fraction))
 
-Base.promote_rule(::Type{C}, ::Type{<:Phase}) where {C<:Complex} = C
-Base.promote_rule(::Type{R}, ::Type{<:Phase}) where {R<:Real} = Complex{R}
+Base.promote_rule(::Type{Complex{R}}, ::Type{<:Phase}) where {R<:AbstractFloat} = Complex{R}
+Base.promote_rule(::Type{R}, ::Type{<:Phase}) where {R<:AbstractFloat} = Complex{R}
+
+Base.promote_rule(::Type{Complex{R}}, ::Type{<:Phase}) where {R<:Real} = ComplexF64
+Base.promote_rule(::Type{R}, ::Type{<:Phase}) where {R<:Real} = ComplexF64
 
 # Need this when scalar types are different
 Base.:(==)(x::Phase, y::Phase) = x.fraction == y.fraction
 
-Base.:(*)(x::Phase, y::Phase) = Phase(x.fraction + y.fraction)
-Base.:(/)(x::Phase, y::Phase) = Phase(x.fraction - y.fraction)
-Base.:(^)(x::Phase, y::Integer) = Phase(x.fraction * y)
-Base.inv(x::Phase) = Phase(-x.fraction)
-
+Base.one(::Phase{T}) where {T} = Phase{T}(zero(T))
+Base.one(::Type{Phase{T}}) where {T} = Phase{T}(zero(T))
+Base.isone(p::Phase) = iszero(p.fraction)
 
 function Base.convert(::Type{Complex{R}}, phase::Phase) where {R<:AbstractFloat}
-    return convert(Complex{R}, cis(2*pi*phase.fraction))
+    r = cospi(2*phase.fraction)
+    i = sinpi(2*phase.fraction)
+    return Complex{R}(r, i)
+    #return convert(Complex{R}, cis(2*pi*phase.fraction))
 end
 
 function Base.convert(::Type{R}, phase::Phase) where {R<:AbstractFloat}
-    iszero(mod(phase.fraction * 2, one(R))) || throw(InexactError(Symbol("$R"), R, phase))
-    return convert(R, cos(2*pi*phase.fraction))
+    iszero(mod(phase.fraction * 2, one(R))) || throw(InexactError(:convert, R, phase))
+    return convert(R, cospi(2*phase.fraction))
 end
 
 function Base.convert(::Type{R}, phase::Phase{T}) where {R<:Integer, T}
-    if phase.fraction == zero(T)
+    if iszero(phase.fraction)
         return one(R)
-    elseif phase.fraction * 2 == one(T)
+    elseif isone(phase.fraction * 2)
         return -one(R)
     end
-    throw(InexactError(Symbol("$R"), R, phase))
+    throw(InexactError(:convert, R, phase))
 end
 
 function Base.convert(::Type{Complex{R}}, phase::Phase{T}) where {R<:Integer, T}
-    if phase.fraction == zero(T)
-        return one(Complex{R})
-    elseif phase.fraction * 2 == one(T)
-        return -one(Complex{R})
+    f4 = phase.fraction * 4
+    if iszero(f4)
+        return Complex{R}(one(R), zero(R))
+    elseif f4 == 1
+        return Complex{R}(zero(R), one(R))
+    elseif f4 == 2
+        return Complex{R}(-one(R), zero(R))
+    elseif f4 == 3
+        return Complex{R}(zero(R), -one(R))
+    else
+        throw(InexactError(:convert, Complex{R}, phase))
     end
-    throw(InexactError(Symbol("$(Complex{R})"), Complex{R}, phase))
 end
 
-Base.angle(x::Phase{T}) where {T} = pi*(mod(2*x.fraction+one(T), 2*one(T)) - one(T))
-Base.real(phase::Phase) = cos(2*pi*phase.fraction)
-Base.imag(phase::Phase) = sin(2*pi*phase.fraction)
+Base.:(*)(x::Phase, y::Phase) = Phase(x.fraction + y.fraction)
+Base.:(/)(x::Phase, y::Phase) = Phase(x.fraction - y.fraction)
+Base.:(\)(x::Phase, y::Phase) = Phase(y.fraction - x.fraction)
+function Base.:(//)(x::Phase{<:Union{<:Integer, <:Rational{<:Integer}}}, y::Phase{<:Union{<:Integer, <:Rational{<:Integer}}})
+    return Phase(x.fraction - y.fraction)
+end
+Base.:(^)(x::Phase, y::Integer) = Phase(x.fraction * y)
+Base.inv(x::Phase) = Phase(-x.fraction)
+Base.conj(x::Phase) = Phase(-x.fraction)
 
+Base.angle(x::Phase{T}) where {T} = pi*(mod(2*x.fraction+one(T), 2*one(T)) - one(T))
+Base.real(phase::Phase) = cospi(2*phase.fraction)
+Base.imag(phase::Phase) = sinpi(2*phase.fraction)
+
+# Independent of type
+Base.hash(p::Phase, h::UInt) = hash(Phase, hash(p.fraction, h))
+
+(x::Phase)(y::Number) = convert(ComplexF64, x) * y

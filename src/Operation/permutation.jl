@@ -18,8 +18,8 @@ The convention for the permutation is that map[i] gets mapped to i.
 In other words, map tells you where each element is from.
 """
 struct Permutation<:AbstractSymmetryOperation
-    map ::Vector{Int}
-    order ::Int
+    map::Vector{Int}
+    order::Int
     function Permutation(perms::AbstractVector{<:Integer}; max_order=2048)
         n = length(perms)
         map = Vector{Int}(perms)
@@ -49,6 +49,45 @@ struct Permutation<:AbstractSymmetryOperation
     end
 end
 
+Base.one(p::Permutation) = Permutation(1:length(p.map))
+Base.isone(p::Permutation) = p.map == 1:length(p.map)
+
+"""
+    isidentity(perm::Permutation)
+
+Test whether the permutation is an identity.
+"""
+isidentity(p::Permutation) = p.map == 1:length(p.map)
+
+
+Base.:(==)(p1::Permutation, p2::Permutation) = p1.map == p2.map
+
+(p::Permutation)(i::Integer) = p.map[i]
+
+function (p::Permutation)(v::AbstractVector{T}) where {T}
+    n = length(v)
+    if n != length(p.map)
+        throw(ArgumentError("permutation needs $(length(p.map)) elements"))
+    end
+    w = Vector{T}(undef, n)
+    for i in 1:n
+        w[p.map[i]] = v[i]
+    end
+    return w
+end
+
+
+function Base.Matrix{T}(p::Permutation) where {T<:Number}
+    n = length(p.map)
+    out = zeros(T, (n, n))
+    for (j, i) in enumerate(p.map)
+        out[i, j] = one(T)
+    end
+    return out
+end
+
+Base.Matrix(p::Permutation) = Base.Matrix{Bool}(p)
+
 
 """
     *(p1 ::Permutation, p2 ::Permutation)
@@ -73,7 +112,7 @@ function Base.:(*)(p1 ::Permutation, p2 ::Permutation)
         throw(ArgumentError("permutations of different universes"))
     end
     #  return Permutation(Int[p2.map[x] for x in p1.map]) original version
-    return Permutation(Int[p1.map[x] for x in p2.map])
+    return Permutation(p1.map[p2.map])
 end
 
 
@@ -106,23 +145,6 @@ function Base.inv(perm::Permutation)
         out[x] = i
     end
     return Permutation(out)
-end
-
-
-Base.:(==)(p1 ::Permutation, p2::Permutation) = p1.map == p2.map
-
-(p::Permutation)(i::Integer) = p.map[i]
-
-function (p::Permutation)(v::AbstractVector{T}) where {T}
-    n = length(v)
-    if n != length(p.map)
-        throw(ArgumentError("permutation needs $(length(p.map)) elements"))
-    end
-    w = Vector{T}(undef, n)
-    for i in 1:n
-        w[p.map[i]] = v[i]
-    end
-    return w
 end
 
 
@@ -159,10 +181,3 @@ function generate_group(generators::Permutation...)
     return group
 end
 
-
-"""
-    isidentity(perm::Permutation)
-
-Test whether the permutation is an identity.
-"""
-isidentity(perm::Permutation) = perm.map == 1:length(perm.map)

@@ -14,6 +14,9 @@ using GroupTools
         n=-3; @test iden^n == iden
         @test inv(iden) == iden
         @test isidentity(iden)
+        @test one(iden) == iden
+        @test one(IdentityOperation) == iden
+        @test isone(iden)
 
         @test apply_operation(iden, [3,2]) == [3,2]
         @test iden([3,2]) == [3,2]
@@ -22,6 +25,7 @@ using GroupTools
         @test length(col) == 1
         @test size(col) == ()
         @test eltype(iden) == typeof(iden)
+
     end
 
     @testset "MatrixOperation" begin
@@ -43,6 +47,13 @@ using GroupTools
             @test size(u0) == ()
             @test eltype(u0) == typeof(u0)
 
+            @test typeof(one(v1)) == MatrixOperation{2, Float64}
+            @test one(v1) == MatrixOperation([1.0 0.0; 0.0 1.0])
+            @test isone(one(v1))
+            @test !isone(v1)
+           
+            @test typeof(one(MatrixOperation{2, Float64})) == MatrixOperation{2, Float64}
+            @test one(MatrixOperation{2, Float64}) == MatrixOperation([1.0 0.0; 0.0 1.0])
         end
 
         @testset "integer" begin

@@ -27,7 +27,7 @@ struct MatrixOperation{D, R<:Number}<:AbstractSymmetryOperation
         return new{D, R}(matrix)
     end
 
-    function MatrixOperation(value::R) where {R}
+    function MatrixOperation(value::R) where {R<:Number}
         iszero(value) && throw(DomainError("value cannot be zero $(value)"))
         return new{1, R}(ones(R, (1,1))*value)
     end
@@ -42,6 +42,17 @@ struct MatrixOperation{D, R<:Number}<:AbstractSymmetryOperation
         return new{D, R}(Matrix(LinearAlgebra.I, (D, D))*R(value))
     end
 end
+
+function Base.one(::MatrixOperation{D, R}) where {D, R}
+    return MatrixOperation{D, R}(Matrix(LinearAlgebra.I, (D, D)))
+end
+
+function Base.one(::Type{MatrixOperation{D, R}}) where {D, R}
+    return MatrixOperation{D, R}(Matrix(LinearAlgebra.I, (D, D)))
+end
+
+Base.isone(m::MatrixOperation) = isone(m.matrix)
+isidentity(m::MatrixOperation) = isone(m.matrix)
 
 Base.hash(x::M, h::UInt) where {M<:MatrixOperation} = Base.hash(M, Base.hash(x.matrix, h))
 
@@ -65,8 +76,6 @@ function Base.:(^)(lhs::U, rhs::Integer) where {U<:MatrixOperation}
     end
 end
 
-
-isidentity(arg::MatrixOperation) = arg.matrix == LinearAlgebra.I
 
 function Base.isapprox(
     lhs::MatrixOperation{D, R1},

@@ -9,6 +9,11 @@ using GroupTools
     @test typeof(Phase{Float64}(0)) == Phase{Float64}
     @test Phase{Float64}(1//4) == Phase(1/4)
 
+    @test typeof(one(Phase{Float64})) == Phase{Float64}
+    @test typeof(one(Phase(0.2))) == Phase{Float64}
+    @test isone(one(Phase(0.2)))
+    @test !isone(Phase(0.2))
+
     p1 = Phase(3//7)
     p2 = Phase(0.3)
     let arr = [p1, p2]
@@ -20,6 +25,8 @@ using GroupTools
     @test p1 * p1 == Phase(6//7)
     @test p1 * p1 * p1 == Phase(2//7)
     @test p1 / p3 == Phase(2//7)
+    @test p1 // p3 == Phase(2//7)
+    @test p3 \ p1 == Phase(2//7)
     @test p1^4 == Phase(12//7) == Phase(5//7)
     @test inv(p1) == Phase(-3//7) == Phase(4//7)
 
@@ -49,13 +56,60 @@ using GroupTools
     @test convert(Complex{Int}, p4) ==  -1 + 0im
     @test isapprox(convert(Float64, p4), -1.0)
 
+    let arr = [1, p1]
+        @test eltype(arr) == ComplexF64
+        @test isapprox(arr[2], cis(2π*3/7))
+    end
+    
+    let arr = [1+0im, p1]
+        @test eltype(arr) == ComplexF64
+        @test isapprox(arr[2], cis(2π*3/7))
+    end
+
     let arr = [1.0, p1]
         @test eltype(arr) == ComplexF64
-        @test arr[2] == cis(2π*3/7)
+        @test isapprox(arr[2], cis(2π*3/7))
     end
 
     let arr = [1.0 + 0.0im, p1]
         @test eltype(arr) == ComplexF64
-        @test arr[2] == cis(2π*3/7)
+        @test isapprox(arr[2], cis(2π*3/7))
     end
+
+    @testset "hash" begin
+        h0 = UInt(0x123456789)
+        @testset "same value, same type" begin
+            p1 = Phase(1//3)
+            p2 = Phase(1//3)
+            @test p1 == p2 && hash(p1) == hash(p2) && hash(p1, h0) == hash(p2, h0)
+        end
+        @testset "same value, different type (one)" begin
+            pi = Phase(0)
+            pri64 = Phase(0//1)
+            pri32 = Phase(Rational{Int32}(0, 1))
+            pf = Phase(0.0)
+
+            for x in [pi, pri64, pri32, pf], y in [pi, pri64, pri32, pf]
+                @test x == y && hash(x) == hash(y) && hash(x, h0) == hash(y, h0)
+            end
+        end
+        @testset "same value, different type (complex)" begin
+            pri64 = Phase(1//4)
+            pri32 = Phase(Rational{Int32}(1, 4))
+            pf = Phase(0.25)
+
+            for x in [pri64, pri32, pf], y in [pri64, pri32, pf]
+                @test x == y && hash(x) == hash(y) && hash(x, h0) == hash(y, h0)
+            end
+        end
+
+        @testset "different value" begin
+            p1 = Phase(1//2)
+            p2 = Phase(3//4)
+            @test p1 != p2 && hash(p1) != hash(p2) && hash(p1, h0) != hash(p2, h0)
+        end
+
+
+    end
+    
 end

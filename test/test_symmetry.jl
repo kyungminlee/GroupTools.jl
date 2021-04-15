@@ -25,31 +25,54 @@ using GroupTools
     @test sym1 == sym2
     @test elements(sym1) == elems
     @test group(sym1) == FiniteGroup([1 2 3; 2 3 1; 3 1 2])
+
+    sym3 = GenericSymmetry{ComplexF64}(elems, FiniteGroup([1 2 3; 2 3 1; 3 1 2]))
+    @test sym3.group == sym2.group
 end
 
 @testset "finite group symmetry" begin
+    group_c3 = FiniteGroup([1 2 3; 2 3 1; 3 1 2])
+    group_c2 = FiniteGroup([1 2; 2 1])
     @testset "GroupElement" begin
         el = GroupElement(1, *, inv)
         el.value == 1
+
+        elems = symmetryelements(group_c3)
+        @test [el.value for el in elems] == [1,2,3]
+        @test all(el.product == group_product(group_c3) for el in elems)
+        @test all(el.inverse == group_inverse(group_c3) for el in elems)
+
+        @test inv(elems[1]) == elems[1]
+        @test inv(elems[2]) != elems[2]
+        @test inv(elems[2]) == elems[3]
+        @test inv(elems[3]) == elems[2]
+
+        @test elems[1] * elems[2] == elems[2]
+        @test elems[2] * elems[3] == elems[1]
+
+        elems_c2 = symmetryelements(group_c2)
+        @test elems[1] != elems_c2[1]
+        @test elems[2] != elems_c2[2]
+
+        @test_throws ArgumentError elems_c2[1] * elems[1]
     end
-    group_c3 = FiniteGroup([1 2 3; 2 3 1; 3 1 2])
-    group_c2 = FiniteGroup([1 2; 2 1])
-    elems = symmetryelements(group_c3)
-    @test [el.value for el in elems] == [1,2,3]
-    @test all(el.product == group_product(group_c3) for el in elems)
-    @test all(el.inverse == group_inverse(group_c3) for el in elems)
-
-    @test inv(elems[1]) == elems[1]
-    @test inv(elems[2]) != elems[2]
-    @test inv(elems[2]) == elems[3]
-    @test inv(elems[3]) == elems[2]
-
-    @test elems[1] * elems[2] == elems[2]
-    @test elems[2] * elems[3] == elems[1]
-
-    elems_c2 = symmetryelements(group_c2)
-    @test elems[1] != elems_c2[1]
-    @test elems[2] != elems_c2[2]
+    
+    @test finitegroupsymmetry(group_c3.multiplication_table).group == group_c3
+    symmetry_c3 = finitegroupsymmetry(group_c3)
+    for i in 1:3, j in 1:3
+        k = group_product(group_c3, i, j)
+        xi = symmetry_c3[i]
+        xj = symmetry_c3[j]
+        xk = symmetry_c3[k]
+        xk2 = xi * xj
+        @test xk == xk2
+    end
+    for i in 1:3
+        j = group_inverse(group_c3, i)
+        xi = symmetry_c3[i]
+        xj = symmetry_c3[j]
+        @test xj == inv(xi)
+    end
 end
 
 @testset "matrix symmetry" begin
@@ -118,7 +141,7 @@ end
         end
     end
 
-    @testset "Float64" begin
+    @testset "Float" begin
         @testset "one-dimensional" begin
             normalize = GroupTools._default_normalize(ComplexF64)
             elems = [1, cis(2π/3), cis(4π/3)]
@@ -127,18 +150,20 @@ end
             @test sym1.group == sym2.group
         end
 
-        sym1 = matrixsymmetry([[1.0 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
-        @testset "constructor" begin
-            sym1p = matrixsymmetry(
-                MatrixOperation.([[1.0 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
-            )
-            @test sym1 == sym1p
-        end
-        @testset "type traits" begin
-            @test eltype(sym1) <: MatrixOperation{2, Float64}
-            @test eltype(typeof(sym1)) <: MatrixOperation{2, Float64}
-            @test valtype(sym1) <: MatrixOperation{2, Float64}
-            @test valtype(typeof(sym1)) <: MatrixOperation{2, Float64}
+        for T in [Float32, Float64]
+            sym1 = matrixsymmetry(Matrix{T}[[1.0 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+            @testset "constructor" begin
+                sym1p = matrixsymmetry(
+                    MatrixOperation{2, T}.([[1.0 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+                )
+                @test sym1 == sym1p
+            end
+            @testset "type traits" begin
+                @test eltype(sym1) <: MatrixOperation{2, T}
+                @test eltype(typeof(sym1)) <: MatrixOperation{2, T}
+                @test valtype(sym1) <: MatrixOperation{2, T}
+                @test valtype(typeof(sym1)) <: MatrixOperation{2, T}
+            end
         end
     end
 
@@ -187,6 +212,7 @@ end # @testset "MatrixSymmetry"
 
     @testset "iterator" begin
         @test Base.IteratorSize(sym3) == Base.HasShape{2}()
+        @test CartesianIndices(sym3) == CartesianIndices((1:4, 1:3))
 
         @test length(sym3) == 12
         @test size(sym3) == (4, 3)
@@ -219,7 +245,7 @@ end # @testset "MatrixSymmetry"
             ones(Int, (1,1)),
             -ones(Int, (1,1)),
         ])
-        sym = sym_c4 × sym_z2
+        sym = sym_c4 ×ˢ sym_z2
         G = FiniteGroup([
             1  2  3  4  5  6  7  8;
             2  3  4  1  6  7  8  5;
@@ -319,7 +345,7 @@ end # @testset "DirectProductSymmetry"
 
             sym3 = matrixsymmetry([ones(Int, (1,1)), -ones(Int, (1,1))])
 
-            sym4 = cross(symp, sym3, sym3)
+            sym4 = directproduct(symp, sym3, sym3)
             @test size(sym4) == (8, 2, 2)
             @test length(sym4) == 32
 
@@ -342,7 +368,7 @@ end # @testset "DirectProductSymmetry"
         @test_throws ArgumentError sym_m ⋊ sym_c3
         sym_z2 = matrixsymmetry([ones(Int, (1,1)), -ones(Int, (1,1))])
 
-        sym = cross(sym_3m1, sym_z2)
+        sym = sym_3m1 ×ˢ sym_z2
         # @test size(sym) == (6, 2)
         @test length(sym) == 12
 

@@ -6,7 +6,10 @@ struct GenericSymmetry{ElementType}<:AbstractSymmetry
     group::FiniteGroup
 
     function GenericSymmetry{ElementType}(elements::AbstractVector, group::FiniteGroup) where {ElementType}
-        #TODO: should I check for isomorphism between product and group_product?
+        return new{ElementType}(elements, group)
+    end
+
+    function GenericSymmetry(elements::AbstractVector{ElementType}, group::FiniteGroup) where {ElementType}
         return new{ElementType}(elements, group)
     end
 

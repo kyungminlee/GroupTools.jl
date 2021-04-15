@@ -42,6 +42,5 @@ end
 
 function finitegroupsymmetry(group::FiniteGroup)
     elems = symmetryelements(group)
-    return new{typeof(first(elems))}(elems, group)
+    return GenericSymmetry(elems, group)
 end
-
