@@ -19,6 +19,9 @@ Base.promote_rule(::Type{R}, ::Type{<:Phase}) where {R<:Real} = ComplexF64
 # Need this when scalar types are different
 Base.:(==)(x::Phase, y::Phase) = x.fraction == y.fraction
 
+Base.one(::Phase{T}) where {T} = Phase{T}(zero(T))
+Base.one(::Type{Phase{T}}) where {T} = Phase{T}(zero(T))
+
 function Base.convert(::Type{Complex{R}}, phase::Phase) where {R<:AbstractFloat}
     r = cospi(2*phase.fraction)
     i = sinpi(2*phase.fraction)
