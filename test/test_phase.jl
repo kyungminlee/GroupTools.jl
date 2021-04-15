@@ -9,6 +9,11 @@ using GroupTools
     @test typeof(Phase{Float64}(0)) == Phase{Float64}
     @test Phase{Float64}(1//4) == Phase(1/4)
 
+    @test typeof(one(Phase{Float64})) == Phase{Float64}
+    @test typeof(one(Phase(0.2))) == Phase{Float64}
+    @test isone(one(Phase(0.2)))
+    @test !isone(Phase(0.2))
+
     p1 = Phase(3//7)
     p2 = Phase(0.3)
     let arr = [p1, p2]
@@ -20,6 +25,8 @@ using GroupTools
     @test p1 * p1 == Phase(6//7)
     @test p1 * p1 * p1 == Phase(2//7)
     @test p1 / p3 == Phase(2//7)
+    @test p1 // p3 == Phase(2//7)
+    @test p3 \ p1 == Phase(2//7)
     @test p1^4 == Phase(12//7) == Phase(5//7)
     @test inv(p1) == Phase(-3//7) == Phase(4//7)
 
