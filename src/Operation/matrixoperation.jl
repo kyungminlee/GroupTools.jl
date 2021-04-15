@@ -43,6 +43,15 @@ struct MatrixOperation{D, R<:Number}<:AbstractSymmetryOperation
     end
 end
 
+function Base.one(::MatrixOperation{D, R}) where {D, R}
+    return MatrixOperation{D, R}(Matrix(LinearAlgebra.I, (D, D)))
+end
+
+function Base.one(::Type{MatrixOperation{D, R}}) where {D, R}
+    return MatrixOperation{D, R}(Matrix(LinearAlgebra.I, (D, D)))
+end
+
+
 Base.hash(x::M, h::UInt) where {M<:MatrixOperation} = Base.hash(M, Base.hash(x.matrix, h))
 
 Base.:(==)(lhs::U, rhs::U) where {U<:MatrixOperation} = lhs.matrix == rhs.matrix
