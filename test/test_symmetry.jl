@@ -25,6 +25,9 @@ using GroupTools
     @test sym1 == sym2
     @test elements(sym1) == elems
     @test group(sym1) == FiniteGroup([1 2 3; 2 3 1; 3 1 2])
+
+    sym3 = GenericSymmetry{ComplexF64}(elems, FiniteGroup([1 2 3; 2 3 1; 3 1 2]))
+    @test sym3.group == sym2.group
 end
 
 @testset "finite group symmetry" begin
