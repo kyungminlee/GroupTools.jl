@@ -177,6 +177,19 @@ end
         @test gp1 != gp3 && hash(gp1) != hash(gp3)
     end
 
+    @testset "one" begin
+        g1 = GeneralizedPermutation([2, 3, 1, 4], Phase.([0//1, 1//4, 2//4, 3//4]))
+        g0 = GeneralizedPermutation([1, 2, 3, 4], Phase.([0//1, 0//1, 0//1, 0//1]))
+        ga = GeneralizedPermutation([1, 2, 3, 4], Phase.([0//1, 1//4, 2//4, 3//4]))
+        gb = GeneralizedPermutation([2, 3, 1, 4], Phase.([0//1, 0//1, 0//1, 0//1]))
+        @test typeof(one(g1)) == typeof(g1)
+        @test one(g1) == g0
+        @test isone(g0)
+        @test !isone(g1)
+        @test !isone(ga)
+        @test !isone(gb)
+    end
+
     @testset "isless" begin
         g0 = GeneralizedPermutation([1,2,3,4], ones(Phase{Rational{Int}}, 4))
         g1 = GeneralizedPermutation([2,3,4,1], Phase.([0//1, 1//4, 2//4, 3//4]))
