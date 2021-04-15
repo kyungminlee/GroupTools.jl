@@ -243,7 +243,7 @@ end # @testset "MatrixSymmetry"
             ones(Int, (1,1)),
             -ones(Int, (1,1)),
         ])
-        sym = sym_c4 × sym_z2
+        sym = sym_c4 ×ˢ sym_z2
         G = FiniteGroup([
             1  2  3  4  5  6  7  8;
             2  3  4  1  6  7  8  5;
@@ -343,7 +343,7 @@ end # @testset "DirectProductSymmetry"
 
             sym3 = matrixsymmetry([ones(Int, (1,1)), -ones(Int, (1,1))])
 
-            sym4 = cross(symp, sym3, sym3)
+            sym4 = directproduct(symp, sym3, sym3)
             @test size(sym4) == (8, 2, 2)
             @test length(sym4) == 32
 
@@ -366,7 +366,7 @@ end # @testset "DirectProductSymmetry"
         @test_throws ArgumentError sym_m ⋊ sym_c3
         sym_z2 = matrixsymmetry([ones(Int, (1,1)), -ones(Int, (1,1))])
 
-        sym = cross(sym_3m1, sym_z2)
+        sym = sym_3m1 ×ˢ sym_z2
         # @test size(sym) == (6, 2)
         @test length(sym) == 12
 
