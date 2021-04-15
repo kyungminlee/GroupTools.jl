@@ -178,16 +178,16 @@ end
     end
 
     @testset "one" begin
-        g1 = GeneralizedPermutation([2, 3, 1, 4], Phase.([0//1, 1//4, 2//4, 3//4]))
         g0 = GeneralizedPermutation([1, 2, 3, 4], Phase.([0//1, 0//1, 0//1, 0//1]))
-        ga = GeneralizedPermutation([1, 2, 3, 4], Phase.([0//1, 1//4, 2//4, 3//4]))
-        gb = GeneralizedPermutation([2, 3, 1, 4], Phase.([0//1, 0//1, 0//1, 0//1]))
+        g1 = GeneralizedPermutation([2, 3, 1, 4], Phase.([0//1, 1//4, 2//4, 3//4]))
+        g2 = GeneralizedPermutation([1, 2, 3, 4], Phase.([0//1, 1//4, 2//4, 3//4]))
+        g3 = GeneralizedPermutation([2, 3, 1, 4], Phase.([0//1, 0//1, 0//1, 0//1]))
         @test typeof(one(g1)) == typeof(g1)
         @test one(g1) == g0
         @test isone(g0)
         @test !isone(g1)
-        @test !isone(ga)
-        @test !isone(gb)
+        @test !isone(g2)
+        @test !isone(g3)
     end
 
     @testset "isless" begin
