@@ -75,3 +75,5 @@ Base.imag(phase::Phase) = sinpi(2*phase.fraction)
 
 # Independent of type
 Base.hash(p::Phase, h::UInt) = hash(Phase, hash(p.fraction, h))
+
+(x::Phase)(y::Number) = convert(ComplexF64, x) * y
