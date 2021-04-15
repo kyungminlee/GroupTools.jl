@@ -110,6 +110,7 @@ end
     @testset "product and inverse and conjugate" begin
         gp1 = GeneralizedPermutation([2=>Phase(0//1), 3=>Phase(1//4), 1=>Phase(2//4), 4=>Phase(3//4)])
         gp2 = GeneralizedPermutation([2=>Phase(0//1), 1=>Phase(1//7), 4=>Phase(2//7), 3=>Phase(3//7)])
+        @test_throws ArgumentError gp1 * GeneralizedPermutation([1,2], [Phase(0), Phase(0)])
         m_gp1 = Matrix(gp1)
         m_gp2 = Matrix(gp2)
         m_gp3 = Matrix(gp1 * gp2)
