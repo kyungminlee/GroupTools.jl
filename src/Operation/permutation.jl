@@ -50,6 +50,15 @@ struct Permutation<:AbstractSymmetryOperation
 end
 
 Base.one(p::Permutation) = Permutation(1:length(p.map))
+Base.isone(p::Permutation) = p.map == 1:length(p.map)
+
+"""
+    isidentity(perm::Permutation)
+
+Test whether the permutation is an identity.
+"""
+isidentity(p::Permutation) = p.map == 1:length(p.map)
+
 
 Base.:(==)(p1::Permutation, p2::Permutation) = p1.map == p2.map
 
@@ -172,10 +181,3 @@ function generate_group(generators::Permutation...)
     return group
 end
 
-
-"""
-    isidentity(perm::Permutation)
-
-Test whether the permutation is an identity.
-"""
-isidentity(perm::Permutation) = perm.map == 1:length(perm.map)

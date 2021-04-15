@@ -21,6 +21,7 @@ Base.:(==)(x::Phase, y::Phase) = x.fraction == y.fraction
 
 Base.one(::Phase{T}) where {T} = Phase{T}(zero(T))
 Base.one(::Type{Phase{T}}) where {T} = Phase{T}(zero(T))
+Base.isone(p::Phase) = iszero(p.fraction)
 
 function Base.convert(::Type{Complex{R}}, phase::Phase) where {R<:AbstractFloat}
     r = cospi(2*phase.fraction)

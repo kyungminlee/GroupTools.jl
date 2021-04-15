@@ -67,6 +67,11 @@ function Base.one(x::GeneralizedPermutation{T}) where {T}
     return GeneralizedPermutation{T}(1:n, [one(Phase{T}) for i in 1:n], 1)
 end
 
+function Base.isone(p::GeneralizedPermutation)
+    return p.map == 1:length(p.map) && all(isone, p.phase)
+end
+
+
 """
 Permutation:
     y: 𝐚 ↦ 𝐛
@@ -114,10 +119,6 @@ end
 
 function Base.conj(p::GeneralizedPermutation{A}) where {A}
     return GeneralizedPermutation{A}(p.map, conj.(p.phase), p.order)
-end
-
-function isidentity(p::GeneralizedPermutation)
-    return p.map == 1:length(p.map) && all(isone, p.phase)
 end
 
 

@@ -51,6 +51,8 @@ function Base.one(::Type{MatrixOperation{D, R}}) where {D, R}
     return MatrixOperation{D, R}(Matrix(LinearAlgebra.I, (D, D)))
 end
 
+Base.isone(m::MatrixOperation) = isone(m.matrix)
+isidentity(m::MatrixOperation) = isone(m.matrix)
 
 Base.hash(x::M, h::UInt) where {M<:MatrixOperation} = Base.hash(M, Base.hash(x.matrix, h))
 
@@ -74,8 +76,6 @@ function Base.:(^)(lhs::U, rhs::Integer) where {U<:MatrixOperation}
     end
 end
 
-
-isidentity(arg::MatrixOperation) = arg.matrix == LinearAlgebra.I
 
 function Base.isapprox(
     lhs::MatrixOperation{D, R1},
