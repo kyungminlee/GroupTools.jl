@@ -8,6 +8,8 @@ using GroupTools
         u0 = MatrixOperation([1.0 0.0; 0.0 1.0])
         u1 = MatrixOperation{ComplexF64}([0.0 1.0; 1.0 0.0])
         @test isa(u0 ×ˢ u1, DirectProductOperation)
+        @test isa(directproduct(u0, u1), DirectProductOperation)
+        @test u0 ×ˢ u1 == directproduct(u0, u1)
         @test isa(u1 * (-1), MatrixOperation)
         @test isa(u1 * 1, MatrixOperation)
         @test isa(u1 * cis(π/4), MatrixOperation)
@@ -51,6 +53,10 @@ using GroupTools
         u4 = IdentityOperation()
         @test (u1 ×ˢ u2) ×ˢ u3 == u1 ×ˢ (u2 ×ˢ u3)
         @test u1 ×ˢ u2 ×ˢ u3 ×ˢ u4 == u1 ×ˢ (u2 ×ˢ u3) ×ˢ u4 == (u1 ×ˢ u2) ×ˢ (u3 ×ˢ u4)
+
+        @test directproduct(directproduct(directproduct(u1, u2), u3), u4) == 
+              directproduct(directproduct(u1, u2), directproduct(u3, u4)) ==
+              directproduct(directproduct(u1, directproduct(u2, u3)), u4)
     end
 
     @testset "isidentity" begin
