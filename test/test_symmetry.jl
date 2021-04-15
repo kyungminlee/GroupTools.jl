@@ -53,6 +53,8 @@ end
 
         @test_throws ArgumentError elems_c2[1] * elems[1]
     end
+    
+    @test finitegroupsymmetry(group_c3.multiplication_table).group == group_c3
     symmetry_c3 = finitegroupsymmetry(group_c3)
     for i in 1:3, j in 1:3
         k = group_product(group_c3, i, j)
