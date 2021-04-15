@@ -29,9 +29,9 @@ struct GeneralizedPermutation{AngleScalar<:Union{<:Integer, <:Rational}}<:Abstra
             end
         end
         order = 1
-        let # compute cycle length
-            current_map = Vector{Int}(map)
+        let current_map = Vector{Int}(map), # compute cycle length
             current_phase = Vector{Phase{A}}(phase)
+            
             while order <= maxorder && !(current_map == 1:n && all(isone, current_phase))
                 current_phase = phase[current_map] .* current_phase
                 current_map = map[current_map]
