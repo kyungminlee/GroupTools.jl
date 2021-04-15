@@ -141,7 +141,7 @@ end
         end
     end
 
-    @testset "Float64" begin
+    @testset "Float" begin
         @testset "one-dimensional" begin
             normalize = GroupTools._default_normalize(ComplexF64)
             elems = [1, cis(2π/3), cis(4π/3)]
@@ -150,18 +150,20 @@ end
             @test sym1.group == sym2.group
         end
 
-        sym1 = matrixsymmetry([[1.0 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
-        @testset "constructor" begin
-            sym1p = matrixsymmetry(
-                MatrixOperation.([[1.0 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
-            )
-            @test sym1 == sym1p
-        end
-        @testset "type traits" begin
-            @test eltype(sym1) <: MatrixOperation{2, Float64}
-            @test eltype(typeof(sym1)) <: MatrixOperation{2, Float64}
-            @test valtype(sym1) <: MatrixOperation{2, Float64}
-            @test valtype(typeof(sym1)) <: MatrixOperation{2, Float64}
+        for T in [Float32, Float64]
+            sym1 = matrixsymmetry(Matrix{T}[[1.0 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+            @testset "constructor" begin
+                sym1p = matrixsymmetry(
+                    MatrixOperation{2, T}.([[1.0 0; 0 1], [-1 0; 0 -1], [0 -1; 1 0], [0 1; -1 0]])
+                )
+                @test sym1 == sym1p
+            end
+            @testset "type traits" begin
+                @test eltype(sym1) <: MatrixOperation{2, T}
+                @test eltype(typeof(sym1)) <: MatrixOperation{2, T}
+                @test valtype(sym1) <: MatrixOperation{2, T}
+                @test valtype(typeof(sym1)) <: MatrixOperation{2, T}
+            end
         end
     end
 
