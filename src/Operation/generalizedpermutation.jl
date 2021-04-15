@@ -152,19 +152,19 @@ function (p::GeneralizedPermutation)(v::AbstractVector{T}) where {T<:Number}
     end
     out = Vector{ComplexF64}(undef, n)
     for (j, (i, ϕ)) in enumerate(zip(p.map, p.phase))
-        out[i] = v[j] * ϕ
+        out[i] = ϕ(v[j])
     end
     return out
 end
 
 function (p::GeneralizedPermutation)(i::Integer, a::Number)
-    return (p.map[i], p.phase[i] * a)
+    return (p.map[i], p.phase[i](a))
 end
 
 
 function (p::GeneralizedPermutation)(ia::Tuple{<:Integer, <:Number})
     i, a = ia
-    return (p.map[i], p.phase[i] * a)
+    return (p.map[i], p.phase[i](a))
 end
 
 
