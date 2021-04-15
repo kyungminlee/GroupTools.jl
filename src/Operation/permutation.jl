@@ -49,6 +49,7 @@ struct Permutation<:AbstractSymmetryOperation
     end
 end
 
+Base.one(p::Permutation) = Permutation(1:length(p.map))
 
 Base.:(==)(p1::Permutation, p2::Permutation) = p1.map == p2.map
 
