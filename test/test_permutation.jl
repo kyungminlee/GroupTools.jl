@@ -36,6 +36,31 @@ using GroupTools
     @test !isidentity(p2)
     @test !isidentity(p3)
 
+    @test isone(p0)
+    @test !isone(p1)
+    @test !isone(p2)
+    @test !isone(p3)
+
+    @test typeof(one(p1)) == typeof(p1)
+    @test one(p1) == p0
+
+    for T in [Bool, Int, Float64, ComplexF64]
+        m = Matrix{T}(p1)
+        @test typeof(m) == Matrix{T}
+        @test m == [
+            0 0 0 1;
+            1 0 0 0;
+            0 1 0 0;
+            0 0 1 0
+        ]
+    end
+    @test Matrix(p1) == [
+        0 0 0 1;
+        1 0 0 0;
+        0 1 0 0;
+        0 0 1 0
+    ]
+
     @test p0(1) == 1 && p0(2) == 2 && p0(3) == 3 && p0(4) == 4
     @test p1(1) == 2 && p1(2) == 3 && p1(3) == 4 && p1(4) == 1
 
