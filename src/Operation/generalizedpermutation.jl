@@ -71,6 +71,10 @@ function Base.isone(p::GeneralizedPermutation)
     return p.map == 1:length(p.map) && all(isone, p.phase)
 end
 
+function isidentity(p::GeneralizedPermutation)
+    return p.map == 1:length(p.map) && all(isone, p.phase)
+end
+
 
 """
 Permutation:
