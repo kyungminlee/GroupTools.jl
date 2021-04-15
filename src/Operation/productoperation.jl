@@ -90,7 +90,7 @@ function Base.isapprox(lhs::P, rhs::P; atol::Real=0, rtol::Real=Base.rtoldefault
     return all(isapprox.(lhs.operations, rhs.operations; atol=atol, rtol=rtol))
 end
 
-Base.one(obj::DirectProductOperation) = DirectOperation(one.(obj.operations))
+Base.one(obj::DirectProductOperation) = DirectProductOperation(one.(obj.operations))
 Base.isone(obj::DirectProductOperation) = all(isone, obj.operations)
 isidentity(obj::DirectProductOperation) = all(isidentity, obj.operations)
 
