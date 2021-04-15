@@ -111,9 +111,11 @@ function directproduct(lhs::AbstractVector{<:AbstractSymmetryOperation}, rhs::Ab
     return [directproduct(l, r) for l in lhs, r in rhs]
 end
 
+#=
 function directproduct(::Type{E}, products::Function...) where {E<:DirectProductOperation}
     function product(lhs::E, rhs::E)
         return DirectProductOperation([p(l, r) for (p, l, r) in zip(products, lhs.operations, rhs.operations)]...)
     end
     return product
 end
+=#
