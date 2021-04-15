@@ -62,17 +62,10 @@ function Base.:(==)(x::GeneralizedPermutation, y::GeneralizedPermutation)
     return x.order == y.order && x.map == y.map && x.phase == y.phase
 end
 
-function Base.Matrix{T}(gp::GeneralizedPermutation) where {T<:Number}
-    n = length(gp.map)
-    out = zeros(T, (n, n))
-    for (j, (i, ϕ)) in enumerate(zip(gp.map, gp.phase))
-        out[i, j] = convert(T, ϕ)
-    end
-    return out
+function Base.one(x::GeneralizedPermutation{T}) where {T}
+    n = length(x.map)
+    return GeneralizedPermutation{T}(1:n, [one(Phase{T}) for i in 1:n], 1)
 end
-
-Base.Matrix(gp::GeneralizedPermutation) = Base.Matrix{ComplexF64}(gp)
-
 
 """
 Permutation:
@@ -168,3 +161,16 @@ function (p::GeneralizedPermutation)(ia::Tuple{<:Integer, <:Number})
     i, a = ia
     return (p.map[i], p.phase[i] * a)
 end
+
+
+
+function Base.Matrix{T}(gp::GeneralizedPermutation) where {T<:Number}
+    n = length(gp.map)
+    out = zeros(T, (n, n))
+    for (j, (i, ϕ)) in enumerate(zip(gp.map, gp.phase))
+        out[i, j] = convert(T, ϕ)
+    end
+    return out
+end
+
+Base.Matrix(gp::GeneralizedPermutation) = Base.Matrix{ComplexF64}(gp)
