@@ -275,7 +275,7 @@ end # @testset "DirectProductSymmetry"
             [1 0 0; 0 1 0; 0 0 1],
             [-1 0 0; 0 -1 0; 0 0 -1],
         ])
-        for symp in [sym1 ⋊ sym2, sym2 ⋉ sym1]
+        for symp in [sym1 ⋊ sym2, sym2 ⋉ sym1, sym1 ⋊ˢ sym2, sym2 ⋉ˢ sym1]
             @testset "type traits" begin
                 @test eltype(symp) == MatrixOperation{3, Int}
                 @test eltype(typeof(symp)) == MatrixOperation{3, Int}
