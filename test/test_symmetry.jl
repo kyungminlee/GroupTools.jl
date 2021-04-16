@@ -273,85 +273,85 @@ end # @testset "DirectProductSymmetry"
             [1 0 0; 0 1 0; 0 0 1],
             [-1 0 0; 0 -1 0; 0 0 -1],
         ])
-        symp = sym1 ⋊ sym2
+        for symp in [sym1 ⋊ sym2, sym2 ⋉ sym1]
+            @testset "type traits" begin
+                @test eltype(symp) == MatrixOperation{3, Int}
+                @test eltype(typeof(symp)) == MatrixOperation{3, Int}
+                @test valtype(symp) == MatrixOperation{3, Int}
+                @test valtype(typeof(symp)) == MatrixOperation{3, Int}
+            end
 
-        @testset "type traits" begin
-            @test eltype(symp) == MatrixOperation{3, Int}
-            @test eltype(typeof(symp)) == MatrixOperation{3, Int}
-            @test valtype(symp) == MatrixOperation{3, Int}
-            @test valtype(typeof(symp)) == MatrixOperation{3, Int}
-        end
+            @testset "iterator" begin
+                @test Base.IteratorSize(symp) == Base.HasShape{2}()
+                @test size(symp) == (4,2)
+                @test length(symp) == 8
+                @test firstindex(symp) == 1
+                @test lastindex(symp) == 8
+                @test symp[2] == MatrixOperation([0 -1 0; 1 0 0; 0 0 1])
+                @test symp[4:5] == MatrixOperation.([[0 1 0; -1 0 0; 0 0 1], [-1 0 0; 0 -1 0; 0 0 -1]])
+                @test symp[3,2] == sym1[3] * sym2[2]
 
-        @testset "iterator" begin
-            @test Base.IteratorSize(symp) == Base.HasShape{2}()
-            @test size(symp) == (4,2)
-            @test length(symp) == 8
-            @test firstindex(symp) == 1
-            @test lastindex(symp) == 8
-            @test symp[2] == MatrixOperation([0 -1 0; 1 0 0; 0 0 1])
-            @test symp[4:5] == MatrixOperation.([[0 1 0; -1 0 0; 0 0 1], [-1 0 0; 0 -1 0; 0 0 -1]])
-            @test symp[3,2] == sym1[3] * sym2[2]
+                @test_throws BoundsError symp[100]
+                @test_throws BoundsError symp[-1]
+                @test_throws BoundsError symp[0]
 
-            @test_throws BoundsError symp[100]
-            @test_throws BoundsError symp[-1]
-            @test_throws BoundsError symp[0]
+                els1 = collect(symp)
+                @test size(els1) == (4,2)
+                @test length(els1) == 8
+                els2 = [
+                    MatrixOperation{3,Int64}([1 0 0; 0 1 0; 0 0 1])
+                    MatrixOperation{3,Int64}([0 -1 0; 1 0 0; 0 0 1])
+                    MatrixOperation{3,Int64}([-1 0 0; 0 -1 0; 0 0 1])
+                    MatrixOperation{3,Int64}([0 1 0; -1 0 0; 0 0 1])
+                    MatrixOperation{3,Int64}([-1 0 0; 0 -1 0; 0 0 -1])
+                    MatrixOperation{3,Int64}([0 1 0; -1 0 0; 0 0 -1])
+                    MatrixOperation{3,Int64}([1 0 0; 0 1 0; 0 0 -1])
+                    MatrixOperation{3,Int64}([0 -1 0; 1 0 0; 0 0 -1])
+                ]
+                @test vcat(els1...) == els2
+                @test elements(symp) == els1
+            end
 
-            els1 = collect(symp)
-            @test size(els1) == (4,2)
-            @test length(els1) == 8
-            els2 = [
-                MatrixOperation{3,Int64}([1 0 0; 0 1 0; 0 0 1])
-                MatrixOperation{3,Int64}([0 -1 0; 1 0 0; 0 0 1])
-                MatrixOperation{3,Int64}([-1 0 0; 0 -1 0; 0 0 1])
-                MatrixOperation{3,Int64}([0 1 0; -1 0 0; 0 0 1])
-                MatrixOperation{3,Int64}([-1 0 0; 0 -1 0; 0 0 -1])
-                MatrixOperation{3,Int64}([0 1 0; -1 0 0; 0 0 -1])
-                MatrixOperation{3,Int64}([1 0 0; 0 1 0; 0 0 -1])
-                MatrixOperation{3,Int64}([0 -1 0; 1 0 0; 0 0 -1])
-            ]
-            @test vcat(els1...) == els2
-            @test elements(symp) == els1
-        end
+            @testset "equality" begin
+                sym1p = matrixsymmetry([
+                    [1 0 0; 0 1 0; 0 0 1],
+                    [0 -1 0; 1 0 0; 0 0 1],
+                    [-1 0 0; 0 -1 0; 0 0 1],
+                    [0 1 0; -1 0 0; 0 0 1]
+                ])
+                sym2p = matrixsymmetry([
+                    [1 0 0; 0 1 0; 0 0 1],
+                    [-1 0 0; 0 -1 0; 0 0 -1],
+                ])
+                sympp = sym1p ⋊ sym2p
+                @test sym1 == sym1p
+                @test sym2 == sym2p
+                @test symp == sympp
+            end
 
-        @testset "equality" begin
-            sym1p = matrixsymmetry([
-                [1 0 0; 0 1 0; 0 0 1],
-                [0 -1 0; 1 0 0; 0 0 1],
-                [-1 0 0; 0 -1 0; 0 0 1],
-                [0 1 0; -1 0 0; 0 0 1]
-            ])
-            sym2p = matrixsymmetry([
-                [1 0 0; 0 1 0; 0 0 1],
-                [-1 0 0; 0 -1 0; 0 0 -1],
-            ])
-            sympp = sym1p ⋊ sym2p
-            @test sym1 == sym1p
-            @test sym2 == sym2p
-            @test symp == sympp
-        end
+            @testset "composition" begin
+                G = FiniteGroup([
+                    1  2  3  4  5  6  7  8;
+                    2  1  4  3  6  5  8  7;
+                    3  4  2  1  7  8  6  5;
+                    4  3  1  2  8  7  5  6;
+                    5  6  7  8  1  2  3  4;
+                    6  5  8  7  2  1  4  3;
+                    7  8  6  5  3  4  2  1;
+                    8  7  5  6  4  3  1  2
+                ])
+                @test !isnothing(group_isomorphism(group(symp), G))
 
-        @testset "composition" begin
-            G = FiniteGroup([
-                1  2  3  4  5  6  7  8;
-                2  1  4  3  6  5  8  7;
-                3  4  2  1  7  8  6  5;
-                4  3  1  2  8  7  5  6;
-                5  6  7  8  1  2  3  4;
-                6  5  8  7  2  1  4  3;
-                7  8  6  5  3  4  2  1;
-                8  7  5  6  4  3  1  2
-            ])
-            @test !isnothing(group_isomorphism(group(symp), G))
+                sym3 = matrixsymmetry([ones(Int, (1,1)), -ones(Int, (1,1))])
 
-            sym3 = matrixsymmetry([ones(Int, (1,1)), -ones(Int, (1,1))])
+                sym4 = directproduct(symp, sym3, sym3)
+                @test size(sym4) == (8, 2, 2)
+                @test length(sym4) == 32
 
-            sym4 = directproduct(symp, sym3, sym3)
-            @test size(sym4) == (8, 2, 2)
-            @test length(sym4) == 32
-
-            # test order of elements of sym4
-            @test collect(sym4) == [DirectProductOperation(x,y,z) for z in sym3 for y in sym3 for x in symp]
-        end
+                # test order of elements of sym4
+                @test collect(sym4) == [DirectProductOperation(x,y,z) for z in sym3 for y in sym3 for x in symp]
+            end
+        end # for symp
     end
 
     @testset "3m1" begin
