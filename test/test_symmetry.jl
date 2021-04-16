@@ -82,6 +82,8 @@ end
             sym1 = GenericSymmetry(elems)
             sym2 = matrixsymmetry(elems)
             @test sym1.group == sym2.group  # (element types are different. TODO: is it necessary?)
+            @test elementnames(sym1) == ["1", "-1"]
+            @test elementname(sym1, 2) == "-1"
         end
 
         # C4 group (Abelian)

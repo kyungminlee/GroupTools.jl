@@ -1,6 +1,6 @@
 export AbstractSymmetry
-export element_name
-export element_names
+export elementname
+export elementnames
 
 abstract type AbstractSymmetry{O} end
 
@@ -25,5 +25,5 @@ abstract type AbstractSymmetry{O} end
 # elementnames(x::AbstractSymmetry) = error("Not implemented")
 # elementname(x::AbstractSymmetry, i) = error("Not implemented")
 
-element_names(x::AbstractSymmetry) = string.(x)
-element_name(x::AbstractSymmetry, idx) = string.(x[idx])
+elementnames(x::AbstractSymmetry) = string.(x)
+elementname(x::AbstractSymmetry, idx) = string.(x[idx])
