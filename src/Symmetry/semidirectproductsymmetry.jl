@@ -1,6 +1,8 @@
 export SemidirectProductSymmetry
 export elements
-export ⋊
+export ⋊, ⋉
+export ⋊ˢ, ⋉ˢ
+
 
 struct SemidirectProductSymmetry{E<:AbstractSymmetryOperation, S1<:AbstractSymmetry, S2<:AbstractSymmetry}<:AbstractSymmetry{E}
     normal::S1
@@ -22,13 +24,11 @@ struct SemidirectProductSymmetry{E<:AbstractSymmetryOperation, S1<:AbstractSymme
     end
 end
 
-function ⋊(normal::S1, rest::S2) where {S1<:AbstractSymmetry, S2<:AbstractSymmetry}
-    return SemidirectProductSymmetry(normal, rest)
-end
+⋊(normal::AbstractSymmetry, rest::AbstractSymmetry) = SemidirectProductSymmetry(normal, rest)
+⋊ˢ(normal::AbstractSymmetry, rest::AbstractSymmetry) = SemidirectProductSymmetry(normal, rest)
 
-function ⋉(rest::S2, normal::S1) where {S1<:AbstractSymmetry, S2<:AbstractSymmetry}
-    return SemidirectProductSymmetry(normal, rest)
-end
+⋉(rest::AbstractSymmetry, normal::AbstractSymmetry) = SemidirectProductSymmetry(normal, rest)
+⋉ˢ(rest::AbstractSymmetry, normal::AbstractSymmetry) = SemidirectProductSymmetry(normal, rest)
 
 # == BEGIN Iterator stuff ==
 Base.eltype(::Type{SemidirectProductSymmetry{E, S1, S2}}) where {E, S1, S2} = E
