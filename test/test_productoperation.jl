@@ -17,6 +17,15 @@ using GroupTools
         u1 * 0.5
     end
 
+    @testset "directproduct-array" begin
+        u0 = MatrixOperation([1.0 0.0; 0.0 1.0])
+        u1 = MatrixOperation([cospi(1/3) sinpi(1/3); -sinpi(1/3) cospi(1/3)])
+        f0 = Phase(0//1)
+        f1 = Phase(1//3)
+        @test directproduct([u0, u1], [f0, f1]) == [ u0 ×ˢ f0 u0 ×ˢ f1; u1 ×ˢ f0 u1 ×ˢ f1]
+        @test [u0, u1] ×ˢ [f0, f1] == [ u0 ×ˢ f0 u0 ×ˢ f1; u1 ×ˢ f0 u1 ×ˢ f1]
+    end
+
     @testset "equality" begin
         u0 = MatrixOperation([1 0; 0 1])
         u1 = MatrixOperation([0 1; 1 0])

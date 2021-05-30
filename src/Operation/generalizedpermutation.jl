@@ -1,5 +1,11 @@
 export GeneralizedPermutation
 
+@doc """
+    GeneralizedPermutation{AngleScalar}
+
+Represents generalized permutation.
+The angle can be either integer or rational, i.e. the phase needs to be commensurate.
+"""
 struct GeneralizedPermutation{AngleScalar<:Union{<:Integer, <:Rational}}<:AbstractSymmetryOperation
     map::Vector{Int}
     phase::Vector{Phase{AngleScalar}}
