@@ -88,6 +88,14 @@ end
 
 Base.Matrix(p::Permutation) = Base.Matrix{Bool}(p)
 
+Base.size(p::Permutation) = (length(p.map), length(p.map))
+
+function Base.size(p::Permutation, i::Integer)
+    i <= 0 && error("Permutation: dimension out of range")
+    i <= 2 && return length(p.map)
+    return 1
+end
+
 
 """
     *(p1 ::Permutation, p2 ::Permutation)
