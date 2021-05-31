@@ -10,6 +10,10 @@ using GroupTools
     p2 = Permutation([3,4,1,2])
     p3 = Permutation([4,1,2,3])
 
+    @test size(p1) == (4,4)
+    @test size(p1, 1) == 4
+    @test size(p1, 2) == 4
+    @test size(p1, 3) == 1
     @test p1 * p2 == p3
     @test p1 != p3
     @test p1^0 == p0
