@@ -96,6 +96,58 @@ using GroupTools
     end
 end
 
+
+@testset "ProductOperation" begin
+
+    @testset "construction" begin
+        u0 = MatrixOperation([1.0 0.0; 0.0 1.0])
+        u1 = MatrixOperation{ComplexF64}([0.0 1.0; 1.0 0.0])
+        p1 = ProductOperation(u0, u1)
+        @test isa(p1, ProductOperation)
+    end
+
+    @testset "equality" begin
+        u0 = MatrixOperation([1 0; 0 1])
+        u1 = MatrixOperation([0 1; 1 0])
+        p = ProductOperation(u0, u1)
+        p2 = ProductOperation(MatrixOperation([1 0; 0 1]), MatrixOperation([0 1; 1 0]))
+        p3 = ProductOperation(MatrixOperation([0 1; 1 0]), MatrixOperation([1 0; 0 1]))
+        @test p == p2
+        @test p != p3
+        p2p = ProductOperation(MatrixOperation([1 0; 0 1]), MatrixOperation([0 1; 1 0]))
+        @test p2 == p2p
+        @test p2 !== p2p
+        @test hash(p2) == hash(p2p)
+    end
+
+    # @testset "times" begin
+    #     u1 = MatrixOperation([cospi(1/3) sinpi(1/3); -sinpi(1/3) cospi(1/3)])
+    #     u2 = MatrixOperation(exp(0.25*pi*im))
+    #     p = u1 ×ˢ u2
+    #     @test p*p*p == p^3
+    #     p3 = MatrixOperation([-1.0 0.0; 0.0 -1.0]) ×ˢ MatrixOperation(exp(0.75*pi*im))
+    #     @test isapprox(p*p*p, p3)
+
+    #     u3 = MatrixOperation([0 1 0; 0 0 1; 1 0 0])
+    #     u4 = IdentityOperation()
+    #     @test (u1 ×ˢ u2) ×ˢ u3 == u1 ×ˢ (u2 ×ˢ u3)
+    #     @test u1 ×ˢ u2 ×ˢ u3 ×ˢ u4 == u1 ×ˢ (u2 ×ˢ u3) ×ˢ u4 == (u1 ×ˢ u2) ×ˢ (u3 ×ˢ u4)
+
+    #     @test directproduct(directproduct(directproduct(u1, u2), u3), u4) == 
+    #           directproduct(directproduct(u1, u2), directproduct(u3, u4)) ==
+    #           directproduct(directproduct(u1, directproduct(u2, u3)), u4)
+    # end
+
+    @testset "isidentity" begin
+        u0 = MatrixOperation([1 0; 0 1])
+        u1 = MatrixOperation([0 1; 1 0])
+        @test !isidentity(ProductOperation(u0, u1))
+        @test isidentity(ProductOperation(u0, u0))
+        @test !isone( ProductOperation(u0, Phase(1//2)) )
+        @test isone( ProductOperation(u0, Phase(0//1)) )
+    end
+end
+
 # @testset "product" begin
 #     r0 = ProductOperation()
 
