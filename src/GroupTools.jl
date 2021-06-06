@@ -3,6 +3,7 @@ module GroupTools
 include("Operation/abstractoperation.jl")
 include("Operation/identityoperation.jl")
 include("Operation/productoperation.jl")
+include("Operation/directproductoperation.jl")
 
 include("Operation/phase.jl")
 include("Operation/matrixoperation.jl")
