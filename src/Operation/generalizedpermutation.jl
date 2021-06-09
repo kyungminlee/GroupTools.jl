@@ -179,9 +179,21 @@ function Base.Matrix{T}(gp::GeneralizedPermutation) where {T<:Number}
     n = length(gp.map)
     out = zeros(T, (n, n))
     for (j, (i, ϕ)) in enumerate(zip(gp.map, gp.phase))
-        out[i, j] = convert(T, ϕ)
+        out[i, j] = ϕ(1)
     end
     return out
 end
 
 Base.Matrix(gp::GeneralizedPermutation) = Base.Matrix{ComplexF64}(gp)
+
+
+function (p::GeneralizedPermutation)(m::MatrixOperation{D, R}) where {D, R}
+    if length(p.map) != D
+        throw(ArgumentError("domain of permutation does not match the dimension of the matrix"))
+    end
+    out = similar(Array{ComplexF64}, axes(m.matrix))
+    for i in 1:D, j in 1:D
+        out[p.map[i], p.map[j]] = p.phase[i]( inv(p.phase[j])(m.matrix[i,j]))
+    end
+    return MatrixOperation(out)
+end

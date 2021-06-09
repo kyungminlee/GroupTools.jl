@@ -24,6 +24,7 @@ Base.one(::Type{Phase{T}}) where {T} = Phase{T}(zero(T))
 Base.isone(p::Phase) = iszero(p.fraction)
 
 function Base.convert(::Type{Complex{R}}, phase::Phase) where {R<:AbstractFloat}
+    @warn "Conversion from Phase to Number type is deprecated" maxlog=1
     r = cospi(2*phase.fraction)
     i = sinpi(2*phase.fraction)
     return Complex{R}(r, i)
@@ -31,11 +32,13 @@ function Base.convert(::Type{Complex{R}}, phase::Phase) where {R<:AbstractFloat}
 end
 
 function Base.convert(::Type{R}, phase::Phase) where {R<:AbstractFloat}
+    @warn "Conversion from Phase to Number type is deprecated" maxlog=1
     iszero(mod(phase.fraction * 2, one(R))) || throw(InexactError(:convert, R, phase))
     return convert(R, cospi(2*phase.fraction))
 end
 
 function Base.convert(::Type{R}, phase::Phase{T}) where {R<:Integer, T}
+    @warn "Conversion from Phase to Number type is deprecated" maxlog=1
     if iszero(phase.fraction)
         return one(R)
     elseif isone(phase.fraction * 2)
@@ -45,6 +48,7 @@ function Base.convert(::Type{R}, phase::Phase{T}) where {R<:Integer, T}
 end
 
 function Base.convert(::Type{Complex{R}}, phase::Phase{T}) where {R<:Integer, T}
+    @warn "Conversion from Phase to Number type is deprecated" maxlog=1
     f4 = phase.fraction * 4
     if iszero(f4)
         return Complex{R}(one(R), zero(R))
@@ -76,4 +80,20 @@ Base.imag(phase::Phase) = sinpi(2*phase.fraction)
 # Independent of type
 Base.hash(p::Phase, h::UInt) = hash(Phase, hash(p.fraction, h))
 
-(x::Phase)(y::Number) = convert(ComplexF64, x) * y
+
+function (x::Phase)(y::S) where {S<:Number}
+    f4 = x.fraction * 4
+    if iszero(f4)
+        return y
+    elseif f4 == 1
+        return im * y
+    elseif f4 == 2
+        return -y
+    elseif f4 == 3
+        return -im * y
+    else
+        r = cospi(2*x.fraction)
+        i = sinpi(2*x.fraction)
+        return Complex(r, i) * y
+    end
+end

@@ -84,6 +84,24 @@ using GroupTools
     @test generate_group(p1) == Set([p0, p1, p2, p3])
     @test generate_group(p2) == Set([p0, p2])
     @test generate_group(p1, p2) == Set([p0, p1, p2, p3])
+
+    @testset "operator transformation" begin
+        p = Permutation([2,3,4,1])
+        m = MatrixOperation([
+            1 2 3 4;
+            5 6 7 8;
+            9 10 11 12;
+            13 14 15 16]
+        )
+        x = Matrix(p) * m.matrix * Matrix(inv(p))
+        y = p(m).matrix
+        @test x == y
+
+        q = Permutation([1,2,3,4])
+        @test p(q) == p * q * inv(p)
+        q = Permutation([3,1,2,4])      
+        @test p(q) == p * q * inv(p)
+    end
 end
 
 @testset "GeneralizedPermutation" begin
@@ -202,5 +220,18 @@ end
         @test !(g1 < g1)
         @test !(g1 < g0)
         @test g2 < g1
+    end
+
+    @testset "operator transformation" begin
+        p = GeneralizedPermutation([2,3,4,1], [Phase(1//12),Phase(2//12),Phase(3//12),Phase(4//12)])
+        m = MatrixOperation([
+            1 2 3 4;
+            5 6 7 8;
+            9 10 11 12;
+            13 14 15 16]
+        )
+        x = Matrix(p) * m.matrix * Matrix(inv(p))
+        y = p(m).matrix
+        @test isapprox(x, y)
     end
 end

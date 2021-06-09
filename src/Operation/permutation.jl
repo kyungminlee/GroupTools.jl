@@ -124,28 +124,27 @@ function Base.:(*)(p1 ::Permutation, p2 ::Permutation)
 end
 
 
-"""
-    ^(perm ::Permutation, pow ::Integer)
+# """
+#     ^(perm ::Permutation, pow ::Integer)
 
-Exponentiate the permutation.
+# Exponentiate the permutation.
 
-# Examples
-```jldoctest
-julia> using GroupTools
+# # Examples
+# ```jldoctest
+# julia> using GroupTools
 
-julia> Permutation([2,3,4,1])^2
-Permutation([3, 4, 1, 2], 2)
-```
-"""
-function Base.:(^)(perm::Permutation, pow::Integer)
-    p = mod(pow, perm.order)
-    out = collect(1:length(perm.map))
-    for i in 1:p
-        out = collect(perm.map[x] for x in out)
-    end
-    return Permutation(out)
-end
-
+# julia> Permutation([2,3,4,1])^2
+# Permutation([3, 4, 1, 2], 2)
+# ```
+# """
+# function Base.:(^)(perm::Permutation, pow::Integer)
+#     p = mod(pow, perm.order)
+#     out = collect(1:length(perm.map))
+#     for i in 1:p
+#         out = collect(perm.map[x] for x in out)
+#     end
+#     return Permutation(out)
+# end
 
 function Base.inv(perm::Permutation)
     out = zeros(Int, length(perm.map))
@@ -156,7 +155,7 @@ function Base.inv(perm::Permutation)
 end
 
 
-function Base.isless(p1 ::Permutation, p2::Permutation)
+function Base.isless(p1::Permutation, p2::Permutation)
     return Base.isless(p1.order, p2.order) || ((p1.order == p2.order) && Base.isless(p1.map, p2.map))
 end
 
@@ -189,3 +188,29 @@ function generate_group(generators::Permutation...)
     return group
 end
 
+
+"""
+P(M) = P M P⁻¹
+"""
+function (p::Permutation)(m::MatrixOperation{D, R}) where {D, R}
+    if length(p.map) != D
+        throw(ArgumentError("domain of permutation does not match the dimension of the matrix"))
+    end
+    out = similar(m.matrix)
+    for i in 1:D, j in 1:D
+        out[p(i), p(j)] = m.matrix[i,j]
+    end
+    return MatrixOperation(out)
+end
+
+"""
+P(Q) = P Q P⁻¹
+"""
+function (p::Permutation)(q::Permutation)
+    length(p.map) == length(q.map) || throw(ArgumentError("p and q should have the same domain"))
+    out = similar(p.map)
+    for (i, x) in enumerate(q.map)
+        out[p(i)] = p(x)
+    end
+    return Permutation(out)
+end
