@@ -26,7 +26,7 @@ Base.hash(x::P, h::UInt) where {P<:ProductOperation} = Base.hash(P, Base.hash(x.
 # Base.:(*)(lhs::P, rhs::P) where {P<:ProductOperation} = ProductOperation(lhs.operations .* rhs.operations)
 # Base.inv(obj::ProductOperation) = ProductOperation(Base.inv.(obj.operations))
 
-Base.:(^)(obj::ProductOperation, n::Integer) = ProductOperation(obj.operations.^n)
+# Base.:(^)(obj::ProductOperation, n::Integer) = ProductOperation(obj.operations.^n)
 Base.:(==)(lhs::P, rhs::P) where {P<:ProductOperation} = all(lhs.operations .== rhs.operations)
 
 function Base.isapprox(lhs::P, rhs::P; atol::Real=0, rtol::Real=Base.rtoldefault(Float64)) where {P<:ProductOperation}
