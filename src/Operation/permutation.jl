@@ -124,28 +124,27 @@ function Base.:(*)(p1 ::Permutation, p2 ::Permutation)
 end
 
 
-"""
-    ^(perm ::Permutation, pow ::Integer)
+# """
+#     ^(perm ::Permutation, pow ::Integer)
 
-Exponentiate the permutation.
+# Exponentiate the permutation.
 
-# Examples
-```jldoctest
-julia> using GroupTools
+# # Examples
+# ```jldoctest
+# julia> using GroupTools
 
-julia> Permutation([2,3,4,1])^2
-Permutation([3, 4, 1, 2], 2)
-```
-"""
-function Base.:(^)(perm::Permutation, pow::Integer)
-    p = mod(pow, perm.order)
-    out = collect(1:length(perm.map))
-    for i in 1:p
-        out = collect(perm.map[x] for x in out)
-    end
-    return Permutation(out)
-end
-
+# julia> Permutation([2,3,4,1])^2
+# Permutation([3, 4, 1, 2], 2)
+# ```
+# """
+# function Base.:(^)(perm::Permutation, pow::Integer)
+#     p = mod(pow, perm.order)
+#     out = collect(1:length(perm.map))
+#     for i in 1:p
+#         out = collect(perm.map[x] for x in out)
+#     end
+#     return Permutation(out)
+# end
 
 function Base.inv(perm::Permutation)
     out = zeros(Int, length(perm.map))
