@@ -90,6 +90,4 @@ end
 Base.Matrix(m::MatrixOperation)= m.matrix
 Base.Matrix{S}(m::MatrixOperation) where {S} = convert(Matrix{S}, m.matrix)
 
-function (m::MatrixOperation{D, R})(v::AbstractVector{S}) where {D, R, S}
-    return m.matrix * v
-end
+(m::MatrixOperation)(v::AbstractVector) = m.matrix * v
