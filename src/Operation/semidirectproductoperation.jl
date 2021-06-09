@@ -29,5 +29,8 @@ end
 function Base.inv(x::SemidirectProductOperation{A, B}) where {A, B}
     irest = inv(x.rest)
     inormal = x.rest( inv(x.normal) )
-    return SemidirectProduct(irest, inormal)
+    return SemidirectProductOperation(irest, inormal)
 end
+
+Base.Matrix(x::SemidirectProductOperation) = Matrix(x.rest) * Matrix(x.normal)
+Base.Matrix{S}(x::SemidirectProductOperation) where {S} = Matrix{S}(x.rest) * Matrix{S}(x.normal)

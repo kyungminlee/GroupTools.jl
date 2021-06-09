@@ -85,3 +85,11 @@ function Base.isapprox(
 ) where {D, R1, R2}
     return isapprox(lhs.matrix, rhs.matrix; atol=atol, rtol=rtol)
 end
+
+
+Base.Matrix(m::MatrixOperation)= m.matrix
+Base.Matrix{S}(m::MatrixOperation) where {S} = convert(Matrix{S}, m.matrix)
+
+function (m::MatrixOperation{D, R})(v::AbstractVector{S}) where {D, R, S}
+    return m.matrix * v
+end
