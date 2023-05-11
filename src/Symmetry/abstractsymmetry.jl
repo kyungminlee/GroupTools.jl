@@ -18,7 +18,7 @@ abstract type AbstractSymmetry{O} end
 # Base.getindex(x::AbstractSymmetry, i::Integer) = error("Not implemented")
 # Base.getindex(x::AbstractSymmetry, i::AbstractVector{<:Integer}) = error("Not implemented")
 # Base.getindex(x::AbstractSymmetry, i::AbstractVector{<:Bool}) = error("Not implemented")
-# Base.getindex(x::AbstractSymmetry, s::Vararg{<:Integer}) = error("Not implemented")
+# Base.getindex(x::AbstractSymmetry, s::Vararg{Integer}) = error("Not implemented")
 # Base.getindex(x::AbstractSymmetry, s::CartesianIndex) = error("Not implemented")
 # Base.iterate(x::AbstractSymmetry, i::Integer=1) = error("Not implemented")
 # elements(x::AbstractSymmetry) = error("Not implemented")
